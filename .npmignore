@@ -1,0 +1,13 @@
+/.idea/
+/test/
+/src/
+/index.ts
+/dist/
+/page/
+/proxy/
+/wallet/
+/config/
+.eslintignore
+.eslintrc.json
+.gitignore
+.prettierignore
