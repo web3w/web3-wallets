@@ -1,5 +1,7 @@
+export {MetaMaskWallet} from './src/connectors/metamaskWallet'
+export {CoinbaseWallet} from './src/connectors/coinbaseWallet'
+export {ConnectWallet} from './src/connectors/walletConnet'
 export {ethers} from 'ethers'
-export {ConnectWallet, MetaMaskWallet, getWalletConnectProvider} from './src'
 
 export const CHAIN_ID_RPC: { [chainId: number]: string } = {
     1: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
@@ -9,3 +11,7 @@ export const CHAIN_ID_RPC: { [chainId: number]: string } = {
     137: 'https://rpc-mainnet.maticvigil.com', // Polygen
     80001: 'https://rpc-mumbai.matic.today'
 }
+
+export {Web3Wallets} from './src/index'
+
+export {ProviderNames} from './src/types'

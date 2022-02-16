@@ -9,7 +9,7 @@
 <p>Account: <span id="accountAddr"></span></p>
 chainId <span id="chainId"></span>
 <hr/>
-<button id="linkwalletBtn">Link Wallet</button>
+<button id="metaMaskBtn">MetaMask</button>
 <button id="switchBSCTESTBtn">Switch BSCTEST</button>
 <button id="switchRinkebyBtn">Switch Rinkeby</button>
 <hr/>
@@ -20,16 +20,11 @@ chainId <span id="chainId"></span>
 <p>Session: <span id="walletSession"></span></p>
 
 <script type="module">
-
-    import {MetamaskWallet} from './js/metamask.js'
-    import {WalletConnect} from './js/walletConnet.js'
-    // import {CHAIN_ID_RPC} from "../index";
+    // import {WalletConnect} from './js/walletConnet.js'
 
     window.ethers = ethers
 
     let accounts
-
-    const wallet = new MetamaskWallet()
 
     async function init(chainId, address) {
         document.getElementById('accountAddr').innerText = address.toLowerCase()
@@ -47,63 +42,69 @@ chainId <span id="chainId"></span>
         // window.orderApi = orderApi
 
 
-        const unitPrice = document.getElementById('erc1155UnitPrice').value
-        const tokenAmount = document.getElementById('erc1155Amount').value
+        // const unitPrice = document.getElementById('erc1155UnitPrice').value
+        // const tokenAmount = document.getElementById('erc1155Amount').value
+        //
+        // const startAmount = document.getElementById('erc1155Price')
+        // startAmount.value = unitPrice * tokenAmount
 
-        const startAmount = document.getElementById('erc1155Price')
-        startAmount.value = unitPrice * tokenAmount
 
-        const switchBSCTESTBtn = document.getElementById('switchBSCTESTBtn')
-        switchBSCTESTBtn.onclick = () => {
-            wallet.switchBSCTEST()
-        }
-        const switchRinkebyBtn = document.getElementById('switchRinkebyBtn')
-        switchRinkebyBtn.onclick = () => {
-            wallet.switchRinkeby()
-        }
     }
 
-    const linkWalletBtn = document.getElementById('linkwalletBtn')
-    linkWalletBtn.onclick = async () => {
-        accounts = await wallet.requestAccounts() // enable ethereum
+    const metaMaskBtn = document.getElementById('metaMaskBtn')
+    metaMaskBtn.onclick = async () => {
+        // const wallet = new MetamaskWallet()
+        const wallet = new Web3Wallets({name: ProviderNames.Metamask})
+        accounts = await wallet.enable() // enable ethereum
         // window.walletConnectProvider = undefined
         const chainId = wallet.chainId
         const address = wallet.account
         console.log(chainId, address)
-        const walletProvider = wallet.ethereum
+        const walletProvider = wallet.walletProvider
+
         window.walletSigner = new ethers.providers.Web3Provider(walletProvider).getSigner()
+
+        const switchBSCTESTBtn = document.getElementById('switchBSCTESTBtn')
+        switchBSCTESTBtn.onclick = () => {
+            walletProvider.switchBSCTEST()
+        }
+        const switchRinkebyBtn = document.getElementById('switchRinkebyBtn')
+        switchRinkebyBtn.onclick = () => {
+            walletProvider.switchRinkeby()
+        }
     }
     const walletConnectBtn = document.getElementById('walletConnectBtn')
     walletConnectBtn.onclick = async () => {
-        const walletConnet = new WalletConnect()
-        walletConnet.connector.on('connect', async (error, payload) => {
-            if (error) {
-                throw error
-            }
-            const web3Provider = walletConnet.wallet.walletProvider
-            if (web3Provider) {
-                window.walletConnectProvider = web3Provider
-                const {accounts, chainId} = payload.params[0]
-                init(chainId, accounts[0])
-            }
-
-        })
-        if (walletConnet.connector.connected) {
+        const wallet = new Web3Wallets({name: ProviderNames.WalletConnect})
+        const walletProvider = wallet.walletProvider
+        if (walletProvider.connected) {
+            debugger
             // const walletSession = JSON.stringify(walletConnet.connector.session, null, 2)
-            const walletSession = walletConnet.connector.session
+            const walletSession = walletProvider.connector.session
             console.log("walletSession", walletSession)
-
-            document.getElementById('accountAddr').innerText = walletSession.accounts[0]
-            document.getElementById('chainId').innerText = walletSession.chainId
-
+            document.getElementById('accountAddr').innerText = walletProvider.accounts[0]
+            document.getElementById('chainId').innerText = walletProvider.chainId
             document.getElementById('walletSession').innerText = walletSession.peerMeta.name
+            const provider = walletProvider
+            window.walletSigner = new ethers.providers.Web3Provider(provider).getSigner()
 
-            const web3Provider = getWalletConnectProvider(walletSession.chainId, walletConnet.connector)
-            if (web3Provider) {
-                const walletProvider = web3Provider
-                window.walletSigner = new ethers.providers.Web3Provider(walletProvider).getSigner()
-            }
+        } else {
+            walletProvider.on('connect', async (error, payload) => {
+                debugger
+                if (error) {
+                    throw error
+                }
+                const web3Provider = walletProvider
+                if (web3Provider) {
+                    const {accounts, chainId,peerMeta} = payload.params[0]
+                    init(chainId, accounts[0])
+                    document.getElementById('walletSession').innerText =  peerMeta.name
+                    const provider = walletProvider
+                    window.walletSigner = new ethers.providers.Web3Provider(provider).getSigner()
+                }
+            })
         }
+
 
     }
 

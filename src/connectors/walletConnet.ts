@@ -1,78 +1,123 @@
 import WalletConnectClient from '@walletconnect/client'
-import { IConnector, IWalletConnectSession } from '@walletconnect/types'
+import {IConnector, IWalletConnectSession} from '@walletconnect/types'
 import QRCodeModal from '@walletconnect/qrcode-modal'
-import { getWalletConnectProvider } from './provider'
+import WalletConnectProvider from "./provider/ethereumProvider";
+import {CHAIN_ID_RPC} from "../../index"
 
-export { getWalletConnectProvider }
+const getWalletConnectProvider = (
+    chainId: number,
+    connector: IConnector
+) => {
+    // export const apiHostTest = 'api-test.element.market' // 测试服外网接口香港入口
+    // export const apiHostTestChina = 'element-api-test.eossql.com' // 测试服外网接口大陆入口
+    // export const apiHostEth = 'api.element.market' // 正式服外网接口香港入口
+    // /api/v1/jsonrpc
+    // /https://api-test.element.market/api/bsc/jsonrpc
+    // https://data-seed-prebsc-1-s1.binance.org:8545
+    debugger
+    const custom: { [chainId: number]: string } = CHAIN_ID_RPC
+    let provider: WalletConnectProvider
+    const walletSession: string | null = localStorage.getItem('walletconnect')
+    const signingMethods = ['eth_signTypedData', 'eth_signTypedData_v4', 'eth_sign', 'personal_sign', 'eth_sendTransaction']
+    if (walletSession) {
+        // const session: IWalletConnectSession = <IWalletConnectSession>JSON.parse(walletSession)
 
-export class ConnectWallet {
-  // public walletName: string = ''//ConnectorNames.WalletConnect
-  public walletProvider: any
-  public connector: IConnector
-  public chainId: string = ''
-  public account: string = ''
-  // public bridge="https://element-api-test.eossql.com/bridge/walletconnect"
-  public bridge = 'https://element-api.eossql.com/bridge/walletconnect'
-  // public bridge='https://bridge.walletconnect.org'
-
-// Create a connector
-  constructor() {
-    let connector = new WalletConnectClient({
-      bridge: this.bridge, // Required
-      qrcodeModal: QRCodeModal
-    })
-    const walletStr = localStorage.getItem('walletconnect')
-    if (walletStr) {
-      const wallet: IWalletConnectSession = <IWalletConnectSession>JSON.parse(walletStr)
-      connector = new WalletConnectClient({ session: wallet })
-      this.walletProvider = getWalletConnectProvider(wallet.chainId, connector)
-      this.walletProvider.enable()
+        // const loginTime = parseInt((session.handshakeId / 1000).toString())
+        // this.account = session.accounts[0]
+        // this.walletName = session.peerMeta?.name || ''
+        provider = new WalletConnectProvider({
+            rpc: custom,
+            chainId: Number(chainId),
+            signingMethods,
+            connector
+        })
+    } else {
+        provider = new WalletConnectProvider({
+            rpc: custom,
+            chainId: Number(chainId),
+            signingMethods,
+            connector
+        })
     }
+    return provider
 
-    this.connector = connector
+    // await provider.enable()
 
 
-    console.log('connector', this.connector)
-    // Check if connection is already established
-    if (!connector.connected) {
-      // create new session
-      connector.createSession()
+    // const web3Provider = new providers.Web3Provider(provider)
+    // const provider = new EthereumProvider(accounts, { rpc: { custom }, chainId, client: { rpc: custom,connector } })
+    // return provider
+}
+
+export class ConnectWallet extends WalletConnectProvider {
+    // public walletName: string = ''//ProviderNames.WalletConnect
+    public walletProvider: any
+    // public connector: IConnector
+    // public chainId: string = ''
+    public account: string = ''
+    // public bridge="https://element-api-test.eossql.com/bridge/walletconnect"
+    // public bridge = 'https://element-api.eossql.com/bridge/walletconnect'
+    public bridge = 'https://bridge.walletconnect.org'
+
+    // Create a connector
+    constructor() {
+        super()
+        let connector = new WalletConnectClient({
+            bridge: this.bridge, // Required
+            qrcodeModal: QRCodeModal
+        })
+        const walletStr = localStorage.getItem('walletconnect')
+        debugger
+        if (walletStr) {
+            const wallet: IWalletConnectSession = <IWalletConnectSession>JSON.parse(walletStr)
+            connector = new WalletConnectClient({session: wallet})
+            this.walletProvider = getWalletConnectProvider(wallet.chainId, connector)
+            this.walletProvider.enable()
+        }
+
+
+        console.log('connector', this.connector)
+        // Check if connection is already established
+        if (!connector.connected) {
+            // create new session
+            connector.createSession()
+        }
+        // Subscribe to connection events
+        connector.on('connect', async (error, payload) => {
+            if (error) {
+                throw error
+            }
+            debugger
+            console.log('connect 2', payload)
+            // Get provided accounts and chainId
+            const {accounts, chainId} = payload.params[0]
+            // this.chainId = chainId
+            this.account = accounts[0]
+            this.walletProvider = getWalletConnectProvider(chainId, connector)
+            this.walletProvider.enable()
+        })
+
+        connector.on('session_update', (error, payload) => {
+            if (error) {
+                throw error
+            }
+            console.log('session_update', payload)
+            // Get updated accounts and chainId
+            const {accounts, chainId} = payload.params[0]
+            // this.chainId = chainId
+            this.account = accounts[0]
+        })
+
+        connector.on('disconnect', (error) => {
+            if (error) {
+                throw error
+            }
+            console.log('disconnect', error)
+            // this.chainId = ''
+            this.account = ''
+            // Delete connector
+        })
     }
-    // Subscribe to connection events
-    connector.on('connect', async (error, payload) => {
-      if (error) {
-        throw error
-      }
-      console.log('connect 2', payload)
-      // Get provided accounts and chainId
-      const { accounts, chainId } = payload.params[0]
-      this.chainId = chainId
-      this.account = accounts[0]
-      this.walletProvider = getWalletConnectProvider(chainId, connector)
-      this.walletProvider.enable()
-    })
-
-    connector.on('session_update', (error, payload) => {
-      if (error) {
-        throw error
-      }
-      console.log('session_update', payload)
-      // Get updated accounts and chainId
-      const { accounts, chainId } = payload.params[0]
-      this.chainId = chainId
-      this.account = accounts[0]
-    })
-
-    connector.on('disconnect', (error) => {
-      if (error) {
-        throw error
-      }
-      console.log('disconnect', error)
-      this.chainId = ''
-      this.account = ''
-      // Delete connector
-    })
-  }
 }
 
 //
