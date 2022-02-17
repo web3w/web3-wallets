@@ -8,19 +8,28 @@ import {
     RequestArguments,
     ProviderNames
 } from "./types";
+import {ethers} from "ethers";
+import {JsonRpcSigner} from "@ethersproject/providers";
+
 
 declare global {
     interface Window {
-        WalletProvider: IEthereumProvider
+        WalletProvider: IEthereumProvider | undefined
+        WalletSigner: JsonRpcSigner | undefined
     }
 }
+
+const bridgeUrl = 'https://bridge.walletconnect.org'
 
 // https://eips.ethereum.org/EIPS/eip-1193#disconnect
 //A JavaScript Ethereum Provider API for consistency across clients and applications.
 export class Web3Wallets extends EventEmitter implements IEthereumProvider {
-    public walletProvider: IEthereumProvider = new MetaMaskWallet()
+    public walletProvider: IEthereumProvider | undefined
+    public walletSigner: JsonRpcSigner | undefined
 
-    constructor({name}: { name: ProviderNames }) {
+    constructor(name: ProviderNames, config?: {
+        bridge?: string, rpc?: { [chainId: number]: string }
+    }) {
         super()
         switch (name) {
             case ProviderNames.Metamask:
@@ -30,28 +39,49 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
                 this.walletProvider = new CoinbaseWallet();
                 break;
             case ProviderNames.WalletConnect:
-                this.walletProvider = new ConnectWallet().walletProvider;
+                const conf = {
+                    bridge: config?.bridge || bridgeUrl,
+                    rpc: config?.rpc
+                }
+                this.walletProvider = new ConnectWallet(conf).walletProvider;
                 break;
             case ProviderNames.TokenPocket:
                 this.walletProvider = new MetaMaskWallet();
                 break;
         }
-        // @ts-ignore
         window.WalletProvider = this.walletProvider
+        if (this.walletProvider) {
+            this.walletSigner = new ethers.providers.Web3Provider(this.walletProvider).getSigner()
+            window.WalletSigner = this.walletSigner
+        }
+
+    }
+
+    private errorHandle() {
+        if (!this.walletProvider) {
+            this.emit("Error")
+            throw ''
+        }
     }
 
     async request(args: RequestArguments): Promise<unknown> {
-        return await this.walletProvider.request(args)
+        this.errorHandle()
+        return this.walletProvider?.request(args)
     };
 
     async enable(): Promise<ProviderAccounts> {
-        return await this.walletProvider.enable()
+        if (!this.walletProvider) {
+            this.emit("Error")
+            throw ''
+        }
+        return this.walletProvider?.enable()
     };
 
-    // listener(event: string, listener: any): void {
-    //     this.emit('Error', "e")
-    //
-    // }
+    static async getFee() {
+
+    }
+
+
 
     sendAsync(request: Object, callback: Function): void {
 
@@ -61,25 +91,4 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
 
     };
 
-    // off(event: string, listener: any): void {
-    //
-    // }
-    //
-    //
-    // on(event: "connect", listener: (info: ProviderInfo) => void): void;
-    // on(event: "disconnect", listener: (error: ProviderRpcError) => void): void;
-    // on(event: "message", listener: (message: ProviderMessage) => void): void;
-    // on(event: "chainChanged", listener: (chainId: ProviderConnectInfo) => void): void;
-    // on(event: "accountsChanged", listener: (accounts: ProviderAccounts) => void): void;
-    // on(event: string, listener: any): void;
-    // on(event: "connect" | "disconnect" | "message" | "chainChanged" | "accountsChanged" | string, listener: any): void {
-    // }
-    //
-    // once(event: string, listener: any): void {
-    // }
-    //
-    // removeListener(event: string, listener: any): void {
-    // }
 }
-
-// export { MetaMaskWallet, ConnectWallet,CoinbaseWallet, getWalletConnectProvider }

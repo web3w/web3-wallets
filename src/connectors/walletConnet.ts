@@ -1,82 +1,54 @@
 import WalletConnectClient from '@walletconnect/client'
 import {IConnector, IWalletConnectSession} from '@walletconnect/types'
 import QRCodeModal from '@walletconnect/qrcode-modal'
-import WalletConnectProvider from "./provider/ethereumProvider";
-import {CHAIN_ID_RPC} from "../../index"
+import EthereumProvider from "./provider/ethereumProvider";
+import {EventEmitter} from "events";
+import {IEthereumProvider, ProviderAccounts, RequestArguments} from "../types";
 
-const getWalletConnectProvider = (
-    chainId: number,
-    connector: IConnector
-) => {
-    // export const apiHostTest = 'api-test.element.market' // 测试服外网接口香港入口
-    // export const apiHostTestChina = 'element-api-test.eossql.com' // 测试服外网接口大陆入口
-    // export const apiHostEth = 'api.element.market' // 正式服外网接口香港入口
-    // /api/v1/jsonrpc
-    // /https://api-test.element.market/api/bsc/jsonrpc
-    // https://data-seed-prebsc-1-s1.binance.org:8545
-    debugger
-    const custom: { [chainId: number]: string } = CHAIN_ID_RPC
-    let provider: WalletConnectProvider
-    const walletSession: string | null = localStorage.getItem('walletconnect')
-    const signingMethods = ['eth_signTypedData', 'eth_signTypedData_v4', 'eth_sign', 'personal_sign', 'eth_sendTransaction']
-    if (walletSession) {
-        // const session: IWalletConnectSession = <IWalletConnectSession>JSON.parse(walletSession)
+const signingMethods = ['eth_signTypedData', 'eth_signTypedData_v4', 'eth_sign', 'personal_sign', 'eth_sendTransaction']
 
-        // const loginTime = parseInt((session.handshakeId / 1000).toString())
-        // this.account = session.accounts[0]
-        // this.walletName = session.peerMeta?.name || ''
-        provider = new WalletConnectProvider({
-            rpc: custom,
-            chainId: Number(chainId),
-            signingMethods,
-            connector
-        })
-    } else {
-        provider = new WalletConnectProvider({
-            rpc: custom,
-            chainId: Number(chainId),
-            signingMethods,
-            connector
-        })
-    }
-    return provider
-
-    // await provider.enable()
-
-
-    // const web3Provider = new providers.Web3Provider(provider)
-    // const provider = new EthereumProvider(accounts, { rpc: { custom }, chainId, client: { rpc: custom,connector } })
-    // return provider
+const CHAIN_ID_RPC: { [chainId: number]: string } = {
+    1: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
+    4: 'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
+    56: 'https://bsc-dataseed1.defibit.io/', // BSC
+    97: 'https://data-seed-prebsc-1-s1.binance.org:8545', //BSC TEST
+    137: 'https://rpc-mainnet.maticvigil.com', // Polygen
+    80001: 'https://rpc-mumbai.matic.today'
 }
 
-export class ConnectWallet extends WalletConnectProvider {
+export class ConnectWallet extends EventEmitter implements IEthereumProvider {
     // public walletName: string = ''//ProviderNames.WalletConnect
     public walletProvider: any
     // public connector: IConnector
     // public chainId: string = ''
     public account: string = ''
-    // public bridge="https://element-api-test.eossql.com/bridge/walletconnect"
-    // public bridge = 'https://element-api.eossql.com/bridge/walletconnect'
-    public bridge = 'https://bridge.walletconnect.org'
+
 
     // Create a connector
-    constructor() {
+    constructor(config: { bridge: string, rpc?: { [chainId: number]: string } }) {
         super()
+        const bridge = config.bridge
         let connector = new WalletConnectClient({
-            bridge: this.bridge, // Required
+            bridge,// Required
             qrcodeModal: QRCodeModal
         })
+        const rpc = config.rpc || CHAIN_ID_RPC
+
+        //
         const walletStr = localStorage.getItem('walletconnect')
-        debugger
         if (walletStr) {
-            const wallet: IWalletConnectSession = <IWalletConnectSession>JSON.parse(walletStr)
-            connector = new WalletConnectClient({session: wallet})
-            this.walletProvider = getWalletConnectProvider(wallet.chainId, connector)
+            const walletSession: IWalletConnectSession = <IWalletConnectSession>JSON.parse(walletStr)
+            connector = new WalletConnectClient({session: walletSession})
+            const chainId = walletSession.chainId
+            this.walletProvider = new EthereumProvider({
+                rpc,
+                chainId,
+                connector,
+                signingMethods
+            })
             this.walletProvider.enable()
         }
-
-
-        console.log('connector', this.connector)
+        // console.log('connector', this.connector)
         // Check if connection is already established
         if (!connector.connected) {
             // create new session
@@ -87,13 +59,17 @@ export class ConnectWallet extends WalletConnectProvider {
             if (error) {
                 throw error
             }
-            debugger
             console.log('connect 2', payload)
             // Get provided accounts and chainId
             const {accounts, chainId} = payload.params[0]
             // this.chainId = chainId
             this.account = accounts[0]
-            this.walletProvider = getWalletConnectProvider(chainId, connector)
+            this.walletProvider = new EthereumProvider({
+                rpc,
+                chainId,
+                connector,
+                signingMethods
+            })
             this.walletProvider.enable()
         })
 
@@ -117,6 +93,14 @@ export class ConnectWallet extends WalletConnectProvider {
             this.account = ''
             // Delete connector
         })
+    };
+
+    async request(args: RequestArguments): Promise<unknown> {
+        return this.walletProvider.request(args)
+    };
+
+    async enable(): Promise<ProviderAccounts> {
+        return this.walletProvider.request({method: 'eth_requestAccounts'}) // enable ethereum
     }
 }
 

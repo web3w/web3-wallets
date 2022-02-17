@@ -7,7 +7,10 @@
 <body>
 
 <p>Account: <span id="accountAddr"></span></p>
-chainId <span id="chainId"></span>
+<p>ChainId: <span id="chainId"></span></p>
+<p>Wallet: <span id="walletName"></span></p>
+
+<button id="getFeeBtn">1559Fee</button>
 <hr/>
 <button id="metaMaskBtn">MetaMask</button>
 <button id="switchBSCTESTBtn">Switch BSCTEST</button>
@@ -17,18 +20,17 @@ chainId <span id="chainId"></span>
 
 <button id="walletConnectSignMessage">SignMessage</button>
 <button id="walletConnectSign712">SignTypedData</button>
-<p>Session: <span id="walletSession"></span></p>
+
 
 <script type="module">
-    // import {WalletConnect} from './js/walletConnet.js'
-
-    window.ethers = ethers
+    import {bridge, RPC_PROVIDER, msg712sign} from './js/walletConnet.js'
 
     let accounts
 
-    async function init(chainId, address) {
+    async function init(chainId, address, walletName) {
         document.getElementById('accountAddr').innerText = address.toLowerCase()
         document.getElementById('chainId').innerText = chainId
+        document.getElementById('walletName').innerText = walletName
 
         const authToken = localStorage.getItem('authToken')
 
@@ -51,10 +53,18 @@ chainId <span id="chainId"></span>
 
     }
 
+    const feeBtn = document.getElementById('getFeeBtn')
+    feeBtn.onclick = async () => {
+        debugger
+
+        const fee = await get1559Fee(RPC_PROVIDER[WalletProvider.chainId])
+        console.log(fee)
+    }
     const metaMaskBtn = document.getElementById('metaMaskBtn')
+
     metaMaskBtn.onclick = async () => {
         // const wallet = new MetamaskWallet()
-        const wallet = new Web3Wallets({name: ProviderNames.Metamask})
+        const wallet = new Web3Wallets(ProviderNames.Metamask)
         accounts = await wallet.enable() // enable ethereum
         // window.walletConnectProvider = undefined
         const chainId = wallet.chainId
@@ -62,7 +72,7 @@ chainId <span id="chainId"></span>
         console.log(chainId, address)
         const walletProvider = wallet.walletProvider
 
-        window.walletSigner = new ethers.providers.Web3Provider(walletProvider).getSigner()
+        window.walletSigner = wallet.walletSigner
 
         const switchBSCTESTBtn = document.getElementById('switchBSCTESTBtn')
         switchBSCTESTBtn.onclick = () => {
@@ -75,37 +85,35 @@ chainId <span id="chainId"></span>
     }
     const walletConnectBtn = document.getElementById('walletConnectBtn')
     walletConnectBtn.onclick = async () => {
-        const wallet = new Web3Wallets({name: ProviderNames.WalletConnect})
+        const config = {
+            bridge,
+            rpc: RPC_PROVIDER
+        }
+        const wallet = new Web3Wallets(ProviderNames.WalletConnect, config)
         const walletProvider = wallet.walletProvider
-        if (walletProvider.connected) {
-            debugger
+
+        if (walletProvider) {
             // const walletSession = JSON.stringify(walletConnet.connector.session, null, 2)
             const walletSession = walletProvider.connector.session
             console.log("walletSession", walletSession)
-            document.getElementById('accountAddr').innerText = walletProvider.accounts[0]
-            document.getElementById('chainId').innerText = walletProvider.chainId
-            document.getElementById('walletSession').innerText = walletSession.peerMeta.name
-            const provider = walletProvider
-            window.walletSigner = new ethers.providers.Web3Provider(provider).getSigner()
+            const {accounts, chainId} = walletProvider
+            const {peerMeta} = walletSession
+            init(chainId, accounts[0], peerMeta.name)
+            window.walletSigner = wallet.walletSigner
 
         } else {
-            walletProvider.on('connect', async (error, payload) => {
-                debugger
+            walletProvider.connector.on('connect', async (error, payload) => {
+
                 if (error) {
                     throw error
                 }
-                const web3Provider = walletProvider
-                if (web3Provider) {
-                    const {accounts, chainId,peerMeta} = payload.params[0]
-                    init(chainId, accounts[0])
-                    document.getElementById('walletSession').innerText =  peerMeta.name
-                    const provider = walletProvider
-                    window.walletSigner = new ethers.providers.Web3Provider(provider).getSigner()
+                if (walletProvider) {
+                    const {accounts, chainId, peerMeta} = payload.params[0]
+                    init(chainId, accounts[0], peerMeta.name)
+                    window.walletSigner = wallet.walletSigner
                 }
             })
         }
-
-
     }
 
     const walletConnectSignMessageBtn = document.getElementById('walletConnectSignMessage')
@@ -114,7 +122,6 @@ chainId <span id="chainId"></span>
         if (window.walletSigner) {
             debugger
             const signature = await window.walletSigner.signMessage(msg).catch((e) => {
-                // this.emit('Error', e)
                 throw e
             })
             alert(signature)
@@ -123,49 +130,13 @@ chainId <span id="chainId"></span>
 
     const walletConnectSign712Btn = document.getElementById('walletConnectSign712')
     walletConnectSign712Btn.onclick = async () => {
-        const msgParams = {
-            types: {
-                EIP712Domain: [
-                    {name: 'name', type: 'string'},
-                    {name: 'version', type: 'string'},
-                    {name: 'chainId', type: 'uint256'},
-                    {name: 'verifyingContract', type: 'address'},
-                ],
-                Person: [
-                    {name: 'name', type: 'string'},
-                    {name: 'wallet', type: 'address'},
-                ],
-                Mail: [
-                    {name: 'from', type: 'Person'},
-                    {name: 'to', type: 'Person'},
-                    {name: 'contents', type: 'string'},
-                ],
-            },
-            primaryType: 'Mail',
-            domain: {
-                name: 'Ether Mail',
-                version: '1',
-                chainId: '1',
-                verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
-            },
-            message: {
-                from: {
-                    name: 'Cow',
-                    wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-                },
-                to: {
-                    name: 'Bob',
-                    wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
-                },
-                contents: 'Hello, Bob!',
-            },
-        };
+
         if (window.walletSigner) {
             // signature = await this.walletProvider._signTypedData(typedData.domain, { Order: typedData.types.Order }, typedData.message)
-            const signature = await window.walletSigner._signTypedData(msgParams.domain, {
-                Person: msgParams.types.Person,
-                Mail: msgParams.types.Mail
-            }, msgParams.message).catch((e) => {
+            const signature = await window.walletSigner._signTypedData(msg712sign.domain, {
+                Person: msg712sign.types.Person,
+                Mail: msg712sign.types.Mail
+            }, msg712sign.message).catch((e) => {
                 // this.emit('Error', e)
                 throw e
             })

@@ -7,7 +7,7 @@ import {SignerConnection} from './signerConnection'
 import {IEthereumProvider, ProviderAccounts, RequestArguments} from '../../types'
 import {isJsonRpcError} from '@walletconnect/jsonrpc-utils'
 
-class WalletConnectProvider implements IEthereumProvider {
+class EthereumProvider implements IEthereumProvider {
     public events: any = new EventEmitter()
     private rpc: IRpcConfig
     private signer: JsonRpcProvider
@@ -174,4 +174,4 @@ class WalletConnectProvider implements IEthereumProvider {
     }
 }
 
-export default WalletConnectProvider
+export default EthereumProvider
