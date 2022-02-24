@@ -29,7 +29,6 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
     public walletProvider: IEthereumProvider | undefined
     public walletSigner: JsonRpcSigner | undefined
 
-
     constructor(name: ProviderNames, config?: {
         bridge?: string, rpc?: { [chainId: number]: string }
     }) {

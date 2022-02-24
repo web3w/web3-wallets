@@ -36,14 +36,14 @@ export async function getEstimateGas(rpcUrl: string, callData: { to: string, dat
         "id": 1
     }
     const blockNumberRes = await ethers.utils.fetchJson(rpcUrl, JSON.stringify(estimate))
-    console.log('getEstimateGas result', blockNumberRes.result)
+    // console.log('getEstimateGas result', blockNumberRes.result)
     return Number(blockNumberRes.result).toString()
 }
 
 export async function getBlockNumber(rpcUrl: string, blockRange: number, percentiles: number[]) {
     const blockNumber = `{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":0}`
     const blockNumberRes = await ethers.utils.fetchJson(rpcUrl, blockNumber)
-    console.log(Number(blockNumberRes.result))
+    // console.log(Number(blockNumberRes.result))
     return blockNumberRes.result
 }
 
