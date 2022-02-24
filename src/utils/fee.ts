@@ -1,6 +1,7 @@
 import {ethers, Signer, providers} from "ethers";
 import {Block} from '@ethersproject/abstract-provider'
 import BigNumber from "bignumber.js";
+import {getFeeHistory} from "./rpc";
 
 // 取中间3个数的平均数
 function bignumberMedian(values) {
@@ -18,23 +19,7 @@ function bignumberMedian(values) {
     return (new BigNumber(values[half - 1]).plus(new BigNumber(values[half])).plus(new BigNumber(values[half + 1]))).dividedToIntegerBy(3);
 }
 
-export async function getFeeHistory(rpcUrl: string, blockRange: number, percentiles: number[]) {
-    // https://docs.alchemy.com/alchemy/apis/ethereum/eth-blocknumber
-    const feeHistory = {
-        "id": 1,
-        "jsonrpc": "2.0",
-        "method": "eth_feeHistory",
-        "params": [blockRange, "latest", percentiles]
-    }
-
-    const feeHistoryRes = await ethers.utils.fetchJson(rpcUrl, JSON.stringify(feeHistory))
-    return feeHistoryRes.result
-    // const blockNumber = `{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":0}`
-    // const blockNumberRes = await ethers.utils.fetchJson(rpcUrl, blockNumber)
-    // console.log(Number(feeHistoryRes.result.oldestBlock))
-    // console.log(Number(blockNumberRes.result))
-
-}
+// from fee history
 
 export async function get1559Fee(rpcURl: string) {
     const url = rpcURl || "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"
@@ -89,6 +74,7 @@ export async function get1559Fee(rpcURl: string) {
 }
 
 
+////------- from block-----
 export function getBaseFeePerGas(block: Block): ethers.BigNumber {
     // 0.875 × PreviousBaseFee ≤ BaseFee ≤ 1.125 × PreviousBaseFee
     if (!block.baseFeePerGas) {

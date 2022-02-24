@@ -55,8 +55,6 @@
 
     const feeBtn = document.getElementById('getFeeBtn')
     feeBtn.onclick = async () => {
-        debugger
-
         const fee = await get1559Fee(RPC_PROVIDER[WalletProvider.chainId])
         console.log(fee)
     }
@@ -67,10 +65,11 @@
         const wallet = new Web3Wallets(ProviderNames.Metamask)
         accounts = await wallet.enable() // enable ethereum
         // window.walletConnectProvider = undefined
-        const chainId = wallet.chainId
-        const address = wallet.account
-        console.log(chainId, address)
         const walletProvider = wallet.walletProvider
+        const chainId = walletProvider.chainId
+        const address = walletProvider.account
+        console.log(chainId, address)
+        init(chainId, address, 'MetaMask')
 
         window.walletSigner = wallet.walletSigner
 
@@ -103,7 +102,6 @@
 
         } else {
             walletProvider.connector.on('connect', async (error, payload) => {
-
                 if (error) {
                     throw error
                 }
