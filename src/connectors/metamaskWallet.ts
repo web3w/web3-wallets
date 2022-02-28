@@ -3,20 +3,17 @@ import {
     ProviderConnectInfo,
     ProviderMessage,
     ProviderRpcError,
-    IEthereumProvider,
-    RequestArguments, ProviderAccounts
 } from '../types'
-import {EventEmitter} from "events";
 import {BaseWallet} from "./baseWallet";
 
 // https://github.com/metamask/test-dapp
 // https://metamask.github.io/test-dapp/
 
 export class MetaMaskWallet extends BaseWallet {
-    public walletName = ProviderNames.Metamask
+    public walletName:string = ProviderNames.Metamask
     public provider: any
     public chainId: number
-    public account: string
+    public address: string
 
     constructor() {
         super()
@@ -25,7 +22,7 @@ export class MetaMaskWallet extends BaseWallet {
             console.log(this.provider)
             // this.chainId = Number(this.walletProvider.chainId)
             this.chainId = Number(this.provider.networkVersion)
-            this.account = this.provider.selectedAddress
+            this.address = this.provider.selectedAddress
         } else {
             throw 'Please install wallet'
         }
@@ -47,7 +44,7 @@ export class MetaMaskWallet extends BaseWallet {
             console.log('Matemask connect', connectInfo)
             this.emit('connect', connectInfo)
             this.chainId = 0
-            this.account = ''
+            this.address = ''
         })
 
         // 断开链接
@@ -56,7 +53,7 @@ export class MetaMaskWallet extends BaseWallet {
             this.emit('disconnect', error)
             this.provider = undefined
             this.chainId = 0
-            this.account = ''
+            this.address = ''
         })
 
         // 更改网络事件
@@ -113,7 +110,7 @@ export class MetaMaskWallet extends BaseWallet {
         const accounts = await this.provider.request({method: 'eth_requestAccounts'})
         const walletChainId = await this.provider.request({method: 'eth_chainId'})
         console.log('wallet isConnected', this.provider.isConnected())
-        this.account = accounts[0]
+        this.address = accounts[0]
         return accounts
     }
 

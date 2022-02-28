@@ -10,12 +10,13 @@ import {
 } from "./types";
 import {ethers, providers, Signer} from "ethers";
 import {JsonRpcSigner} from "@ethersproject/providers";
+import {BaseWallet} from "./connectors/baseWallet";
 
 
 declare global {
     interface Window {
-        WalletProvider: IEthereumProvider | undefined
-        WalletSigner: JsonRpcSigner | undefined
+        walletProvider: BaseWallet | undefined
+        walletSigner: JsonRpcSigner | undefined
         elementWeb3: any
     }
 }
@@ -26,7 +27,7 @@ const bridgeUrl = 'https://bridge.walletconnect.org'
 // https://eips.ethereum.org/EIPS/eip-1193#disconnect
 //A JavaScript Ethereum Provider API for consistency across clients and applications.
 export class Web3Wallets extends EventEmitter implements IEthereumProvider {
-    public walletProvider: IEthereumProvider | undefined
+    public walletProvider: BaseWallet | undefined
     public walletSigner: JsonRpcSigner | undefined
 
     constructor(name: ProviderNames, config?: {
@@ -53,11 +54,20 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
                 case ProviderNames.TokenPocket:
                     this.walletProvider = new MetaMaskWallet();
                     break;
+                case ProviderNames.KeyStroeWallet:
+                    // TODO
+                    break;
+                case ProviderNames.ProxyWallet:
+                    // TODO
+                    break;
             }
-            window.WalletProvider = this.walletProvider
+
             if (this.walletProvider) {
                 this.walletSigner = new ethers.providers.Web3Provider(this.walletProvider).getSigner()
-                window.WalletSigner = this.walletSigner
+                if (typeof window !== 'undefined') {
+                    window.walletProvider = this.walletProvider
+                    window.walletSigner = this.walletSigner
+                }
             }
         }
 

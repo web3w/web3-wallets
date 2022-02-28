@@ -29,7 +29,7 @@
     let accounts
 
     async function init(chainId, address, walletName) {
-        document.getElementById('accountAddr').innerText = address.toLowerCase()
+        document.getElementById('accountAddr').innerText = address
         document.getElementById('chainId').innerText = chainId
         document.getElementById('walletName').innerText = walletName
 
@@ -65,7 +65,7 @@
         const address = window.ethereum.selectedAddress
         const {walletSigner} = getProvider({address, chainId: 1})
         // const { walletSigner } = getProvider({chainId, address})
-        debugger
+
         const addr = await walletSigner.getAddress()
         alert(addr)
     }
@@ -78,7 +78,7 @@
         // window.walletConnectProvider = undefined
         const walletProvider = wallet.walletProvider
         const chainId = walletProvider.chainId
-        const address = walletProvider.account
+        const address = walletProvider.address
         console.log(chainId, address)
         init(chainId, address, 'MetaMask')
 
@@ -104,23 +104,29 @@
 
         if (walletProvider) {
             // const walletSession = JSON.stringify(walletConnet.connector.session, null, 2)
-            const walletSession = walletProvider.connector.session
-            console.log("walletSession", walletSession)
-            const {accounts, chainId} = walletProvider
-            const {peerMeta} = walletSession
-            init(chainId, accounts[0], peerMeta.name)
-            window.walletSigner = wallet.walletSigner
+            // const walletSession = walletProvider.connector.session
+            // console.log("walletSession", walletSession)
 
-        } else {
-            walletProvider.connector.on('connect', async (error, payload) => {
+            const {address, chainId, walletName} = wallet.walletProvider
+            // const {peerMeta} = walletSession
+            init(chainId, address, walletName)
+
+        }
+        if (wallet.walletProvider) {
+            wallet.walletProvider.on('connect', async (error, payload) => {
+                debugger
                 if (error) {
                     throw error
                 }
-                if (walletProvider) {
-                    const {accounts, chainId, peerMeta} = payload.params[0]
-                    init(chainId, accounts[0], peerMeta.name)
-                    window.walletSigner = wallet.walletSigner
+                const {accounts, chainId, peerMeta} = payload.params[0]
+                init(chainId, accounts[0], peerMeta.name)
+            })
+            wallet.walletProvider.on('disconnect', async (error) => {
+                debugger
+                if (error) {
+                    throw error
                 }
+                init(0, '', '')
             })
         }
     }

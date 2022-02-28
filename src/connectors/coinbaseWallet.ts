@@ -11,7 +11,7 @@ export class CoinbaseWallet extends BaseWallet {
     // public ethereum: WalletLinkProvider
     public walletName = ProviderNames.Coinbase
     public provider: any
-    public account: string = ''
+    public address: string = ''
     public chainId: number = 0
     public host: string = ''
 
@@ -25,7 +25,7 @@ export class CoinbaseWallet extends BaseWallet {
         })
         //rpcUrl, this.chainId)
         this.provider = walletLink.makeWeb3Provider()
-        this.account = this.provider.selectedAddress || ''
+        this.address = this.provider.selectedAddress || ''
         // this.chainId = Number(this.ethereum.chainId)
         this.chainId = Number(this.provider.networkVersion)
         this.host = this.provider.host

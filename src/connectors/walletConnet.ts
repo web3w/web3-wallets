@@ -2,8 +2,7 @@ import WalletConnectClient from '@walletconnect/client'
 import {IConnector, IWalletConnectSession} from '@walletconnect/types'
 import QRCodeModal from '@walletconnect/qrcode-modal'
 import EthereumProvider from "./provider/ethereumProvider";
-import {EventEmitter} from "events";
-import {IEthereumProvider, ProviderAccounts, RequestArguments} from "../types";
+import {ProviderNames} from "../types";
 import {BaseWallet} from "./baseWallet";
 
 const signingMethods = ['eth_signTypedData', 'eth_signTypedData_v4', 'eth_sign', 'personal_sign', 'eth_sendTransaction']
@@ -18,12 +17,11 @@ const CHAIN_ID_RPC: { [chainId: number]: string } = {
 }
 
 export class ConnectWallet extends BaseWallet {
-    // public walletName: string = ''//ProviderNames.WalletConnect
+    public walletName: string = ProviderNames.WalletConnect//
     public provider: any
     // public connector: IConnector
     public account: string = ''
     public chainId: number = 0
-
 
     // Create a connector
     constructor(config: { bridge: string, rpc?: { [chainId: number]: string } }) {
@@ -40,8 +38,10 @@ export class ConnectWallet extends BaseWallet {
         if (walletStr) {
             const walletSession: IWalletConnectSession = <IWalletConnectSession>JSON.parse(walletStr)
             connector = new WalletConnectClient({session: walletSession})
-            const chainId = walletSession.chainId
+            const {chainId, accounts, peerMeta} = walletSession
+            this.address = accounts[0]
             this.chainId = Number(chainId)
+            this.walletName = ProviderNames.WalletConnect + '-' + peerMeta?.name;
             this.provider = new EthereumProvider({
                 rpc,
                 chainId,
@@ -61,11 +61,12 @@ export class ConnectWallet extends BaseWallet {
             if (error) {
                 throw error
             }
-            console.log('connect 2', payload)
             // Get provided accounts and chainId
-            const {accounts, chainId} = payload.params[0]
+            const {accounts, chainId, peerMeta} = payload.params[0]
+            this.address = accounts[0]
             this.chainId = Number(chainId)
-            this.account = accounts[0]
+            this.walletName = ProviderNames.WalletConnect + '-' + peerMeta?.name;
+
             this.provider = new EthereumProvider({
                 rpc,
                 chainId,
@@ -73,7 +74,7 @@ export class ConnectWallet extends BaseWallet {
                 signingMethods
             })
             this.provider.enable()
-            this.emit('connect', {error, payload})
+            this.emit('connect', error, payload)
         })
 
         connector.on('session_update', (error, payload) => {
@@ -83,8 +84,8 @@ export class ConnectWallet extends BaseWallet {
             console.log('session_update', payload)
             // Get updated accounts and chainId
             const {accounts, chainId} = payload.params[0]
-            // this.chainId = chainId
-            this.account = accounts[0]
+            this.chainId = chainId
+            this.address = accounts[0]
             this.emit('session_update', {error, payload})
         })
 
@@ -93,10 +94,10 @@ export class ConnectWallet extends BaseWallet {
                 throw error
             }
             console.log('disconnect', error)
-            // this.chainId = ''
-            this.account = ''
-            this.emit('disconnect', {error})
-            // Delete connector
+            this.address = ''
+            this.chainId = 0
+            this.walletName = ""
+            this.emit('disconnect', error)
         })
     };
 
@@ -129,7 +130,7 @@ export class ConnectWallet extends BaseWallet {
 //
 //   async signMessage(message: string) {
 //     const msgParams = [
-//       this.account                          // Required
+//       this.address                          // Required
 //       // keccak256("\x19Ethereum Signed Message:\n" +  message.length + message))    // Required
 //     ]
 //     this.connector.signMessage(msgParams)
@@ -145,7 +146,7 @@ export class ConnectWallet extends BaseWallet {
 //
 //   async signTypedData(typedData: any) {
 //     const msgParams = [
-//       this.account,                            // Required
+//       this.address,                            // Required
 //       typedData   // Required
 //     ]
 //     this.connector.signTypedData(msgParams)
@@ -166,7 +167,7 @@ export class ConnectWallet extends BaseWallet {
 //       method: 'eth_signTransaction',
 //       params: [
 //         {
-//           from: this.account,
+//           from: this.address,
 //           to: '0x89D24A7b4cCB1b6fAA2625Fe562bDd9A23260359',
 //           data: '0x',
 //           gasPrice: '0x02540be400',

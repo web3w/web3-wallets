@@ -48,13 +48,5 @@ export const msg712sign = {
     },
 };
 
-// export class WalletConnect {
-//     constructor() {
-//         const wallet = new ConnectWallet()
-//         this.connector = wallet.connector
-//         this.wallet = wallet
-//     }
-// }
-
 
 
