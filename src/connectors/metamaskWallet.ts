@@ -7,30 +7,31 @@ import {
     RequestArguments, ProviderAccounts
 } from '../types'
 import {EventEmitter} from "events";
+import {BaseWallet} from "./baseWallet";
 
 // https://github.com/metamask/test-dapp
 // https://metamask.github.io/test-dapp/
 
-export class MetaMaskWallet extends EventEmitter implements IEthereumProvider {
+export class MetaMaskWallet extends BaseWallet {
     public walletName = ProviderNames.Metamask
-    public walletProvider: any
+    public provider: any
     public chainId: number
     public account: string
 
     constructor() {
         super()
-        this.walletProvider = window.ethereum
-        if (this.walletProvider) {
-            console.log(this.walletProvider)
+        this.provider = window.ethereum
+        if (this.provider) {
+            console.log(this.provider)
             // this.chainId = Number(this.walletProvider.chainId)
-            this.chainId = Number(this.walletProvider.networkVersion)
-            this.account = this.walletProvider.selectedAddress
+            this.chainId = Number(this.provider.networkVersion)
+            this.account = this.provider.selectedAddress
         } else {
             throw 'Please install wallet'
         }
 
         // 判断钱包
-        const provider = this.walletProvider
+        const provider = this.provider
         if (provider && provider.isImToken) {
             this.walletName = ProviderNames.ImToken
         }
@@ -53,7 +54,7 @@ export class MetaMaskWallet extends EventEmitter implements IEthereumProvider {
         provider.on('disconnect', (error: ProviderRpcError) => {
             console.log('Matemask disconnect', error)
             this.emit('disconnect', error)
-            this.walletProvider = undefined
+            this.provider = undefined
             this.chainId = 0
             this.account = ''
         })
@@ -78,17 +79,11 @@ export class MetaMaskWallet extends EventEmitter implements IEthereumProvider {
         })
     }
 
-    async request(args: RequestArguments): Promise<unknown> {
-        return   await this.walletProvider.request(args)
-    };
 
-    async enable(): Promise<ProviderAccounts> {
-        return this.walletProvider.request({method: 'eth_requestAccounts'}) // enable ethereum
-    }
 
     async switchEthereumChain(chainId: string, rpcUrl?: string) {
         try {
-            await this.walletProvider.request({
+            await this.provider.request({
                 method: 'wallet_switchEthereumChain',
                 params: [{chainId}]
             })
@@ -96,7 +91,7 @@ export class MetaMaskWallet extends EventEmitter implements IEthereumProvider {
             // This error code indicates that the chain has not been added to MetaMask.
             if (switchError.code === 4902) {
                 try {
-                    await this.walletProvider.request({
+                    await this.provider.request({
                         method: 'wallet_addEthereumChain',
                         params: [{chainId, rpcUrl}]
                     })
@@ -110,14 +105,14 @@ export class MetaMaskWallet extends EventEmitter implements IEthereumProvider {
 
 
     async isMetamaskLock(): Promise<boolean> {
-        return this.walletProvider._metamask.isUnlocked()
+        return this.provider._metamask.isUnlocked()
     }
 
     async onConnectMetaMask(): Promise<any> {
         // 请求会触发解锁窗口
-        const accounts = await this.walletProvider.request({method: 'eth_requestAccounts'})
-        const walletChainId = await this.walletProvider.request({method: 'eth_chainId'})
-        console.log('wallet isConnected', this.walletProvider.isConnected())
+        const accounts = await this.provider.request({method: 'eth_requestAccounts'})
+        const walletChainId = await this.provider.request({method: 'eth_chainId'})
+        console.log('wallet isConnected', this.provider.isConnected())
         this.account = accounts[0]
         return accounts
     }

@@ -4,6 +4,7 @@ import QRCodeModal from '@walletconnect/qrcode-modal'
 import EthereumProvider from "./provider/ethereumProvider";
 import {EventEmitter} from "events";
 import {IEthereumProvider, ProviderAccounts, RequestArguments} from "../types";
+import {BaseWallet} from "./baseWallet";
 
 const signingMethods = ['eth_signTypedData', 'eth_signTypedData_v4', 'eth_sign', 'personal_sign', 'eth_sendTransaction']
 
@@ -16,12 +17,12 @@ const CHAIN_ID_RPC: { [chainId: number]: string } = {
     80001: 'https://rpc-mumbai.matic.today'
 }
 
-export class ConnectWallet extends EventEmitter implements IEthereumProvider {
+export class ConnectWallet extends BaseWallet {
     // public walletName: string = ''//ProviderNames.WalletConnect
-    public walletProvider: any
+    public provider: any
     // public connector: IConnector
-    // public chainId: string = ''
     public account: string = ''
+    public chainId: number = 0
 
 
     // Create a connector
@@ -32,21 +33,22 @@ export class ConnectWallet extends EventEmitter implements IEthereumProvider {
             bridge,// Required
             qrcodeModal: QRCodeModal
         })
+
         const rpc = config.rpc || CHAIN_ID_RPC
 
-        //
         const walletStr = localStorage.getItem('walletconnect')
         if (walletStr) {
             const walletSession: IWalletConnectSession = <IWalletConnectSession>JSON.parse(walletStr)
             connector = new WalletConnectClient({session: walletSession})
             const chainId = walletSession.chainId
-            this.walletProvider = new EthereumProvider({
+            this.chainId = Number(chainId)
+            this.provider = new EthereumProvider({
                 rpc,
                 chainId,
                 connector,
                 signingMethods
             })
-            this.walletProvider.enable()
+            this.provider.enable()
         }
         // console.log('connector', this.connector)
         // Check if connection is already established
@@ -62,15 +64,16 @@ export class ConnectWallet extends EventEmitter implements IEthereumProvider {
             console.log('connect 2', payload)
             // Get provided accounts and chainId
             const {accounts, chainId} = payload.params[0]
-            // this.chainId = chainId
+            this.chainId = Number(chainId)
             this.account = accounts[0]
-            this.walletProvider = new EthereumProvider({
+            this.provider = new EthereumProvider({
                 rpc,
                 chainId,
                 connector,
                 signingMethods
             })
-            this.walletProvider.enable()
+            this.provider.enable()
+            this.emit('connect', {error, payload})
         })
 
         connector.on('session_update', (error, payload) => {
@@ -82,6 +85,7 @@ export class ConnectWallet extends EventEmitter implements IEthereumProvider {
             const {accounts, chainId} = payload.params[0]
             // this.chainId = chainId
             this.account = accounts[0]
+            this.emit('session_update', {error, payload})
         })
 
         connector.on('disconnect', (error) => {
@@ -91,17 +95,11 @@ export class ConnectWallet extends EventEmitter implements IEthereumProvider {
             console.log('disconnect', error)
             // this.chainId = ''
             this.account = ''
+            this.emit('disconnect', {error})
             // Delete connector
         })
     };
 
-    async request(args: RequestArguments): Promise<unknown> {
-        return this.walletProvider.request(args)
-    };
-
-    async enable(): Promise<ProviderAccounts> {
-        return this.walletProvider.request({method: 'eth_requestAccounts'}) // enable ethereum
-    }
 }
 
 //

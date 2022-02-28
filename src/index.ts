@@ -48,7 +48,7 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
                         bridge: config?.bridge || bridgeUrl,
                         rpc: config?.rpc
                     }
-                    this.walletProvider = new ConnectWallet(conf).walletProvider;
+                    this.walletProvider = new ConnectWallet(conf);
                     break;
                 case ProviderNames.TokenPocket:
                     this.walletProvider = new MetaMaskWallet();

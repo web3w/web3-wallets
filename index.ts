@@ -8,6 +8,9 @@ export {ProviderNames} from './src/types'
 
 export {get1559Fee} from './src/utils/fee'
 // RPC
-export {getProvider, ethSend, getEstimateGas} from './src/utils/rpc'
-export type {WalletInfo, LimitedCallSpec, RPC_PROVIDER} from './src/utils/rpc'
+export {ethSend, getEstimateGas} from './src/utils/rpc'
+export type {LimitedCallSpec} from './src/utils/rpc'
+
+export {getProvider, detectWallets} from './src/utils/provider'
+export type {WalletInfo, RPC_PROVIDER} from './src/utils/provider'
 

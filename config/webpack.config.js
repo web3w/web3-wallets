@@ -40,7 +40,7 @@ module.exports = {
       directory: path.join(__dirname, '../dist')
     },
     compress: true,
-    port: 9001
+    port: 9002
   },
   devtool: 'inline-source-map',
   resolve: {

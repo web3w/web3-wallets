@@ -11,6 +11,7 @@
 <p>Wallet: <span id="walletName"></span></p>
 
 <button id="getFeeBtn">1559Fee</button>
+<button id="getProviderBtn">GetProvider</button>
 <hr/>
 <button id="metaMaskBtn">MetaMask</button>
 <button id="switchBSCTESTBtn">Switch BSCTEST</button>
@@ -58,6 +59,16 @@
         const fee = await get1559Fee(RPC_PROVIDER[WalletProvider.chainId])
         console.log(fee)
     }
+    const getProviderBtn = document.getElementById('getProviderBtn')
+    getProviderBtn.onclick = async () => {
+        const chainId = window.ethereum.networkVersion
+        const address = window.ethereum.selectedAddress
+        const {walletSigner} = getProvider({address, chainId: 1})
+        // const { walletSigner } = getProvider({chainId, address})
+        debugger
+        const addr = await walletSigner.getAddress()
+        alert(addr)
+    }
     const metaMaskBtn = document.getElementById('metaMaskBtn')
 
     metaMaskBtn.onclick = async () => {
@@ -89,7 +100,7 @@
             rpc: RPC_PROVIDER
         }
         const wallet = new Web3Wallets(ProviderNames.WalletConnect, config)
-        const walletProvider = wallet.walletProvider
+        const walletProvider = wallet.walletProvider.provider
 
         if (walletProvider) {
             // const walletSession = JSON.stringify(walletConnet.connector.session, null, 2)
@@ -128,7 +139,7 @@
 
     const walletConnectSign712Btn = document.getElementById('walletConnectSign712')
     walletConnectSign712Btn.onclick = async () => {
-
+        debugger
         if (window.walletSigner) {
             // signature = await this.walletProvider._signTypedData(typedData.domain, { Order: typedData.types.Order }, typedData.message)
             const signature = await window.walletSigner._signTypedData(msg712sign.domain, {

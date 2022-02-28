@@ -1,15 +1,10 @@
 import {ethers, providers, Signer} from "ethers";
 import {get1559Fee} from "./fee";
 import {TransactionResponse} from "@ethersproject/abstract-provider";
+import {Web3Wallets} from "../index";
+import {ProviderNames} from "../types";
+import {getProvider, WalletInfo} from "./provider";
 
-export const RPC_PROVIDER = {
-    1: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
-    4: 'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
-    56: 'https://bsc-dataseed1.defibit.io/',
-    97: 'https://data-seed-prebsc-1-s1.binance.org:8545',
-    137: 'https://rpc-mainnet.maticvigil.com',
-    80001: 'https://polygon-mumbai.g.alchemy.com/v2/9NqLsboUltGGnzDsJsOq5fJ740fZPaVE'
-}
 
 
 // https://docs.alchemy.com/alchemy/apis/ethereum/eth-blocknumber
@@ -51,63 +46,10 @@ export async function getBlockNumber(rpcUrl: string, blockRange: number, percent
     // console.log(Number(blockNumberRes.result))
     return blockNumberRes.result
 }
-
-
-export interface WalletInfo {
-    chainId: number;
-    address: string;
-    exSchema?: string;
-    priKey?: string;
-    rpcUrl?: string;
-}
-
 export interface LimitedCallSpec {
     to: string
     data: string
     value?: string
-}
-
-export function getProvider(wallet: WalletInfo) {
-    const {chainId, address, priKey, rpcUrl} = wallet
-    const rpc = rpcUrl || RPC_PROVIDER[chainId]
-    const rpcProvider = new providers.JsonRpcProvider(rpc)
-
-    let walletSigner: Signer, walletProvider: any
-
-    if (priKey) {
-        walletSigner = new ethers.Wallet(priKey, rpcProvider)
-        walletProvider = walletSigner
-        // walletProvider = rpcProvider.getSigner(address)
-    } else {
-        walletSigner = rpcProvider.getSigner(address) //new ethers.VoidSigner(address, rpcProvider)
-        if (typeof window === 'undefined') {
-            walletProvider = rpcProvider.getSigner(address)
-            // console.warn('not signer fo walletProvider')
-        } else {
-            if (window.ethereum) {
-                walletProvider = window.ethereum
-                walletSigner = new ethers.providers.Web3Provider(walletProvider).getSigner()
-            }
-            // console.log('isMetaMask', window.elementWeb3.isMetaMask)
-            if (window.elementWeb3 || window.WalletProvider) {
-                walletProvider = window.elementWeb3 && window.WalletProvider
-                console.log('walletProvider', walletProvider)
-                if (walletProvider.isWalletConnect) {
-                    walletSigner = new ethers.providers.Web3Provider(window.elementWeb3).getSigner()
-                } else {
-                    //JsonRpcSigner
-                    walletSigner = new ethers.providers.Web3Provider(window.elementWeb3.currentProvider).getSigner()
-                }
-            }
-        }
-    }
-    return {
-        address,
-        chainId,
-        rpc,
-        walletSigner,
-        walletProvider
-    }
 }
 
 export async function ethSend(wallet: WalletInfo, callData: LimitedCallSpec): Promise<TransactionResponse> {
