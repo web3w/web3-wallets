@@ -65,12 +65,18 @@ export function getProvider(walletInfo: WalletInfo) {
                 walletSigner = new ethers.providers.Web3Provider(walletProvider).getSigner(address)
             }
             // console.log('isMetaMask', window.elementWeb3.isMetaMask)
-            if (window.elementWeb3 || window.walletProvider) {
-                walletProvider = window.elementWeb3 ? window.elementWeb3 : window.walletProvider
+            if (window.walletProvider) {
+                walletProvider = window.walletProvider
+                walletSigner = new ethers.providers.Web3Provider(walletProvider).getSigner(address)
+            }
+
+            if (window.elementWeb3) {
+                walletProvider = window.elementWeb3
                 if (walletProvider.isWalletConnect) {
+                    //JsonRpcSigner wallet connect
                     walletSigner = new ethers.providers.Web3Provider(walletProvider).getSigner(address)
                 } else {
-                    //JsonRpcSigner
+                    // new Web3()
                     walletSigner = new ethers.providers.Web3Provider(walletProvider.currentProvider).getSigner(address)
                 }
             }

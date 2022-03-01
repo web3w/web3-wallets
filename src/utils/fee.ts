@@ -65,11 +65,18 @@ export async function get1559Fee(rpcURl: string) {
     // 最终的baseFee
     let baseFee = totalBaseFee.dividedToIntegerBy(baseFeeCount)
 
+    // 避免 base Fee 过低
+    if (baseFee.lte(2e9)) {
+        baseFee = new BigNumber(5e9);
+    }
+
     // 最终的maxFee, 一定要取整，不能有小数
     let maxFee = baseFee.multipliedBy(1.125).plus(priorityFee)
 
     // console.log("maxFee: %s, maxPriorityFee: %s， baseFee: %s", maxFee.toFixed(0), priorityFee.toFixed(0), baseFee.toFixed(0))
     console.log("maxFee: %s, maxPriorityFee: %s， baseFee: %s", maxFee.div(1e9).toFixed(0), priorityFee.div(1e9).toFixed(0), baseFee.div(1e9).toFixed(0))
+
+
     return {maxPriorityFeePerGas: priorityFee.toFixed(0), maxFeePerGas: maxFee.toFixed(0)}
 }
 
