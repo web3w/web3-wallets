@@ -21,7 +21,7 @@ function bignumberMedian(values) {
 
 // from fee history
 
-export async function get1559Fee(rpcURl: string) {
+export async function get1559Fee(rpcURl?: string) {
     const url = rpcURl || "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"
     let feeHistory = await getFeeHistory(url, 5, [25, 75])
 
@@ -47,7 +47,7 @@ export async function get1559Fee(rpcURl: string) {
     let maxBaseFee = new BigNumber(10e18) // TODO: max
     let minBaseFee = new BigNumber(0)
     for (let i = 0; i < feeHistory.baseFeePerGas.length; i++) {
-        let tmpFee = new BigNumber(feeHistory.baseFeePerGas[i]);
+        const tmpFee = new BigNumber(feeHistory.baseFeePerGas[i]);
         if (tmpFee.lte(0)) {
             continue
         }
@@ -186,7 +186,7 @@ export async function getFeeData(signer: Signer): Promise<{ maxFeePerGas: string
 }
 
 // BaseGasPrice = PreviousBaseGasPrice × (1 + k × CongestionLevel)
-export async function getGas1559PriceBak(rpcUrl: string): Promise<{ maxPriorityFeePerGas: string, maxFeePerGas: string }> {
+export async function getGas1559PriceBak(rpcUrl: string): Promise<{ maxPriorityFeePerGas: string; maxFeePerGas: string | undefined }> {
     const chain = new providers.JsonRpcProvider(rpcUrl)
     // @ts-ignore
     const block = await chain.getBlock('latest') // rpcProvider.getBlock();

@@ -1,7 +1,7 @@
 import {MetaMaskWallet} from './connectors/metamaskWallet'
 import {CoinbaseWallet} from './connectors/coinbaseWallet'
 import {ConnectWallet} from './connectors/walletConnet'
-import {EventEmitter} from 'events'
+import EventEmitter from 'events'
 import {
     IEthereumProvider,
     ProviderAccounts,

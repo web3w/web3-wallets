@@ -9,6 +9,15 @@ export enum ProviderNames {
     KeyStroeWallet = 'KeyStroe'
 }
 
+
+
+export interface LimitedCallSpec {
+    to: string
+    data: string
+    value?: string
+    from?: string
+}
+
 export interface ProviderRpcError extends Error {
     message: string;
     code: number;
