@@ -10,7 +10,7 @@ import {BaseWallet} from "./baseWallet";
 // https://metamask.github.io/test-dapp/
 
 export class MetaMaskWallet extends BaseWallet {
-    public walletName:string = ProviderNames.Metamask
+    public walletName: string = ProviderNames.Metamask
     public provider: any
     public chainId: number
     public address: string
@@ -19,7 +19,6 @@ export class MetaMaskWallet extends BaseWallet {
         super()
         this.provider = window.ethereum
         if (this.provider) {
-            console.log(this.provider)
             // this.chainId = Number(this.walletProvider.chainId)
             this.chainId = Number(this.provider.networkVersion)
             this.address = this.provider.selectedAddress
@@ -75,7 +74,6 @@ export class MetaMaskWallet extends BaseWallet {
             this.emit('message', payload)
         })
     }
-
 
 
     async switchEthereumChain(chainId: string, rpcUrl?: string) {

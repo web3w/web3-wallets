@@ -45,9 +45,7 @@ export function getProvider(walletInfo: WalletInfo) {
     const {chainId, address, priKey, rpcUrl} = walletInfo
     const rpc = rpcUrl || RPC_PROVIDER[Number(chainId)]
     const rpcProvider = new providers.JsonRpcProvider(rpc)
-
     let walletSigner: Signer, walletProvider: any
-
     if (priKey) {
         walletSigner = new ethers.Wallet(priKey, rpcProvider)
         walletProvider = walletSigner
