@@ -22,6 +22,7 @@ export class ConnectWallet extends BaseWallet {
     // public connector: IConnector
     public account: string = ''
     public chainId: number = 0
+    public rpcList: { [chainId: number]: string }
 
     // Create a connector
     constructor(config: { bridge: string, rpc?: { [chainId: number]: string } }) {
@@ -32,7 +33,7 @@ export class ConnectWallet extends BaseWallet {
             qrcodeModal: QRCodeModal
         })
 
-        const rpc = config.rpc || CHAIN_ID_RPC
+        this.rpcList = config.rpc || CHAIN_ID_RPC
 
         const walletStr = localStorage.getItem('walletconnect')
         if (walletStr) {
@@ -43,7 +44,7 @@ export class ConnectWallet extends BaseWallet {
             this.chainId = Number(chainId)
             this.walletName = ProviderNames.WalletConnect + '-' + peerMeta?.name;
             this.provider = new EthereumProvider({
-                rpc,
+                rpc: this.rpcList,
                 chainId,
                 connector,
                 signingMethods
@@ -54,7 +55,20 @@ export class ConnectWallet extends BaseWallet {
         // Check if connection is already established
         if (!connector.connected) {
             // create new session
+            // connector.createSession()
+            this.provider = connector
+        }
+
+    };
+
+    getConnector() {
+        let connector = this.provider
+        if (!this.provider.connected) {
+            debugger
             connector.createSession()
+        } else {
+            debugger
+            connector = this.provider.connector
         }
         // Subscribe to connection events
         connector.on('connect', async (error, payload) => {
@@ -68,7 +82,7 @@ export class ConnectWallet extends BaseWallet {
             this.walletName = ProviderNames.WalletConnect + '-' + peerMeta?.name;
 
             this.provider = new EthereumProvider({
-                rpc,
+                rpc: this.rpcList,
                 chainId,
                 connector,
                 signingMethods
@@ -90,6 +104,7 @@ export class ConnectWallet extends BaseWallet {
         })
 
         connector.on('disconnect', (error) => {
+            debugger
             if (error) {
                 throw error
             }
@@ -99,7 +114,9 @@ export class ConnectWallet extends BaseWallet {
             this.walletName = ""
             this.emit('disconnect', error)
         })
-    };
+
+        return connector
+    }
 
 }
 

@@ -19,6 +19,9 @@ export class MetaMaskWallet extends BaseWallet {
         super()
         this.provider = window.ethereum
         if (this.provider) {
+            if (this.provider.overrideIsMetaMask) {
+                this.provider = this.provider.providers.find(val => val.isMetaMask)
+            }
             // this.chainId = Number(this.walletProvider.chainId)
             this.chainId = Number(this.provider.networkVersion)
             this.address = this.provider.selectedAddress

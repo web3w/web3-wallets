@@ -6,161 +6,39 @@
 </head>
 <body>
 
+<button id="detectWalletsBtn">DetectWallets</button>
+
+<div id="walletList"></div>
+
+<div id="metamaskFunc" style="display: none">
+    <button id="metamaskBtn">MetaMask Info</button>
+    <button id="metamaskSignMessage">SignMessage</button>
+    <button id="metamaskSign712">SignTypedData</button>
+    <button id="switchBSCTESTBtn">Switch BSCTEST</button>
+    <button id="switchRinkebyBtn">Switch Rinkeby</button>
+
+</div>
+<div id="walletconnectFunc" style="display: none">
+    <button id="walletConnectBtn">WalletConnect Info</button>
+    <button id="walletConnectSignMessage">SignMessage</button>
+    <button id="walletConnectSign712">SignTypedData</button>
+</div>
+<div id="coinbaseFunc" style="display: none">
+    <button id="coinbaseWalletBtn">CoinbaseWallet Info</button>
+    <button id="coinbaseSignMessage">SignMessage</button>
+    <button id="coinbaseSign712">SignTypedData</button>
+</div>
+
+
 <p>Account: <span id="accountAddr"></span></p>
 <p>ChainId: <span id="chainId"></span></p>
 <p>Wallet: <span id="walletName"></span></p>
 
 <button id="getFeeBtn">1559Fee</button>
 <button id="getProviderBtn">GetProvider</button>
-<hr/>
-<button id="metaMaskBtn">MetaMask</button>
-<button id="switchBSCTESTBtn">Switch BSCTEST</button>
-<button id="switchRinkebyBtn">Switch Rinkeby</button>
-<hr/>
-<button id="walletConnectBtn">Wallet Connect</button>
-
-<button id="walletConnectSignMessage">SignMessage</button>
-<button id="walletConnectSign712">SignTypedData</button>
 
 
-<script type="module">
-    import {bridge, RPC_PROVIDER, msg712sign} from './js/walletConnet.js'
-
-    let accounts
-
-    async function init(chainId, address, walletName) {
-        document.getElementById('accountAddr').innerText = address
-        document.getElementById('chainId').innerText = chainId
-        document.getElementById('walletName').innerText = walletName
-
-        const authToken = localStorage.getItem('authToken')
-
-        console.log('authToken', authToken)
-        // orderApi = new ElementOrdersV2({chainId, address}, {authToken})
-        // orderApi.on('Error', function (e) {
-        //     debugger
-        //     console.log('Error', e)
-        // })
-
-        // window.orderApi = orderApi
-
-
-        // const unitPrice = document.getElementById('erc1155UnitPrice').value
-        // const tokenAmount = document.getElementById('erc1155Amount').value
-        //
-        // const startAmount = document.getElementById('erc1155Price')
-        // startAmount.value = unitPrice * tokenAmount
-
-
-    }
-
-    const feeBtn = document.getElementById('getFeeBtn')
-    feeBtn.onclick = async () => {
-        const fee = await get1559Fee(RPC_PROVIDER[WalletProvider.chainId])
-        console.log(fee)
-    }
-    const getProviderBtn = document.getElementById('getProviderBtn')
-    getProviderBtn.onclick = async () => {
-        const chainId = window.ethereum.networkVersion
-        const address = window.ethereum.selectedAddress
-        const {walletSigner} = getProvider({address, chainId: 1})
-        // const { walletSigner } = getProvider({chainId, address})
-
-        const addr = await walletSigner.getAddress()
-        alert(addr)
-    }
-    const metaMaskBtn = document.getElementById('metaMaskBtn')
-
-    metaMaskBtn.onclick = async () => {
-        // const wallet = new MetamaskWallet()
-        const wallet = new Web3Wallets(ProviderNames.Metamask)
-        accounts = await wallet.enable() // enable ethereum
-        // window.walletConnectProvider = undefined
-        const walletProvider = wallet.walletProvider
-        const chainId = walletProvider.chainId
-        const address = walletProvider.address
-        console.log(chainId, address)
-        init(chainId, address, 'MetaMask')
-
-        window.walletSigner = wallet.walletSigner
-
-        const switchBSCTESTBtn = document.getElementById('switchBSCTESTBtn')
-        switchBSCTESTBtn.onclick = () => {
-            walletProvider.switchBSCTEST()
-        }
-        const switchRinkebyBtn = document.getElementById('switchRinkebyBtn')
-        switchRinkebyBtn.onclick = () => {
-            walletProvider.switchRinkeby()
-        }
-    }
-    const walletConnectBtn = document.getElementById('walletConnectBtn')
-    walletConnectBtn.onclick = async () => {
-        const config = {
-            bridge,
-            rpc: RPC_PROVIDER
-        }
-        const wallet = new Web3Wallets(ProviderNames.WalletConnect, config)
-        const walletProvider = wallet.walletProvider.provider
-
-        if (walletProvider) {
-            // const walletSession = JSON.stringify(walletConnet.connector.session, null, 2)
-            // const walletSession = walletProvider.connector.session
-            // console.log("walletSession", walletSession)
-
-            const {address, chainId, walletName} = wallet.walletProvider
-            // const {peerMeta} = walletSession
-            init(chainId, address, walletName)
-
-        }
-        if (wallet.walletProvider) {
-            wallet.walletProvider.on('connect', async (error, payload) => {
-                debugger
-                if (error) {
-                    throw error
-                }
-                const {accounts, chainId, peerMeta} = payload.params[0]
-                init(chainId, accounts[0], peerMeta.name)
-            })
-            wallet.walletProvider.on('disconnect', async (error) => {
-                debugger
-                if (error) {
-                    throw error
-                }
-                init(0, '', '')
-            })
-        }
-    }
-
-    const walletConnectSignMessageBtn = document.getElementById('walletConnectSignMessage')
-    walletConnectSignMessageBtn.onclick = async () => {
-        const msg = prompt("sign Info")
-        if (window.walletSigner) {
-            debugger
-            const signature = await window.walletSigner.signMessage(msg).catch((e) => {
-                throw e
-            })
-            alert(signature)
-        }
-    }
-
-    const walletConnectSign712Btn = document.getElementById('walletConnectSign712')
-    walletConnectSign712Btn.onclick = async () => {
-        debugger
-        if (window.walletSigner) {
-            // signature = await this.walletProvider._signTypedData(typedData.domain, { Order: typedData.types.Order }, typedData.message)
-            const signature = await window.walletSigner._signTypedData(msg712sign.domain, {
-                Person: msg712sign.types.Person,
-                Mail: msg712sign.types.Mail
-            }, msg712sign.message).catch((e) => {
-                // this.emit('Error', e)
-                throw e
-            })
-            alert(signature)
-        }
-    }
-
-
-</script>
+<script type="module" src="./js/index.js"></script>
 
 </body>
 </html>

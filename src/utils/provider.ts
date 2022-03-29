@@ -33,7 +33,6 @@ export function detectWallets() {
             metamask = new Web3Wallets(ProviderNames.Metamask)
         }
     }
-
     const coinbase = new Web3Wallets(ProviderNames.Coinbase)
     const walletconnect = new Web3Wallets(ProviderNames.WalletConnect)
 
