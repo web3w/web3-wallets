@@ -29,6 +29,10 @@ export function detectWallets() {
     }
     if (window.ethereum) {
         const walletProvider = window.ethereum
+        // if (walletProvider.overrideIsMetaMask) {
+        //     this.provider = walletProvider.provider.providers.find(val => val.isMetaMask)
+        // }
+
         if (walletProvider.isMetaMask) {
             metamask = new Web3Wallets(ProviderNames.Metamask)
         }
@@ -54,7 +58,7 @@ export function getProvider(walletInfo: WalletInfo) {
             walletProvider = rpcProvider.getSigner(address)
             walletSigner = walletProvider
         } else {
-            if (window.ethereum) {
+            if (window.ethereum && !window.walletProvider || window.ethereum && !window.elementWeb3) {
                 walletProvider = window.ethereum
                 if (!window.ethereum.selectedAddress) {
                     window.ethereum.enable()

@@ -64,10 +64,10 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
 
             if (this.walletProvider) {
                 this.walletSigner = new ethers.providers.Web3Provider(this.walletProvider).getSigner()
-                if (typeof window !== 'undefined') {
-                    window.walletProvider = this.walletProvider
-                    window.walletSigner = this.walletSigner
-                }
+                // if (typeof window !== 'undefined') {
+                //     window.walletProvider = this.walletProvider
+                //     window.walletSigner = this.walletSigner
+                // }
             }
         }
 
