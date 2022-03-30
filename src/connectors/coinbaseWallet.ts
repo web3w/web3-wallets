@@ -1,11 +1,13 @@
 // TypeScript
-import WalletLink from 'walletlink'
+import CoinbaseWalletSDK from "@coinbase/wallet-sdk";
 import {ProviderAccounts, ProviderNames, IEthereumProvider, RequestArguments} from '../types'
 import {BaseWallet} from "./baseWallet";
 
 
 const APP_NAME = 'Coinbase'
 const APP_LOGO_URL = 'https://images.ctfassets.net/q5ulk4bp65r7/3TBS4oVkD1ghowTqVQJlqj/2dfd4ea3b623a7c0d8deb2ff445dee9e/Consumer_Wordmark.svg'
+const DEFAULT_ETH_JSONRPC_URL = "https://mainnet-infura.wallet.coinbase.com"
+const DEFAULT_CHAIN_ID = 1;
 
 export class CoinbaseWallet extends BaseWallet {
     // public ethereum: WalletLinkProvider
@@ -18,13 +20,23 @@ export class CoinbaseWallet extends BaseWallet {
 
     constructor() {
         super()
-        const walletLink = new WalletLink({
+        // const walletLink = new WalletLink({
+        //     appName: APP_NAME,
+        //     appLogoUrl: APP_LOGO_URL,
+        //     darkMode: false
+        // })
+
+
+        const coinbaseWallet = new CoinbaseWalletSDK({
             appName: APP_NAME,
             appLogoUrl: APP_LOGO_URL,
             darkMode: false
-        })
-        //rpcUrl, this.chainId)
-        this.provider = walletLink.makeWeb3Provider()
+        });
+
+        // debugger
+        // console.log(coinbaseWallet)
+        //(rpcUrl, this.chainId)
+        this.provider = coinbaseWallet.makeWeb3Provider(DEFAULT_ETH_JSONRPC_URL, DEFAULT_CHAIN_ID)
         this.address = this.provider.selectedAddress || ''
         // this.chainId = Number(this.ethereum.chainId)
         this.chainId = Number(this.provider.networkVersion)

@@ -127,8 +127,12 @@ detectWalletsBtn.onclick = () => {
         if (val.id == "coinbase") {
             getById('coinbaseFunc').style.display = ""
             getById('coinbaseWalletBtn').onclick = async () => {
+                debugger
                 const accounts = await coinbase.walletProvider.enable() // enable ethereum
                 const {address, chainId, walletName} = coinbase.walletProvider
+                debugger
+                const balance = await coinbase.walletSigner.getBalance()
+                alert(balance)
                 init(chainId, address, walletName)
             }
 
