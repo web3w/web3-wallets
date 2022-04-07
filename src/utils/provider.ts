@@ -1,6 +1,6 @@
 import {ethers, providers, Signer} from "ethers";
 import {Web3Wallets} from "../index";
-import {ProviderNames} from "../types";
+import {ProviderNames, WalletInfo} from "../types";
 
 export const RPC_PROVIDER = {
     1: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
@@ -11,14 +11,6 @@ export const RPC_PROVIDER = {
     80001: 'https://polygon-mumbai.g.alchemy.com/v2/9NqLsboUltGGnzDsJsOq5fJ740fZPaVE'
 }
 
-
-export interface WalletInfo {
-    chainId: number;
-    address: string;
-    exSchema?: string;
-    priKey?: string;
-    rpcUrl?: string;
-}
 
 export function detectWallets() {
     let metamask: Web3Wallets | undefined
@@ -47,18 +39,21 @@ export function detectWallets() {
 export function getProvider(walletInfo: WalletInfo) {
     const {chainId, address, priKey, rpcUrl} = walletInfo
     const rpc = rpcUrl || RPC_PROVIDER[Number(chainId)]
-    const rpcProvider = new providers.JsonRpcProvider(rpc)
-    let walletSigner: Signer, walletProvider: any
+    // const rpcProvider =
+    let walletSigner: Signer | undefined, walletProvider: any
+
     if (priKey) {
-        walletSigner = new ethers.Wallet(priKey, rpcProvider)
+        walletSigner = new ethers.Wallet(priKey, new providers.JsonRpcProvider(rpc))
         walletProvider = walletSigner
     } else {
-        walletSigner = rpcProvider.getSigner(address)
+        // walletSigner = rpcProvider.getSigner(address)
         if (typeof window === 'undefined') {
-            walletProvider = rpcProvider.getSigner(address)
+            console.log('getProvider:There are no priKey')
+            walletProvider = (new providers.JsonRpcProvider(rpc)).getSigner(address)
             walletSigner = walletProvider
         } else {
             if (window.ethereum && !window.walletProvider || window.ethereum && !window.elementWeb3) {
+                console.log('getProvider:ethereum')
                 walletProvider = window.ethereum
                 if (!window.ethereum.selectedAddress) {
                     window.ethereum.enable()
@@ -67,11 +62,13 @@ export function getProvider(walletInfo: WalletInfo) {
             }
             // console.log('isMetaMask', window.elementWeb3.isMetaMask)
             if (window.walletProvider) {
+                console.log('getProvider:walletProvider')
                 walletProvider = window.walletProvider
                 walletSigner = new ethers.providers.Web3Provider(walletProvider).getSigner(address)
             }
 
             if (window.elementWeb3) {
+                console.log('getProvider:elementWeb3')
                 walletProvider = window.elementWeb3
                 if (walletProvider.isWalletConnect) {
                     //JsonRpcSigner wallet connect
@@ -83,7 +80,7 @@ export function getProvider(walletInfo: WalletInfo) {
             }
         }
     }
-
+    walletSigner = walletSigner || (new providers.JsonRpcProvider(rpc)).getSigner(address)
     return {
         address,
         chainId,

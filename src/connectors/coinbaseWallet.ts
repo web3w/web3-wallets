@@ -20,25 +20,14 @@ export class CoinbaseWallet extends BaseWallet {
 
     constructor() {
         super()
-        // const walletLink = new WalletLink({
-        //     appName: APP_NAME,
-        //     appLogoUrl: APP_LOGO_URL,
-        //     darkMode: false
-        // })
-
-
         const coinbaseWallet = new CoinbaseWalletSDK({
             appName: APP_NAME,
             appLogoUrl: APP_LOGO_URL,
             darkMode: false
         });
 
-        // debugger
-        // console.log(coinbaseWallet)
-        //(rpcUrl, this.chainId)
         this.provider = coinbaseWallet.makeWeb3Provider(DEFAULT_ETH_JSONRPC_URL, DEFAULT_CHAIN_ID)
         this.address = this.provider.selectedAddress || ''
-        // this.chainId = Number(this.ethereum.chainId)
         this.chainId = Number(this.provider.networkVersion)
         this.host = this.provider.host
         // get chainId(): string;

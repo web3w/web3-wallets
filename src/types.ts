@@ -9,6 +9,15 @@ export enum ProviderNames {
     KeyStroeWallet = 'KeyStroe'
 }
 
+export interface WalletInfo {
+    chainId: number
+    address: string
+    exSchema?: string
+    priKey?: string
+    rpcUrl?: string
+    offsetGasLimitRatio?: number
+    isSetGasPrice?: boolean
+}
 
 
 export interface LimitedCallSpec {

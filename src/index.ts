@@ -29,11 +29,13 @@ const bridgeUrl = 'https://bridge.walletconnect.org'
 export class Web3Wallets extends EventEmitter implements IEthereumProvider {
     public walletProvider: BaseWallet | undefined
     public walletSigner: JsonRpcSigner | undefined
+    public walletName: ProviderNames
 
     constructor(name: ProviderNames, config?: {
         bridge?: string, rpc?: { [chainId: number]: string }
     }) {
         super()
+        this.walletName = name
         if (typeof window === 'undefined') {
             throw 'not support node evn'
         } else {

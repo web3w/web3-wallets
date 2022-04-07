@@ -2,43 +2,20 @@
 <html>
 <head>
     <meta charset="UTF-8"/>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+
+    <script src="js/utils/vconsole.min.js"></script>
+    <script>
+        // 初始化
+        const vConsole = new VConsole();
+    </script>
     <title>Web3 Wallets</title>
 </head>
 <body>
 
-<button id="detectWalletsBtn">DetectWallets</button>
+<div id="root"></div>
 
-<div id="walletList"></div>
-
-<div id="metamaskFunc" style="display: none">
-    <button id="metamaskBtn">MetaMask Info</button>
-    <button id="metamaskSignMessage">SignMessage</button>
-    <button id="metamaskSign712">SignTypedData</button>
-    <button id="switchBSCTESTBtn">Switch BSCTEST</button>
-    <button id="switchRinkebyBtn">Switch Rinkeby</button>
-
-</div>
-<div id="walletconnectFunc" style="display: none">
-    <button id="walletConnectBtn">WalletConnect Info</button>
-    <button id="walletConnectSignMessage">SignMessage</button>
-    <button id="walletConnectSign712">SignTypedData</button>
-</div>
-<div id="coinbaseFunc" style="display: none">
-    <button id="coinbaseWalletBtn">CoinbaseWallet Info</button>
-    <button id="coinbaseSignMessage">SignMessage</button>
-    <button id="coinbaseSign712">SignTypedData</button>
-</div>
-
-
-<p>Account: <span id="accountAddr"></span></p>
-<p>ChainId: <span id="chainId"></span></p>
-<p>Wallet: <span id="walletName"></span></p>
-
-<button id="getFeeBtn">1559Fee</button>
-<button id="getProviderBtn">GetProvider</button>
-
-
-<script type="module" src="./js/index.js"></script>
 
 </body>
 </html>

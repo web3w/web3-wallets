@@ -7,6 +7,7 @@ import {BaseWallet} from "./baseWallet";
 
 const signingMethods = ['eth_signTypedData', 'eth_signTypedData_v4', 'eth_sign', 'personal_sign', 'eth_sendTransaction']
 
+//    EthereumProvider config   signingMethods
 const CHAIN_ID_RPC: { [chainId: number]: string } = {
     1: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
     4: 'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
@@ -21,7 +22,7 @@ export class ConnectWallet extends BaseWallet {
     public peerMetaName: string = ""
     public provider: any
     // public connector: IConnector
-    public account: string = ''
+    // public account: string = ''
     public chainId: number = 0
     public rpcList: { [chainId: number]: string }
 
@@ -49,8 +50,7 @@ export class ConnectWallet extends BaseWallet {
             this.provider = new EthereumProvider({
                 rpc: this.rpcList,
                 chainId,
-                connector,
-                signingMethods
+                connector
             })
             this.provider.enable()
         }
@@ -64,7 +64,7 @@ export class ConnectWallet extends BaseWallet {
 
     };
 
-    getConnector() {
+    getConnector(): IConnector {
         let connector = this.provider
         if (this.provider.connected) {
             connector = this.provider.connector
@@ -87,14 +87,14 @@ export class ConnectWallet extends BaseWallet {
             this.provider = new EthereumProvider({
                 rpc: this.rpcList,
                 chainId,
-                connector,
-                signingMethods
+                connector
             })
             this.provider.enable()
             this.emit('connect', error, payload)
         })
 
         connector.on('session_update', (error, payload) => {
+            debugger
             if (error) {
                 throw error
             }
@@ -120,6 +120,11 @@ export class ConnectWallet extends BaseWallet {
         })
 
         return connector
+    }
+
+    disconnect() {
+        this.emit('disconnect', 'client')
+        this.provider.disconnect();
     }
 
 }

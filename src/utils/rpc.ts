@@ -1,8 +1,9 @@
 import {ethers, providers, Signer} from "ethers";
 import {get1559Fee} from "./fee";
-import {TransactionResponse} from "@ethersproject/abstract-provider";
-import {LimitedCallSpec} from "../types";
-import {getProvider, WalletInfo} from "./provider";
+import {Block, FeeData, TransactionRequest, Provider, TransactionResponse} from '@ethersproject/abstract-provider'
+import {LimitedCallSpec, WalletInfo} from "../types";
+import {getProvider} from "./provider";
+import BigNumber from "bignumber.js";
 
 
 // https://docs.alchemy.com/alchemy/apis/ethereum/eth-blocknumber
@@ -77,21 +78,78 @@ export async function ethSendGas(wallet: WalletInfo, callData: LimitedCallSpec):
     }
 }
 
+export async function ethSendGasLimit(wallet: WalletInfo, callData: LimitedCallSpec, gasLimit: string): Promise<TransactionResponse> {
+    const offsetRatio = wallet.offsetGasLimitRatio || 1
+    const offsetGasLimit = new BigNumber(gasLimit).times(offsetRatio).toFixed(0)
+    const {walletSigner, rpc} = getProvider(wallet)
+    let value = ethers.BigNumber.from(0)
+    if (callData.value) {
+        value = ethers.BigNumber.from(callData.value)
+    }
+
+    const transactionObject = {
+        from: wallet.address,
+        to: callData.to,
+        data: callData.data,
+        gasLimit: ethers.BigNumber.from(offsetGasLimit),
+        value
+    } as TransactionRequest
+
+    console.log('value', value.toString(), 'gasLimit', transactionObject.gasLimit?.toString(),)
+
+    if (wallet.setGasPrice) {
+        const tx = await walletSigner.populateTransaction(transactionObject).catch(async (error: any) => {
+            throw error
+        })
+        if (tx?.type == 2) {
+            const fee = await get1559Fee(rpc)
+            transactionObject.maxFeePerGas = ethers.BigNumber.from(fee.maxFeePerGas) //?.mul(gasPriceOffset).div(100).toNumber()
+            transactionObject.maxPriorityFeePerGas = ethers.BigNumber.from(fee.maxPriorityFeePerGas) //?.mul(gasPriceOffset).div(100).toNumber()
+        } else {
+            const fee = await walletSigner.getFeeData()
+            const gasPrice = ethers.utils.formatUnits(fee.gasPrice || 5, 'gwei')
+            console.log("gasPrice", gasPrice)
+            transactionObject.gasPrice = ethers.BigNumber.from(gasPrice)
+        }
+    }
+
+    console.log('value', value.toString(), 'gasLimit', transactionObject.gasLimit?.toString(),)
+
+    return walletSigner.sendTransaction(transactionObject).catch((e: any) => {
+        throw e
+    })
+}
+
 export async function ethSend(wallet: WalletInfo, callData: LimitedCallSpec): Promise<TransactionResponse> {
-    const {walletSigner} = getProvider(wallet)
+    const {walletSigner, rpc} = getProvider(wallet)
     let value = ethers.BigNumber.from(0)
     if (callData.value) {
         value = ethers.BigNumber.from(callData.value)
     }
     const transactionObject = {
-        from:wallet.address,
+        from: wallet.address,
         to: callData.to,
         data: callData.data,
         value
+    } as TransactionRequest
+
+    if (wallet.setGasPrice) {
+        const tx = await walletSigner.populateTransaction(transactionObject).catch(async (error: any) => {
+            throw error
+        })
+        if (tx?.type == 2) {
+            const fee = await get1559Fee(rpc)
+            transactionObject.maxFeePerGas = ethers.BigNumber.from(fee.maxFeePerGas) //?.mul(gasPriceOffset).div(100).toNumber()
+            transactionObject.maxPriorityFeePerGas = ethers.BigNumber.from(fee.maxPriorityFeePerGas) //?.mul(gasPriceOffset).div(100).toNumber()
+        } else {
+            const fee = await walletSigner.getFeeData()
+            const gasPrice = ethers.utils.formatUnits(fee.gasPrice || 5, 'gwei')
+            console.log("gasPrice", gasPrice)
+            transactionObject.gasPrice = ethers.BigNumber.from(gasPrice)
+        }
     }
 
     try {
-        // const tx =   walletSigner.populateTransaction(transactionObject)
         return walletSigner.sendTransaction(transactionObject).catch((e: any) => {
             throw e
         })
