@@ -8,7 +8,9 @@ export const RPC_PROVIDER = {
     56: 'https://bsc-dataseed1.defibit.io/',
     97: 'https://data-seed-prebsc-1-s1.binance.org:8545',
     137: 'https://rpc-mainnet.maticvigil.com',
-    80001: 'https://polygon-mumbai.g.alchemy.com/v2/9NqLsboUltGGnzDsJsOq5fJ740fZPaVE'
+    80001: 'https://polygon-mumbai.g.alchemy.com/v2/9NqLsboUltGGnzDsJsOq5fJ740fZPaVE',
+    43113: "https://api.avax-test.network/ext/bc/C/rpc",
+    43114: "https://api.avax.network/ext/bc/C/rpc"
 }
 
 
@@ -80,7 +82,10 @@ export function getProvider(walletInfo: WalletInfo) {
             }
         }
     }
-    walletSigner = walletSigner || (new providers.JsonRpcProvider(rpc)).getSigner(address)
+    walletSigner = walletSigner || (new providers.JsonRpcProvider(rpc, {
+        name: walletInfo.address,
+        chainId: walletInfo.chainId
+    })).getSigner(address)
     return {
         address,
         chainId,
