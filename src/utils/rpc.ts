@@ -97,7 +97,7 @@ export async function ethSendGasLimit(wallet: WalletInfo, callData: LimitedCallS
 
     console.log('value', value.toString(), 'gasLimit', transactionObject.gasLimit?.toString(),)
 
-    if (wallet.setGasPrice) {
+    if (wallet.isSetGasPrice) {
         const tx = await walletSigner.populateTransaction(transactionObject).catch(async (error: any) => {
             throw error
         })
@@ -133,7 +133,7 @@ export async function ethSend(wallet: WalletInfo, callData: LimitedCallSpec): Pr
         value
     } as TransactionRequest
 
-    if (wallet.setGasPrice) {
+    if (wallet.isSetGasPrice) {
         const tx = await walletSigner.populateTransaction(transactionObject).catch(async (error: any) => {
             throw error
         })

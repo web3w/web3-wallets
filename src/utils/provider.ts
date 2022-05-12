@@ -1,17 +1,7 @@
 import {ethers, providers, Signer} from "ethers";
 import {Web3Wallets} from "../index";
-import {ProviderNames, WalletInfo} from "../types";
+import {ProviderNames, RPC_PUB_PROVIDER, WalletInfo} from "../types";
 
-export const RPC_PROVIDER = {
-    1: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
-    4: 'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
-    56: 'https://bsc-dataseed1.defibit.io/',
-    97: 'https://data-seed-prebsc-1-s1.binance.org:8545',
-    137: 'https://rpc-mainnet.maticvigil.com',
-    80001: 'https://polygon-mumbai.g.alchemy.com/v2/9NqLsboUltGGnzDsJsOq5fJ740fZPaVE',
-    43113: "https://api.avax-test.network/ext/bc/C/rpc",
-    43114: "https://api.avax.network/ext/bc/C/rpc"
-}
 
 
 export function detectWallets() {
@@ -40,18 +30,22 @@ export function detectWallets() {
 
 export function getProvider(walletInfo: WalletInfo) {
     const {chainId, address, priKey, rpcUrl} = walletInfo
-    const rpc = rpcUrl || RPC_PROVIDER[Number(chainId)]
+    const rpc = rpcUrl || RPC_PUB_PROVIDER[Number(chainId)]
     // const rpcProvider =
     let walletSigner: Signer | undefined, walletProvider: any
+    const network = {
+        name: walletInfo.address,
+        chainId: walletInfo.chainId
+    }
 
     if (priKey) {
-        walletSigner = new ethers.Wallet(priKey, new providers.JsonRpcProvider(rpc))
+        walletSigner = new ethers.Wallet(priKey, new providers.JsonRpcProvider(rpc,network))
         walletProvider = walletSigner
     } else {
         // walletSigner = rpcProvider.getSigner(address)
         if (typeof window === 'undefined') {
             console.log('getProvider:There are no priKey')
-            walletProvider = (new providers.JsonRpcProvider(rpc)).getSigner(address)
+            walletProvider = (new providers.JsonRpcProvider(rpc,network)).getSigner(address)
             walletSigner = walletProvider
         } else {
             if (window.ethereum && !window.walletProvider || window.ethereum && !window.elementWeb3) {
@@ -82,10 +76,7 @@ export function getProvider(walletInfo: WalletInfo) {
             }
         }
     }
-    walletSigner = walletSigner || (new providers.JsonRpcProvider(rpc, {
-        name: walletInfo.address,
-        chainId: walletInfo.chainId
-    })).getSigner(address)
+    walletSigner = walletSigner || (new providers.JsonRpcProvider(rpc, network)).getSigner(address)
     return {
         address,
         chainId,

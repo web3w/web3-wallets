@@ -1,3 +1,19 @@
+export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
+export const NULL_BLOCK_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000'
+export const ETH_TOKEN_ADDRESS = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+
+export const RPC_PUB_PROVIDER = {
+    1: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
+    3: 'https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
+    4: 'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
+    56: 'https://bsc-dataseed1.defibit.io/',
+    97: 'https://data-seed-prebsc-1-s1.binance.org:8545',
+    137: 'https://rpc-mainnet.maticvigil.com',
+    80001: 'https://matic-mumbai.chainstacklabs.com',
+    43113: "https://api.avax-test.network/ext/bc/C/rpc",
+    43114: "https://api.avax.network/ext/bc/C/rpc"
+}
+
 export enum ProviderNames {
     Metamask = 'MetaMask',
     Coinbase = 'Coinbase',
@@ -12,7 +28,6 @@ export enum ProviderNames {
 export interface WalletInfo {
     chainId: number
     address: string
-    exSchema?: string
     priKey?: string
     rpcUrl?: string
     offsetGasLimitRatio?: number
