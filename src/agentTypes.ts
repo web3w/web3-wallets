@@ -1,11 +1,21 @@
 // import {Token, Asset, OrderType} from "./elementTypes";
 import EventEmitter from 'events'
-import {WalletInfo} from "./types";
+import {WalletInfo, NULL_ADDRESS, LimitedCallSpec} from "./types";
 import BigNumber from 'bignumber.js'
 
 BigNumber.config({EXPONENTIAL_AT: 1e9})
 export {BigNumber}
 
+
+export interface ElementConfig {
+    chainId?: number;
+    account?: string
+    authToken?: string
+    apiBaseUrl?: string
+    protocolFeePoint?: number
+    protocolFeeAddress?: string
+    contractAddresses?: any
+}
 
 export enum ElementSchemaName {
     ERC20 = 'ERC20',
@@ -63,6 +73,13 @@ export interface Token {
     decimals: number
 }
 
+export const ETHToken: Token = {
+    name: 'etherem',
+    symbol: 'ETH',
+    address: NULL_ADDRESS,
+    decimals: 18
+}
+
 export enum OrderType {
     All = -1,
     Buy = 0,
@@ -72,11 +89,6 @@ export enum OrderType {
 export interface MixedPayment {
     ethValue: string,
     wethValue: string
-}
-
-export interface collection {
-    transferFeeAddress: string,
-    elementSellerFeeBasisPoints: number
 }
 
 export type MatchParams = {
@@ -155,19 +167,35 @@ export interface BatchAcceptOrderOption {
 export interface ExAgent extends EventEmitter {
     contracts: any
     walletInfo: WalletInfo
-    getOrderApproveStep: (params: CreateOrderParams, side: OrderType) => Promise<any>
+    getAssetApprove: (metadata: ExchangeMetadata[]) => Promise<{ isApprove: boolean, balances: string, calldata: LimitedCallSpec }[]>
     getMatchCallData: (params: MatchParams) => Promise<any>
     createSellOrder: (order: SellOrderParams) => Promise<any>
     createLowerPriceOrder: (order: LowerPriceOrderParams) => Promise<any>
     createBuyOrder: (order: BuyOrderParams) => Promise<any>
     acceptOrder: (order: string, option?: AcceptOrderOption) => Promise<any>
     cancelOrders: (orders: string[]) => Promise<any>
+    getRegisterProxy?: (account?: string) => Promise<{ isRegister: boolean, proxyAdderss: string, calldata: LimitedCallSpec }>
+    getOrderApproveStep?: (params: CreateOrderParams, side: OrderType) => Promise<any>
     acceptOrders?: (orders: string[], option?: BatchAcceptOrderOption) => Promise<any>
-    approveOrder?: (error: any) => Promise<any>
+    // approveOrder?: (error: any) => Promise<any>
     checkOrderMatch?: (order: string, params?: MatchParams) => Promise<any>
     checkOrderPost?: (order: string, params?: MatchParams) => Promise<any>
 }
 
-
+// export enum CHAIN_ID {
+//     main = 1,
+//     ropsten = 3,
+//     // [Network.Rinkeby]: 4,
+//     // [Network.Kovan]: 42,
+//     // [Network.BSC]: 56,
+//     // [Network.BSCTEST]: 97,
+//     // [Network.Polygon]: 137,
+//     // [Network.Mumbai]: 80001,
+//     // [Network.AvaxTest]: 43113,
+//     // [Network.Avalanche]: 43114,
+//     // [Network.Fantom]: 250,
+//     // [Network.Celo]: 42220,
+//     // [Network.Optimism]: 10
+// }
 
 

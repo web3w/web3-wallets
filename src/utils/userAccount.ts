@@ -5,6 +5,26 @@ import {ethSend} from "./rpc";
 import {LimitedCallSpec, NULL_ADDRESS, WalletInfo, ETH_TOKEN_ADDRESS} from "../types";
 import {Asset, ElementSchemaName, ExchangeMetadata} from "../agentTypes";
 
+export function assetToMetadata(asset: Asset, quantity: string = "1", data?: string): ExchangeMetadata {
+    return <ExchangeMetadata>{
+        asset: {
+            id: asset.tokenId,
+            address: asset.tokenAddress,
+            quantity,
+            data
+        },
+        schema: asset.schemaName
+    }
+}
+
+export function metadataToAsset(metadata: ExchangeMetadata, data?: Asset): Asset {
+    return <Asset>{
+        ...data,
+        tokenId: metadata.asset.id,
+        tokenAddress: metadata.asset.address,
+        schemaName: metadata.schema
+    }
+}
 
 export class UserAccount extends ContractBase {
     constructor(wallet: WalletInfo) {
@@ -195,11 +215,11 @@ export class UserAccount extends ContractBase {
         const tokenId = asset.tokenId || '0'
         if (asset.schemaName == ElementSchemaName.ERC721) {
             isApprove = await this.getERC721Allowance(tokenAddr, operator, owner)
-            calldata = isApprove ? undefined : this.approveErc721ProxyCalldata(tokenAddr, operator)
+            calldata = isApprove ? undefined : await this.approveErc721ProxyCalldata(tokenAddr, operator)
             balances = await this.getERC721Balances(tokenAddr, tokenId, owner)
         } else if (asset.schemaName == ElementSchemaName.ERC1155) {
             isApprove = await this.getERC1155Allowance(tokenAddr, operator, owner)
-            calldata = isApprove ? undefined : this.approveErc1155ProxyCalldata(tokenAddr, operator)
+            calldata = isApprove ? undefined : await this.approveErc1155ProxyCalldata(tokenAddr, operator)
             balances = await this.getERC1155Balances(tokenAddr, tokenId, owner)
         }
         // else if (asset.schemaName == ElementSchemaName.ERC20) {
@@ -219,7 +239,7 @@ export class UserAccount extends ContractBase {
         if (!ethers.utils.isAddress(tokenAddr)) throw 'GetTokenApprove error'
         const allowance = await this.getERC20Allowance(tokenAddr, spender, owner)
         const balances = await this.getERC20Balances(tokenAddr, owner)
-        const calldata = this.approveErc20ProxyCalldata(tokenAddr, spender)
+        const calldata = await this.approveErc20ProxyCalldata(tokenAddr, spender)
         return {
             allowance,
             balances,
@@ -292,19 +312,54 @@ export class UserAccount extends ContractBase {
         return ethSend(this.walletInfo, calldata)
     }
 
-    public async getAssetShareInfo(shareAssetAddress: string, tokenId: string) {
-        const erc1155 = this.getContract(shareAssetAddress, this.erc1155Abi)
-        // 如对应token id 的资产未创建 未false
-        const exists = await erc1155.exists(tokenId)
-        // const balance = (await erc1155.balanceOf(this.walletInfo.address, tokenId)).toString()
-        // const creator = await erc1155.creator(tokenId)
-        // const uri = await erc1155.uri(tokenId)
-        // const overURI = await erc1155._getOverrideURI(tokenId)
-        // console.log(balance.toString(), creator, uri, overURI)
+    async getUserTokenBalance(token: {
+        tokenAddr?: string,
+        decimals?: number,
+        account?: string,
+        rpcUrl?: string
+    }): Promise<{
+        ethBal: number
+        ethValue: string
+        erc20Bal: number
+        erc20Value: string
+    }> {
+        const {tokenAddr, account, rpcUrl} = token
+        const decimals = token.decimals || 18
+
+        const ethBal = !account ? "0" : await this.getGasBalances({account, rpcUrl})
+        const erc20Bal = !tokenAddr ? "0" : await this.getTokenBalances({
+            tokenAddr,
+            account,
+            rpcUrl
+        })
+        // const {erc20Bal, ethBal} = await this.userAccount.getAccountBalance({account, tokenAddr, rpcUrl})
         return {
-            exists
+            ethBal: Number(ethBal),
+            ethValue: ethers.utils.formatEther(ethBal),
+            erc20Bal: Number(erc20Bal),
+            erc20Value: ethers.utils.formatUnits(erc20Bal, decimals)
         }
     }
+
+    public async transfer(params: { asset: Asset, quantity: string, to: string, from?: string}) {
+        const {asset, quantity, to} = params
+        const metadata = assetToMetadata(asset, quantity)
+        return this.assetTransfer(metadata, to)
+    }
+
+    // public async getAssetShareInfo(shareAssetAddress: string, tokenId: string) {
+    //     const erc1155 = this.getContract(shareAssetAddress, this.erc1155Abi)
+    //     // 如对应token id 的资产未创建 未false
+    //     const exists = await erc1155.exists(tokenId)
+    //     // const balance = (await erc1155.balanceOf(this.walletInfo.address, tokenId)).toString()
+    //     // const creator = await erc1155.creator(tokenId)
+    //     // const uri = await erc1155.uri(tokenId)
+    //     // const overURI = await erc1155._getOverrideURI(tokenId)
+    //     // console.log(balance.toString(), creator, uri, overURI)
+    //     return {
+    //         exists
+    //     }
+    // }
 }
 
 

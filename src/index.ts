@@ -11,6 +11,7 @@ import {
 import {ethers, providers, Signer} from "ethers";
 import {JsonRpcSigner} from "@ethersproject/providers";
 import {BaseWallet} from "./connectors/baseWallet";
+import {UserAccount} from "./utils/userAccount";
 
 
 declare global {
@@ -29,13 +30,14 @@ const bridgeUrl = 'https://bridge.walletconnect.org'
 export class Web3Wallets extends EventEmitter implements IEthereumProvider {
     public walletProvider: BaseWallet | undefined
     public walletSigner: JsonRpcSigner | undefined
-    public walletName: ProviderNames
+    public walletName: ProviderNames | undefined
+    public userAccount: UserAccount | undefined
 
-    constructor(name: ProviderNames, config?: {
+    constructor(name?: ProviderNames, config?: {
         bridge?: string, rpc?: { [chainId: number]: string }
     }) {
         super()
-        this.walletName = name
+        this.walletName = name || ProviderNames.WalletConnect
         if (typeof window === 'undefined') {
             throw 'not support node evn'
         } else {
@@ -66,6 +68,10 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
 
             if (this.walletProvider) {
                 this.walletSigner = new ethers.providers.Web3Provider(this.walletProvider).getSigner()
+                this.userAccount = new UserAccount({
+                    chainId: this.walletProvider.chainId,
+                    address: this.walletProvider.address
+                })
                 // if (typeof window !== 'undefined') {
                 //     window.walletProvider = this.walletProvider
                 //     window.walletSigner = this.walletSigner
@@ -95,11 +101,6 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
         }
         return this.walletProvider.enable()
     };
-
-    static async getFee() {
-
-    }
-
 
     sendAsync(request: Object, callback: Function): void {
 
