@@ -23,6 +23,7 @@ export interface APIConfig {
     authToken?: string
     apiBaseUrl?: string
     apiKey?: string
+    apiTimeout?: number
     proxyUrl?: string
     protocolFeePoint?: number
     protocolFeeAddress?: string
@@ -147,11 +148,12 @@ export interface BuyOrderParams extends CreateOrderParams {
 }
 
 export interface LowerPriceOrderParams {
-    orderStr: string,
-    basePrice: string,
+    orderStr: string
+    basePrice: string
     royaltyFeePoint: number
     royaltyFeeAddress: string
-    standard: string;
+    standard: string
+    paymentToken?: Token
     protocolFeePoint?: number
     protocolFeeAddress?: string
     nonce?: number
