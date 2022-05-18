@@ -19,7 +19,7 @@ export {ethers, Signer, Contract, Wallet, providers, BaseContract, constants} fr
 export type {ContractInterface} from 'ethers'
 
 export type {
-    ElementConfig,
+    APIConfig,
     ExAgent,
     Asset,
     MetaAsset,
@@ -36,4 +36,4 @@ export type {
 } from './src/agentTypes'
 
 export {ElementSchemaName, BigNumber, ETHToken, OrderType, OfferType} from './src/agentTypes'
-export {UserAccount, assetToMetadata, metadataToAsset} from './src/utils/userAccount'
+export {UserAccount, assetToMetadata, metadataToAsset, tokenToAsset} from './src/utils/userAccount'

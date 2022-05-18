@@ -1,6 +1,6 @@
 import {ethers, providers, Signer} from "ethers";
 import {get1559Fee} from "./fee";
-import {Block, FeeData, TransactionRequest, Provider, TransactionResponse} from '@ethersproject/abstract-provider'
+import {TransactionRequest, TransactionResponse} from '@ethersproject/abstract-provider'
 import {LimitedCallSpec, WalletInfo} from "../types";
 import {getProvider} from "./provider";
 import BigNumber from "bignumber.js";
@@ -25,7 +25,6 @@ export async function getBlockNumber(rpcUrl: string, blockRange: number, percent
     // console.log(Number(blockNumberRes.result))
     return blockNumberRes.result
 }
-
 
 export async function getEstimateGas(rpcUrl: string, callData: LimitedCallSpec) {
     if (callData.value && callData.value.toString().substr(0, 2) != '0x') {

@@ -13,7 +13,6 @@ import {JsonRpcSigner} from "@ethersproject/providers";
 import {BaseWallet} from "./connectors/baseWallet";
 import {UserAccount} from "./utils/userAccount";
 
-
 declare global {
     interface Window {
         walletProvider: BaseWallet | undefined

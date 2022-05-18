@@ -7,11 +7,23 @@ BigNumber.config({EXPONENTIAL_AT: 1e9})
 export {BigNumber}
 
 
-export interface ElementConfig {
+// export interface ElementConfig {
+//     chainId?: number;
+//     account?: string
+//     authToken?: string
+//     apiBaseUrl?: string
+//     protocolFeePoint?: number
+//     protocolFeeAddress?: string
+//     contractAddresses?: any
+// }
+
+export interface APIConfig {
     chainId?: number;
     account?: string
     authToken?: string
     apiBaseUrl?: string
+    apiKey?: string
+    proxyUrl?: string
     protocolFeePoint?: number
     protocolFeeAddress?: string
     contractAddresses?: any
@@ -167,15 +179,15 @@ export interface BatchAcceptOrderOption {
 export interface ExAgent extends EventEmitter {
     contracts: any
     walletInfo: WalletInfo
-    getAssetApprove: (metadata: ExchangeMetadata[]) => Promise<{ isApprove: boolean, balances: string, calldata: LimitedCallSpec }[]>
+    getAssetApprove: (metadatas: ExchangeMetadata[], decimals?: number) => Promise<{ isApprove: boolean, balances: string, calldata: LimitedCallSpec | undefined }[]>
+    getOrderApproveStep: (params: CreateOrderParams, side: OrderType) => Promise<any>
     getMatchCallData: (params: MatchParams) => Promise<any>
     createSellOrder: (order: SellOrderParams) => Promise<any>
     createLowerPriceOrder: (order: LowerPriceOrderParams) => Promise<any>
     createBuyOrder: (order: BuyOrderParams) => Promise<any>
     acceptOrder: (order: string, option?: AcceptOrderOption) => Promise<any>
     cancelOrders: (orders: string[]) => Promise<any>
-    getRegisterProxy?: (account?: string) => Promise<{ isRegister: boolean, proxyAdderss: string, calldata: LimitedCallSpec }>
-    getOrderApproveStep?: (params: CreateOrderParams, side: OrderType) => Promise<any>
+    getRegisterProxy?: () => Promise<{ isRegister: boolean, accountProxy: string, calldata: LimitedCallSpec | undefined }>
     acceptOrders?: (orders: string[], option?: BatchAcceptOrderOption) => Promise<any>
     // approveOrder?: (error: any) => Promise<any>
     checkOrderMatch?: (order: string, params?: MatchParams) => Promise<any>

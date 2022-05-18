@@ -3,7 +3,7 @@ import {ContractBase} from './contracts/index'
 
 import {ethSend} from "./rpc";
 import {LimitedCallSpec, NULL_ADDRESS, WalletInfo, ETH_TOKEN_ADDRESS} from "../types";
-import {Asset, ElementSchemaName, ExchangeMetadata} from "../agentTypes";
+import {Asset, ElementSchemaName, ExchangeMetadata, Token} from "../agentTypes";
 
 export function assetToMetadata(asset: Asset, quantity: string = "1", data?: string): ExchangeMetadata {
     return <ExchangeMetadata>{
@@ -25,6 +25,16 @@ export function metadataToAsset(metadata: ExchangeMetadata, data?: Asset): Asset
         schemaName: metadata.schema
     }
 }
+
+export function tokenToAsset(token: Token): Asset {
+    return <Asset>{
+        tokenId: undefined,
+        tokenAddress: token.address,
+        schemaName: 'ERC20',
+        decimals: token.decimals
+    }
+}
+
 
 export class UserAccount extends ContractBase {
     constructor(wallet: WalletInfo) {
@@ -208,7 +218,8 @@ export class UserAccount extends ContractBase {
         return erc1155.isApprovedForAll(owner, operator)
     }
 
-    public async getAssetApprove(asset: Asset, operator: string, account?: string) {
+    public async getAssetApprove(asset: Asset, operator: string, account?: string)
+        : Promise<{ isApprove: boolean, balances: string, calldata: LimitedCallSpec | undefined }> {
         const owner = account || this.signerAddress
         let isApprove = false, balances = '0', calldata
         const tokenAddr = asset.tokenAddress
@@ -222,11 +233,6 @@ export class UserAccount extends ContractBase {
             calldata = isApprove ? undefined : await this.approveErc1155ProxyCalldata(tokenAddr, operator)
             balances = await this.getERC1155Balances(tokenAddr, tokenId, owner)
         }
-        // else if (asset.schemaName == ElementSchemaName.ERC20) {
-        //   const allowance = await this.getERC20Allowance(tokenAddr)
-        //   isApprove = quantity.lte(allowance)
-        //   balances = await this.getERC20Balances(tokenAddr, tokenId)
-        // }
         return {
             isApprove,
             balances,
@@ -234,7 +240,8 @@ export class UserAccount extends ContractBase {
         }
     }
 
-    public async getTokenApprove(tokenAddr: string, spender: string, account?: string) {
+    public async getTokenApprove(tokenAddr: string, spender: string, account?: string)
+        : Promise<{ allowance: string, balances: string, calldata: LimitedCallSpec }> {
         const owner = account || this.signerAddress
         if (!ethers.utils.isAddress(tokenAddr)) throw 'GetTokenApprove error'
         const allowance = await this.getERC20Allowance(tokenAddr, spender, owner)
@@ -341,25 +348,12 @@ export class UserAccount extends ContractBase {
         }
     }
 
-    public async transfer(params: { asset: Asset, quantity: string, to: string, from?: string}) {
+    public async transfer(params: { asset: Asset, quantity: string, to: string, from?: string }) {
         const {asset, quantity, to} = params
         const metadata = assetToMetadata(asset, quantity)
         return this.assetTransfer(metadata, to)
     }
 
-    // public async getAssetShareInfo(shareAssetAddress: string, tokenId: string) {
-    //     const erc1155 = this.getContract(shareAssetAddress, this.erc1155Abi)
-    //     // 如对应token id 的资产未创建 未false
-    //     const exists = await erc1155.exists(tokenId)
-    //     // const balance = (await erc1155.balanceOf(this.walletInfo.address, tokenId)).toString()
-    //     // const creator = await erc1155.creator(tokenId)
-    //     // const uri = await erc1155.uri(tokenId)
-    //     // const overURI = await erc1155._getOverrideURI(tokenId)
-    //     // console.log(balance.toString(), creator, uri, overURI)
-    //     return {
-    //         exists
-    //     }
-    // }
 }
 
 
