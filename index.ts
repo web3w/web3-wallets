@@ -35,5 +35,5 @@ export type {
     BatchAcceptOrderOption
 } from './src/agentTypes'
 
-export {ElementSchemaName, BigNumber, ETHToken, OrderType, OfferType} from './src/agentTypes'
+export {ElementSchemaName, BigNumber, ETHToken, NullToken, OrderType, OfferType} from './src/agentTypes'
 export {UserAccount, assetToMetadata, metadataToAsset, tokenToAsset} from './src/utils/userAccount'

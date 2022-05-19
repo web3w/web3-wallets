@@ -52,9 +52,7 @@ export const MOCK_CONTRACTS_ADDRESSES = {
 export class ContractBase extends EventEmitter {
     public chainId: number
     public readonly signer: Signer
-    // public readonly provider: any
     public readonly signerAddress: string
-    // public readonly walletSigner: any
 
     public walletInfo: WalletInfo
     public erc20Abi: any
@@ -62,6 +60,7 @@ export class ContractBase extends EventEmitter {
     public erc1155Abi: any
     public Mock721: Contract | undefined
     public Mock1155: Contract | undefined
+    public Mock20: Contract | undefined
 
 
     constructor(wallet: WalletInfo) {
@@ -81,6 +80,9 @@ export class ContractBase extends EventEmitter {
         if (mock) {
             this.Mock721 = this.getContract(mock.ERC721, ContractABI.erc721.abi)
             this.Mock1155 = this.getContract(mock.ERC1155, ContractABI.erc1155.abi)
+            if (mock.ERC20) {
+                this.Mock20 = this.getContract(mock.ERC1155, ContractABI.erc1155.abi)
+            }
         }
     }
 

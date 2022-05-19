@@ -45,26 +45,20 @@ export class UserAccount extends ContractBase {
         const quantity = allowance || ethers.constants.MaxInt256.toString() //200e18.toString() //
         const erc20 = this.getContract(tokenAddr, this.erc20Abi)
         const data = await erc20.populateTransaction.approve(spender, quantity)
-
         return {
             from: data.from,
             to: data.to,
             data: data.data
         } as LimitedCallSpec
-
-    }
-
-    public metadataToAsset(metadata: ExchangeMetadata, data?: Asset): Asset {
-        return <Asset>{
-            ...data,
-            tokenId: metadata.asset.id,
-            tokenAddress: metadata.asset.address,
-            schemaName: metadata.schema
-        }
     }
 
     public async approveErc20Proxy(tokenAddr: string, spender: string, allowance?: string) {
         const callData = await this.approveErc20ProxyCalldata(tokenAddr, spender, allowance)
+        return ethSend(this.walletInfo, callData)
+    }
+
+    public async cancelErc20Proxy(tokenAddr: string, operator: string) {
+        const callData = await this.approveErc20ProxyCalldata(tokenAddr, operator, "1")
         return ethSend(this.walletInfo, callData)
     }
 
@@ -87,27 +81,29 @@ export class UserAccount extends ContractBase {
         return ethSend(this.walletInfo, callData)
     }
 
-    public async approveErc721ProxyFalse(tokenAddr: string, operator: string) {
+    public async cancelErc721Proxy(tokenAddr: string, operator: string) {
         const callData = await this.approveErc721ProxyCalldata(tokenAddr, operator, false)
         return ethSend(this.walletInfo, callData)
     }
 
-    public async approveErc1155ProxyCalldata(tokenAddr: string, operator: string) {
-
+    public async approveErc1155ProxyCalldata(tokenAddr: string, operator: string, isApprove = true) {
         const erc1155 = this.getContract(tokenAddr, this.erc1155Abi)
-        const data = await erc1155.populateTransaction.setApprovalForAll(operator, true)
-
+        const data = await erc1155.populateTransaction.setApprovalForAll(operator, isApprove)
         return {
             from: data.from,
             to: data.to,
             data: data.data
         } as LimitedCallSpec
-
     }
 
     public async approveErc1155Proxy(tokenAddr: string, operator: string) {
         const calldata = await this.approveErc1155ProxyCalldata(tokenAddr, operator)
         return ethSend(this.walletInfo, calldata)
+    }
+
+    public async cancelErc1155Proxy(tokenAddr: string, operator: string) {
+        const callData = await this.approveErc1155ProxyCalldata(tokenAddr, operator, false)
+        return ethSend(this.walletInfo, callData)
     }
 
     public async getGasBalances({
@@ -243,14 +239,19 @@ export class UserAccount extends ContractBase {
     public async getTokenApprove(tokenAddr: string, spender: string, account?: string)
         : Promise<{ allowance: string, balances: string, calldata: LimitedCallSpec }> {
         const owner = account || this.signerAddress
-        if (!ethers.utils.isAddress(tokenAddr)) throw 'GetTokenApprove error'
-        const allowance = await this.getERC20Allowance(tokenAddr, spender, owner)
-        const balances = await this.getERC20Balances(tokenAddr, owner)
-        const calldata = await this.approveErc20ProxyCalldata(tokenAddr, spender)
-        return {
-            allowance,
-            balances,
-            calldata
+        if (ethers.utils.isAddress(tokenAddr)
+            && tokenAddr != NULL_ADDRESS
+            && tokenAddr.toLowerCase() != ETH_TOKEN_ADDRESS.toLowerCase()) {
+            const allowance = await this.getERC20Allowance(tokenAddr, spender, owner)
+            const balances = await this.getERC20Balances(tokenAddr, owner)
+            const calldata = await this.approveErc20ProxyCalldata(tokenAddr, spender)
+            return {
+                allowance,
+                balances,
+                calldata
+            }
+        } else {
+            throw 'User Account GetTokenApprove error'
         }
     }
 
@@ -282,7 +283,7 @@ export class UserAccount extends ContractBase {
 
     public async assetTransfer(metadata: ExchangeMetadata, to: string) {
         const from = this.signerAddress
-        const assetQ = this.metadataToAsset(metadata)
+        const assetQ = metadataToAsset(metadata)
         const balance = await this.getAssetBalances(assetQ, from)
 
         const {asset, schema} = metadata
@@ -319,7 +320,13 @@ export class UserAccount extends ContractBase {
         return ethSend(this.walletInfo, calldata)
     }
 
-    async getUserTokenBalance(token: {
+    public async transfer(params: { asset: Asset, quantity: string, to: string, from?: string }) {
+        const {asset, quantity, to} = params
+        const metadata = assetToMetadata(asset, quantity)
+        return this.assetTransfer(metadata, to)
+    }
+
+    public async getUserTokenBalance(token: {
         tokenAddr?: string,
         decimals?: number,
         account?: string,
@@ -346,12 +353,6 @@ export class UserAccount extends ContractBase {
             erc20Bal: Number(erc20Bal),
             erc20Value: ethers.utils.formatUnits(erc20Bal, decimals)
         }
-    }
-
-    public async transfer(params: { asset: Asset, quantity: string, to: string, from?: string }) {
-        const {asset, quantity, to} = params
-        const metadata = assetToMetadata(asset, quantity)
-        return this.assetTransfer(metadata, to)
     }
 
 }
