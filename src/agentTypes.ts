@@ -1,10 +1,8 @@
 // import {Token, Asset, OrderType} from "./elementTypes";
 import EventEmitter from 'events'
-import {WalletInfo, NULL_ADDRESS, LimitedCallSpec} from "./types";
-import BigNumber from 'bignumber.js'
+import {WalletInfo, NULL_ADDRESS, LimitedCallSpec, ETH_TOKEN_ADDRESS} from "./types";
 
-BigNumber.config({EXPONENTIAL_AT: 1e9})
-export {BigNumber}
+export {BigNumber} from "./utils/bignumber"
 
 
 // export interface ElementConfig {
@@ -87,6 +85,13 @@ export interface Token {
 }
 
 export const ETHToken: Token = {
+    name: 'etherem',
+    symbol: 'ETH',
+    address: ETH_TOKEN_ADDRESS,
+    decimals: 18
+}
+
+export const NullToken: Token = {
     name: 'etherem',
     symbol: 'ETH',
     address: NULL_ADDRESS,
