@@ -1,9 +1,8 @@
 import {ethers, providers,} from 'ethers'
 import {ContractBase} from './contracts/index'
-
-import {ethSend} from "./rpc";
 import {LimitedCallSpec, NULL_ADDRESS, WalletInfo, ETH_TOKEN_ADDRESS} from "../types";
 import {Asset, ElementSchemaName, ExchangeMetadata, Token} from "../agentTypes";
+import {PopulatedTransaction} from "@ethersproject/contracts";
 
 export function assetToMetadata(asset: Asset, quantity: string = "1", data?: string): ExchangeMetadata {
     return <ExchangeMetadata>{
@@ -35,6 +34,15 @@ export function tokenToAsset(token: Token): Asset {
     }
 }
 
+export function transactionToCallData(data: PopulatedTransaction): LimitedCallSpec {
+    return {
+        from: data.from,
+        to: data.to,
+        data: data.data,
+        value: data.value
+    } as LimitedCallSpec
+}
+
 
 export class UserAccount extends ContractBase {
     constructor(wallet: WalletInfo) {
@@ -45,65 +53,50 @@ export class UserAccount extends ContractBase {
         const quantity = allowance || ethers.constants.MaxInt256.toString() //200e18.toString() //
         const erc20 = this.getContract(tokenAddr, this.erc20Abi)
         const data = await erc20.populateTransaction.approve(spender, quantity)
-        return {
-            from: data.from,
-            to: data.to,
-            data: data.data
-        } as LimitedCallSpec
+        return transactionToCallData(data)
     }
 
     public async approveErc20Proxy(tokenAddr: string, spender: string, allowance?: string) {
         const callData = await this.approveErc20ProxyCalldata(tokenAddr, spender, allowance)
-        return ethSend(this.walletInfo, callData)
+        return this.ethSend(callData)
     }
 
-    public async cancelErc20Proxy(tokenAddr: string, operator: string) {
+    public async cancelErc20Approve(tokenAddr: string, operator: string) {
         const callData = await this.approveErc20ProxyCalldata(tokenAddr, operator, "1")
-        return ethSend(this.walletInfo, callData)
+        return this.ethSend(callData)
     }
-
 
     public async approveErc721ProxyCalldata(tokenAddr: string, operator: string, isApprove = true): Promise<LimitedCallSpec> {
-
         const erc721 = this.getContract(tokenAddr, this.erc721Abi)
         const data = await erc721.populateTransaction.setApprovalForAll(operator, isApprove)
-
-        return {
-            from: data.from,
-            to: data.to,
-            data: data.data
-        } as LimitedCallSpec
+        return transactionToCallData(data)
 
     }
 
     public async approveErc721Proxy(tokenAddr: string, operator: string) {
         const callData = await this.approveErc721ProxyCalldata(tokenAddr, operator)
-        return ethSend(this.walletInfo, callData)
+        return this.ethSend(callData)
     }
 
-    public async cancelErc721Proxy(tokenAddr: string, operator: string) {
+    public async cancelErc721Approve(tokenAddr: string, operator: string) {
         const callData = await this.approveErc721ProxyCalldata(tokenAddr, operator, false)
-        return ethSend(this.walletInfo, callData)
+        return this.ethSend(callData)
     }
 
     public async approveErc1155ProxyCalldata(tokenAddr: string, operator: string, isApprove = true) {
         const erc1155 = this.getContract(tokenAddr, this.erc1155Abi)
         const data = await erc1155.populateTransaction.setApprovalForAll(operator, isApprove)
-        return {
-            from: data.from,
-            to: data.to,
-            data: data.data
-        } as LimitedCallSpec
+        return transactionToCallData(data)
     }
 
     public async approveErc1155Proxy(tokenAddr: string, operator: string) {
         const calldata = await this.approveErc1155ProxyCalldata(tokenAddr, operator)
-        return ethSend(this.walletInfo, calldata)
+        return this.ethSend(calldata)
     }
 
-    public async cancelErc1155Proxy(tokenAddr: string, operator: string) {
+    public async cancelErc1155Approve(tokenAddr: string, operator: string) {
         const callData = await this.approveErc1155ProxyCalldata(tokenAddr, operator, false)
-        return ethSend(this.walletInfo, callData)
+        return this.ethSend(callData)
     }
 
     public async getGasBalances({
@@ -178,11 +171,17 @@ export class UserAccount extends ContractBase {
 
     public async getERC20Allowance(erc20Addr: string, spender: string, account?: string): Promise<string> {
         const owner = account || this.signerAddress
-        // console.log('getERC20Allowance', owner, spender)
         const erc20 = this.getContract(erc20Addr, this.erc20Abi)
         const result = await erc20.allowance(owner, spender)
         return result.toString()
     }
+
+    public async getERC20Decimals(erc20Addr: string): Promise<string> {
+        const erc20 = this.getContract(erc20Addr, this.erc20Abi)
+        const result = await erc20.decimals()
+        return result.toString()
+    }
+
 
     public async getERC721Balances(to: string, tokenId: string, account?: string): Promise<string> {
         const checkAddr = account || this.signerAddress
@@ -317,7 +316,7 @@ export class UserAccount extends ContractBase {
             calldata = await erc20.populateTransaction.safeTransferFrom(from, to, quantity)
         }
         if (!calldata) throw schema + 'asset transfer error'
-        return ethSend(this.walletInfo, calldata)
+        return this.ethSend(calldata)
     }
 
     public async transfer(params: { asset: Asset, quantity: string, to: string, from?: string }) {
@@ -355,6 +354,23 @@ export class UserAccount extends ContractBase {
         }
     }
 
+    public async wethWithdraw(ether: string) {
+        const wad = ethers.utils.parseEther(ether)
+        const data = await this.GasWarpperContract.populateTransaction.withdraw(wad)
+        return this.ethSend(transactionToCallData(data))
+    }
+
+    public async wethDeposit(ether: string, depositFunc?: false) {
+        const wad = ethers.utils.parseEther(ether)
+        let callData = {
+            to: this.GasWarpperContract.address,
+            value: wad.toString()
+        } as LimitedCallSpec
+        if (depositFunc) {
+            callData = transactionToCallData(await this.GasWarpperContract.populateTransaction.deposit(wad))
+        }
+        return this.ethSend(callData)
+    }
 }
 
 

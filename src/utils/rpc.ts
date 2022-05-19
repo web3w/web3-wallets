@@ -2,9 +2,8 @@ import {ethers, providers, Signer} from "ethers";
 import {get1559Fee} from "./fee";
 import {TransactionRequest, TransactionResponse} from '@ethersproject/abstract-provider'
 import {LimitedCallSpec, WalletInfo} from "../types";
+import {BigNumber} from "../agentTypes"
 import {getProvider} from "./provider";
-import BigNumber from "bignumber.js";
-
 
 // https://docs.alchemy.com/alchemy/apis/ethereum/eth-blocknumber
 export async function getFeeHistory(rpcUrl: string, blockRange: number, percentiles: number[]) {
@@ -45,36 +44,6 @@ export async function getEstimateGas(rpcUrl: string, callData: LimitedCallSpec) 
     }
 }
 
-// export async function ethSendGas(wallet: WalletInfo, callData: LimitedCallSpec): Promise<TransactionResponse> {
-//     const {walletSigner, rpc} = getProvider(wallet)
-//     let value = ethers.BigNumber.from(0)
-//     if (callData.value) {
-//         value = ethers.BigNumber.from(callData.value)
-//     }
-//     const transactionObject = {
-//         to: callData.to,
-//         data: callData.data,
-//         value
-//     }
-//
-//     try {
-//         const tx = await walletSigner.populateTransaction(transactionObject).catch(async (error: any) => {
-//             throw error
-//         })
-//         console.log('EthSend tx.type', tx.type, 'tx.value', tx.value?.toString(), 'gasPrice', tx.gasPrice?.toString(), 'gasLimit', tx.gasLimit?.toString())
-//         let signTx = {...tx}
-//         if (tx.type == 2) {
-//             const fee = await get1559Fee(rpc)
-//             signTx.maxFeePerGas = ethers.BigNumber.from(fee.maxFeePerGas) //?.mul(gasPriceOffset).div(100).toNumber()
-//             signTx.maxPriorityFeePerGas = ethers.BigNumber.from(fee.maxPriorityFeePerGas) //?.mul(gasPriceOffset).div(100).toNumber()
-//         }
-//         return walletSigner.sendTransaction(signTx).catch((e: any) => {
-//             throw e
-//         })
-//     } catch (e: any) {
-//         throw e
-//     }
-// }
 
 export async function ethSendGasLimit(wallet: WalletInfo, callData: LimitedCallSpec, gasLimit: string): Promise<TransactionResponse> {
     const offsetRatio = wallet.offsetGasLimitRatio || 1
@@ -132,10 +101,14 @@ export async function ethSend(wallet: WalletInfo, callData: LimitedCallSpec): Pr
         value
     } as TransactionRequest
 
+    if (wallet.chainId == 97 || wallet.chainId == 56) {
+        wallet.offsetGasLimitRatio = wallet.offsetGasLimitRatio || 1.18
+    }
+
     if (wallet.offsetGasLimitRatio) {
         if (wallet.offsetGasLimitRatio < 1) throw 'Offset must be greater than 1 '
         const offsetRatio = wallet.offsetGasLimitRatio || 1
-        const gasLimit =await walletSigner.estimateGas(transactionObject)
+        const gasLimit = await walletSigner.estimateGas(transactionObject)
         const offsetGasLimit = new BigNumber(gasLimit.toString() || "0").times(offsetRatio).toFixed(0)
         transactionObject.gasLimit = ethers.BigNumber.from(offsetGasLimit)
     }
@@ -164,3 +137,35 @@ export async function ethSend(wallet: WalletInfo, callData: LimitedCallSpec): Pr
         throw e
     }
 }
+
+
+// export async function ethSendGas(wallet: WalletInfo, callData: LimitedCallSpec): Promise<TransactionResponse> {
+//     const {walletSigner, rpc} = getProvider(wallet)
+//     let value = ethers.BigNumber.from(0)
+//     if (callData.value) {
+//         value = ethers.BigNumber.from(callData.value)
+//     }
+//     const transactionObject = {
+//         to: callData.to,
+//         data: callData.data,
+//         value
+//     }
+//
+//     try {
+//         const tx = await walletSigner.populateTransaction(transactionObject).catch(async (error: any) => {
+//             throw error
+//         })
+//         console.log('EthSend tx.type', tx.type, 'tx.value', tx.value?.toString(), 'gasPrice', tx.gasPrice?.toString(), 'gasLimit', tx.gasLimit?.toString())
+//         let signTx = {...tx}
+//         if (tx.type == 2) {
+//             const fee = await get1559Fee(rpc)
+//             signTx.maxFeePerGas = ethers.BigNumber.from(fee.maxFeePerGas) //?.mul(gasPriceOffset).div(100).toNumber()
+//             signTx.maxPriorityFeePerGas = ethers.BigNumber.from(fee.maxPriorityFeePerGas) //?.mul(gasPriceOffset).div(100).toNumber()
+//         }
+//         return walletSigner.sendTransaction(signTx).catch((e: any) => {
+//             throw e
+//         })
+//     } catch (e: any) {
+//         throw e
+//     }
+// }
