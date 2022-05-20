@@ -1,8 +1,10 @@
 import {ethers, providers,} from 'ethers'
 import {ContractBase} from './contracts/index'
-import {LimitedCallSpec, NULL_ADDRESS, WalletInfo, ETH_TOKEN_ADDRESS} from "../types";
+import {LimitedCallSpec, NULL_ADDRESS, WalletInfo, ETH_TOKEN_ADDRESS, EIP712TypedData} from "../types";
 import {Asset, ElementSchemaName, ExchangeMetadata, Token} from "../agentTypes";
 import {PopulatedTransaction} from "@ethersproject/contracts";
+import {getProvider} from "./provider";
+import {Bytes} from "@ethersproject/bytes";
 
 export function assetToMetadata(asset: Asset, quantity: string = "1", data?: string): ExchangeMetadata {
     return <ExchangeMetadata>{
@@ -34,6 +36,18 @@ export function tokenToAsset(token: Token): Asset {
     }
 }
 
+export function tokenToMetadata(token: Token, quantity: string = "1", data?: string): ExchangeMetadata {
+    return <ExchangeMetadata>{
+        asset: {
+            id: undefined,
+            address: token.address,
+            quantity,
+            data
+        },
+        schema: 'ERC20'
+    }
+}
+
 export function transactionToCallData(data: PopulatedTransaction): LimitedCallSpec {
     return {
         from: data.from,
@@ -47,6 +61,47 @@ export function transactionToCallData(data: PopulatedTransaction): LimitedCallSp
 export class UserAccount extends ContractBase {
     constructor(wallet: WalletInfo) {
         super(wallet)
+    }
+
+    public async signMessage(message: Bytes | string): Promise<any> {
+        const {walletSigner} = getProvider(this.walletInfo)
+        if (ethers.utils.isHexString(message)) {
+            message = ethers.utils.arrayify(message)
+        }
+        const signature = await walletSigner.signMessage(message).catch((error: any) => {
+            this.emit('SignMessage', error)
+            throw error
+        })
+
+        if (typeof signature != 'string') throw "SignMessage error"
+        const pubAddress = ethers.utils.verifyMessage(message, signature)
+        console.assert(pubAddress.toLowerCase() == this.walletInfo.address.toLowerCase(), 'Sign message error')
+        return {message, signature}
+    }
+
+    public async signTypedData(typedData: EIP712TypedData): Promise<any> {
+        const {walletProvider, walletSigner} = getProvider(this.walletInfo)
+        const types = typedData.types
+        if (types.EIP712Domain) {
+            delete types.EIP712Domain
+        }
+        let signature: string
+        // if (walletProvider.isWalletConnect) {
+        //     const walletSigner = new providers.Web3Provider(walletProvider).getSigner()
+        //     signature = await walletSigner._signTypedData(typedData.domain, {Order: typedData.types.Order}, typedData.message)
+        // }
+        signature = await (<any>walletSigner)._signTypedData(typedData.domain, typedData.types, typedData.message).catch((error: any) => {
+            this.emit('SignTypedData', error)
+            throw error
+        })
+
+        const pubAddress = ethers.utils.verifyTypedData(typedData.domain, typedData.types, typedData.message, signature)
+        const msg = `VerifyTypedData error ${pubAddress} ${this.walletInfo.address}`
+        console.assert(pubAddress.toLowerCase() == this.walletInfo.address.toLowerCase(), msg)
+        return {
+            signature,
+            typedData
+        }
     }
 
     public async approveErc20ProxyCalldata(tokenAddr: string, spender: string, allowance?: string): Promise<LimitedCallSpec> {

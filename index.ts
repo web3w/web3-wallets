@@ -36,4 +36,6 @@ export type {
 } from './src/agentTypes'
 
 export {ElementSchemaName, BigNumber, ETHToken, NullToken, OrderType, OfferType} from './src/agentTypes'
-export {UserAccount, assetToMetadata, metadataToAsset, tokenToAsset} from './src/utils/userAccount'
+export {
+    UserAccount, assetToMetadata, metadataToAsset, tokenToAsset, tokenToMetadata, transactionToCallData
+} from './src/utils/userAccount'
