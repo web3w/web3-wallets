@@ -3,7 +3,6 @@ import {Web3Wallets} from "../index";
 import {ProviderNames, RPC_PUB_PROVIDER, WalletInfo} from "../types";
 
 
-
 export function detectWallets() {
     let metamask: Web3Wallets | undefined
 
@@ -28,9 +27,13 @@ export function detectWallets() {
 
 }
 
-export function getProvider(walletInfo: WalletInfo) {
+export function getProvider(walletInfo: WalletInfo, options?: {
+    timeout?: number
+}) {
+    const {timeout} = options
     const {chainId, address, priKey, rpcUrl} = walletInfo
     const rpc = rpcUrl || RPC_PUB_PROVIDER[Number(chainId)]
+    const url = {url: rpc, timeout: timeout || 5000}
     // const rpcProvider =
     let walletSigner: Signer | undefined, walletProvider: any
     const network = {
@@ -39,13 +42,13 @@ export function getProvider(walletInfo: WalletInfo) {
     }
 
     if (priKey) {
-        walletSigner = new ethers.Wallet(priKey, new providers.JsonRpcProvider(rpc,network))
+        walletSigner = new ethers.Wallet(priKey, new providers.JsonRpcProvider(url, network))
         walletProvider = walletSigner
     } else {
         // walletSigner = rpcProvider.getSigner(address)
         if (typeof window === 'undefined') {
             console.log('getProvider:There are no priKey')
-            walletProvider = (new providers.JsonRpcProvider(rpc,network)).getSigner(address)
+            walletProvider = (new providers.JsonRpcProvider(url, network)).getSigner(address)
             walletSigner = walletProvider
         } else {
             if (window.ethereum && !window.walletProvider || window.ethereum && !window.elementWeb3) {
@@ -76,7 +79,7 @@ export function getProvider(walletInfo: WalletInfo) {
             }
         }
     }
-    walletSigner = walletSigner || (new providers.JsonRpcProvider(rpc, network)).getSigner(address)
+    walletSigner = walletSigner || (new providers.JsonRpcProvider(url, network)).getSigner(address)
     return {
         address,
         chainId,

@@ -139,7 +139,6 @@ export interface EIP712Object {
     [key: string]: EIP712ObjectValue;
 }
 
-
 export interface EIP712TypedData {
     types: EIP712Types
     domain: TypedDataDomain
