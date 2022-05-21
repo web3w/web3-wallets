@@ -1,10 +1,10 @@
 import EventEmitter from 'events'
 import {ethers, Signer, ContractInterface, Contract} from 'ethers'
-import {LimitedCallSpec, RPC_PUB_PROVIDER, WalletInfo} from "../../types";
+import {LimitedCallSpec, WalletInfo} from "../../types";
 import {getProvider} from "../provider";
 import {ContractABI} from "./abi";
 import {Token} from "../../agentTypes";
-import {ethSend, getEstimateGas} from "../rpc";
+import {ethSend, getChainInfo, getChainRpcUrl, getEstimateGas} from "../rpc";
 
 export const COMMON_CONTRACTS_ADDRESSES = {
     1: {
@@ -96,7 +96,7 @@ export class ContractBase extends EventEmitter {
 
     constructor(wallet: WalletInfo) {
         super()
-        wallet.rpcUrl = wallet.rpcUrl || RPC_PUB_PROVIDER[wallet.chainId]
+        wallet.rpcUrl = wallet.rpcUrl || getChainInfo(wallet.chainId).rpcs[0]
         this.walletInfo = wallet
         const {address, chainId, walletSigner} = getProvider(wallet)
 
@@ -129,11 +129,12 @@ export class ContractBase extends EventEmitter {
         return new ethers.Contract(contractAddresses, abi, this.signer)
     }
 
-    ethSend(callData: LimitedCallSpec) {
+    async ethSend(callData: LimitedCallSpec) {
         return ethSend(this.walletInfo, callData)
     }
 
-    estimateGas(callData: LimitedCallSpec) {
-        return getEstimateGas(this.walletInfo.rpcUrl || RPC_PUB_PROVIDER[this.walletInfo.chainId], callData)
+    async estimateGas(callData: LimitedCallSpec) {
+        const rpcUrl = this.walletInfo.rpcUrl || await getChainRpcUrl(this.walletInfo.chainId)
+        return getEstimateGas(rpcUrl, callData)
     }
 }

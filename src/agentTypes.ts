@@ -1,19 +1,7 @@
-// import {Token, Asset, OrderType} from "./elementTypes";
 import EventEmitter from 'events'
 import {WalletInfo, NULL_ADDRESS, LimitedCallSpec, ETH_TOKEN_ADDRESS} from "./types";
 
 export {BigNumber} from "./utils/bignumber"
-
-
-// export interface ElementConfig {
-//     chainId?: number;
-//     account?: string
-//     authToken?: string
-//     apiBaseUrl?: string
-//     protocolFeePoint?: number
-//     protocolFeeAddress?: string
-//     contractAddresses?: any
-// }
 
 export interface APIConfig {
     chainId?: number;
@@ -196,25 +184,8 @@ export interface ExAgent extends EventEmitter {
     cancelOrders: (orders: string[]) => Promise<any>
     getRegisterProxy?: () => Promise<{ isRegister: boolean, accountProxy: string, calldata: LimitedCallSpec | undefined }>
     acceptOrders?: (orders: string[], option?: BatchAcceptOrderOption) => Promise<any>
-    // approveOrder?: (error: any) => Promise<any>
     checkOrderMatch?: (order: string, params?: MatchParams) => Promise<any>
     checkOrderPost?: (order: string, params?: MatchParams) => Promise<any>
 }
-
-// export enum CHAIN_ID {
-//     main = 1,
-//     ropsten = 3,
-//     // [Network.Rinkeby]: 4,
-//     // [Network.Kovan]: 42,
-//     // [Network.BSC]: 56,
-//     // [Network.BSCTEST]: 97,
-//     // [Network.Polygon]: 137,
-//     // [Network.Mumbai]: 80001,
-//     // [Network.AvaxTest]: 43113,
-//     // [Network.Avalanche]: 43114,
-//     // [Network.Fantom]: 250,
-//     // [Network.Celo]: 42220,
-//     // [Network.Optimism]: 10
-// }
 
 

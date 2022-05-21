@@ -1,22 +1,12 @@
 import {TypedDataDomain, TypedDataField} from "@ethersproject/abstract-signer";
 
+export type {TypedDataDomain, TypedDataField}
+
 export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
 export const NULL_BLOCK_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000'
 export const ETH_TOKEN_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"//0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 export const MAX_UINT_256 = '115792089237316195423570985008687907853269984665640564039457584007913129639935' //new BigNumber(2).pow(256).minus(1).toString()
 
-
-export const RPC_PUB_PROVIDER = {
-    1: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
-    3: 'https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
-    4: 'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
-    56: 'https://bsc-dataseed1.defibit.io/',
-    97: 'https://data-seed-prebsc-1-s1.binance.org:8545',
-    137: 'https://rpc-mainnet.maticvigil.com',
-    80001: 'https://matic-mumbai.chainstacklabs.com',
-    43113: "https://api.avax-test.network/ext/bc/C/rpc",
-    43114: "https://api.avax.network/ext/bc/C/rpc"
-}
 
 export enum ProviderNames {
     Metamask = 'MetaMask',
@@ -142,6 +132,16 @@ export interface EIP712Object {
 export interface EIP712TypedData {
     types: EIP712Types
     domain: TypedDataDomain
-    message: EIP712Object;
+    message: EIP712Object
     primaryType: string
+}
+
+export interface ChainInfo {
+    rpcs: string []
+    faucets?: string []
+    scans?: string []
+    name?: string
+    websiteUrl?: string
+    websiteDead?: boolean
+    rpcWorking?: boolean
 }
