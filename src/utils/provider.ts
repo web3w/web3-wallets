@@ -1,6 +1,7 @@
 import {ethers, providers, Signer} from "ethers";
 import {Web3Wallets} from "../index";
-import {ProviderNames, RPC_PUB_PROVIDER, WalletInfo} from "../types";
+import {ProviderNames, WalletInfo} from "../types";
+import {getChainInfo, RPR_API_TIMEOUT} from "./rpc";
 
 
 export function detectWallets() {
@@ -30,10 +31,10 @@ export function detectWallets() {
 export function getProvider(walletInfo: WalletInfo, options?: {
     timeout?: number
 }) {
-    const {timeout} = options
+    const {timeout} = options || {}
     const {chainId, address, priKey, rpcUrl} = walletInfo
-    const rpc = rpcUrl || RPC_PUB_PROVIDER[Number(chainId)]
-    const url = {url: rpc, timeout: timeout || 5000}
+    const rpc = rpcUrl || getChainInfo(chainId).rpcs[0]
+    const url = {url: rpc, timeout: timeout || RPR_API_TIMEOUT}
     // const rpcProvider =
     let walletSigner: Signer | undefined, walletProvider: any
     const network = {

@@ -3,15 +3,29 @@ export {CoinbaseWallet} from './src/connectors/coinbaseWallet'
 export {ConnectWallet} from './src/connectors/walletConnet'
 
 export {Web3Wallets} from './src/index'
+export {CHAIN_NAME, CHAIN_CONFIG} from './src/constants/chain'
 
 export {
-    ProviderNames, RPC_PUB_PROVIDER, NULL_ADDRESS, NULL_BLOCK_HASH, ETH_TOKEN_ADDRESS, MAX_UINT_256
+    ProviderNames, NULL_ADDRESS, NULL_BLOCK_HASH, ETH_TOKEN_ADDRESS, MAX_UINT_256
 } from './src/types'
-export type {LimitedCallSpec, WalletInfo} from './src/types'
+export type {
+    LimitedCallSpec,
+    WalletInfo,
+    EIP712TypedData,
+    EIP712Types,
+    EIP712Object,
+    EIP712ObjectValue,
+    TypedDataDomain,
+    TypedDataField,
+    ChainConfigType
+} from './src/types'
 
 export {get1559Fee} from './src/utils/fee'
 // RPC
-export {ethSend, ethSendGasLimit, getEstimateGas} from './src/utils/rpc'
+export {
+    ethSend, getEstimateGas, getChainRpcUrl, getChainInfo
+} from './src/utils/rpc'
+export type {TransactionRequest, TransactionResponse} from './src/utils/rpc'
 
 export {getProvider, detectWallets} from './src/utils/provider'
 

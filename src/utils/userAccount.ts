@@ -344,7 +344,7 @@ export class UserAccount extends ContractBase {
         const {address, quantity, data, id} = asset
 
         if (Number(quantity || 1) > Number(balance)) {
-            throw 'Asset banacle not enough'
+            throw 'Asset balances not enough'
         }
 
         const tokenId = id
