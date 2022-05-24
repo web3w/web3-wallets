@@ -154,11 +154,9 @@ export class UserAccount extends ContractBase {
         return this.ethSend(callData)
     }
 
-    public async getGasBalances({
-                                    account,
-                                    rpcUrl
-                                }: { account?: string, rpcUrl?: string }): Promise<string> {
-        const owner = account || this.signerAddress
+    public async getGasBalances(account?: { address?: string, rpcUrl?: string }): Promise<string> {
+        const {address, rpcUrl} = account || {}
+        const owner = address || this.signerAddress
         let provider: any = this.signer
         let rpc = rpcUrl || this.walletInfo.rpcUrl
         let ethBal = '0'
@@ -169,7 +167,7 @@ export class UserAccount extends ContractBase {
             }
             provider = new providers.JsonRpcProvider(rpc, network)
         }
-        if (account && ethers.utils.isAddress(account)) {
+        if (owner && ethers.utils.isAddress(owner)) {
             if (rpcUrl) {
                 // ethBal = (await provider.getBalance(this.walletInfo.address)).toString()
                 const ethStr = await provider.send('eth_getBalance', [owner, 'latest'])
@@ -394,7 +392,7 @@ export class UserAccount extends ContractBase {
         const {tokenAddr, account, rpcUrl} = token
         const decimals = token.decimals || 18
 
-        const ethBal = !account ? "0" : await this.getGasBalances({account, rpcUrl})
+        const ethBal = !account ? "0" : await this.getGasBalances({address:account, rpcUrl})
         const erc20Bal = !tokenAddr ? "0" : await this.getTokenBalances({
             tokenAddr,
             account,

@@ -79,7 +79,8 @@ export const CHAIN_CONFIG = {
             "https://rpc.ankr.com/eth",
             "https://eth-rpc.gateway.pokt.network",
             "https://main-light.eth.linkpool.io",
-            "https://eth-mainnet.public.blastapi.io"
+            "https://eth-mainnet.public.blastapi.io",
+            "https://api.element.market/api/v1/jsonrpc"
         ]
     },
     "3": {
@@ -124,13 +125,14 @@ export const CHAIN_CONFIG = {
             "https://bscrpc.com",
             "https://bsc.mytokenpocket.vip",
             "https://binance.nodereal.io",
-            "https://rpc-bsc.bnb48.club"
+            "https://rpc-bsc.bnb48.club",
+            "https://api.element.market/api/bsc/jsonrpc"
         ]
     },
     "97": {
         "rpcs": [
             "https://data-seed-prebsc-1-s1.binance.org:8545",
-            "https://api-test.element.market/api/v1/jsonrpc"
+            "https://api-test.element.market/api/bsc/jsonrpc"
         ],
         "scans": [
             "https://testnet.bscscan.com/"

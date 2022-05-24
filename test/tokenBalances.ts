@@ -1,4 +1,4 @@
-import {RPC_PUB_PROVIDER, UserAccount} from "../index";
+import {getChainRpcUrl, UserAccount} from "../index";
 
 const buyer = '0x9F7A946d935c8Efc7A8329C0d894A69bA241345A';
 const seller = '0x0A56b3317eD60dC4E1027A63ffbE9df6fb102401';
@@ -11,6 +11,9 @@ const seller = '0x0A56b3317eD60dC4E1027A63ffbE9df6fb102401';
             address: seller,
             // priKey: secrets.accounts[seller]
         })
+
+        const ethBal = await sdk.getGasBalances()
+        console.log(ethBal)
 
         const accountTokenBalD = await sdk.getUserTokenBalance({})
         console.log(accountTokenBalD)
@@ -34,7 +37,7 @@ const seller = '0x0A56b3317eD60dC4E1027A63ffbE9df6fb102401';
 
         // return
 
-        const rpcUrl = RPC_PUB_PROVIDER[chainId]
+        const rpcUrl = await getChainRpcUrl(chainId)
 
         const userETHBalRpc = await sdk.getUserTokenBalance({account: buyer, rpcUrl})
         console.log('ETH RPC', userETHBalRpc)
