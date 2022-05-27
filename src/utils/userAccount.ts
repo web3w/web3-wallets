@@ -392,18 +392,72 @@ export class UserAccount extends ContractBase {
         const {tokenAddr, account, rpcUrl} = token
         const decimals = token.decimals || 18
 
-        const ethBal = !account ? "0" : await this.getGasBalances({address:account, rpcUrl})
-        const erc20Bal = !tokenAddr ? "0" : await this.getTokenBalances({
-            tokenAddr,
-            account,
-            rpcUrl
-        })
+        const ethBal = !account ? "0" : await this.getGasBalances({address: account, rpcUrl})
+        const erc20Bal = !tokenAddr || tokenAddr == NULL_ADDRESS || tokenAddr.toLowerCase() == ETH_TOKEN_ADDRESS.toLowerCase() ? "0"
+            : await this.getTokenBalances({
+                tokenAddr,
+                account,
+                rpcUrl
+            })
         // const {erc20Bal, ethBal} = await this.userAccount.getAccountBalance({account, tokenAddr, rpcUrl})
         return {
             ethBal: Number(ethBal),
             ethValue: ethers.utils.formatEther(ethBal),
             erc20Bal: Number(erc20Bal),
             erc20Value: ethers.utils.formatUnits(erc20Bal, decimals)
+        }
+    }
+
+    public async getUserTokensBalance(params: {
+        tokens: {
+            tokenAddr: string,
+            decimals: number
+        }[],
+        account?: string,
+        rpcUrl?: string
+    }): Promise<{
+        ethBal: number
+        ethValue: string
+        erc20Bals: {
+            [key: string]: {
+                decimals: number,
+                erc20Bal: number
+                erc20Value: string
+            }
+        }
+
+    }> {
+        const {tokens, account, rpcUrl} = params
+        const ethBal = !account ? "0" : await this.getGasBalances({address: account, rpcUrl})
+        const erc20Bals: {
+            [key: string]: {
+                decimals: number,
+                erc20Bal: number
+                erc20Value: string
+            }
+        } = {}
+        for (const token of tokens) {
+            const tokenAddr = token.tokenAddr || ""
+            const decimals = token.decimals || 18
+
+
+            const erc20Bal = !tokenAddr || tokenAddr == NULL_ADDRESS || tokenAddr.toLowerCase() == ETH_TOKEN_ADDRESS.toLowerCase() ? "0"
+                : await this.getTokenBalances({
+                    tokenAddr,
+                    account,
+                    rpcUrl
+                })
+            erc20Bals[tokenAddr] = {
+                decimals,
+                erc20Bal: Number(erc20Bal),
+                erc20Value: ethers.utils.formatUnits(erc20Bal, decimals)
+            }
+        }
+        // const {erc20Bal, ethBal} = await this.userAccount.getAccountBalance({account, tokenAddr, rpcUrl})
+        return {
+            ethBal: Number(ethBal),
+            ethValue: ethers.utils.formatEther(ethBal),
+            erc20Bals
         }
     }
 

@@ -12,6 +12,48 @@ const seller = '0x0A56b3317eD60dC4E1027A63ffbE9df6fb102401';
             // priKey: secrets.accounts[seller]
         })
 
+        const userERC20s = await sdk.getUserTokensBalance({
+            tokens: [
+                {
+                    tokenAddr: '0x44C73A7b3B286c78944aD79b2BBa0204916Cebca',
+                    decimals: 18
+                },
+                {
+                    tokenAddr:"0xb506bfaa7661dabf4de80672bd3f13f4610a5fdf",
+                    decimals: 18
+                }
+            ]
+        })
+
+        console.log('ERC20s', JSON.stringify(userERC20s, null, 2))
+
+
+        const userETHs = await sdk.getUserTokensBalance({
+            tokens: [],
+            account: buyer
+        })
+
+        console.log('ETH', JSON.stringify(userETHs, null, 2))
+
+        const userETHERC20Bals = await sdk.getUserTokensBalance({
+            tokens: [
+                {
+                    tokenAddr: '0x44C73A7b3B286c78944aD79b2BBa0204916Cebca',
+                    decimals: 18
+                },
+                {
+                    tokenAddr:"0xb506bfaa7661dabf4de80672bd3f13f4610a5fdf",
+                    decimals: 18
+                }
+            ],
+            account: buyer
+        })
+
+        console.log('ETH+ERC20s', userETHERC20Bals)
+
+
+
+
         const ethBal = await sdk.getGasBalances()
         console.log(ethBal)
 
@@ -34,6 +76,7 @@ const seller = '0x0A56b3317eD60dC4E1027A63ffbE9df6fb102401';
             account: buyer
         })
         console.log('ETH+ERC20', userETHERC20Bal)
+
 
         // return
 
