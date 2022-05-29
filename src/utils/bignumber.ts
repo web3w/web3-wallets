@@ -1,4 +1,4 @@
-import { BigNumber } from 'bignumber.js';
+import {BigNumber} from 'bignumber.js';
 
 // import BigNumber from 'bignumber.js'
 //
@@ -44,4 +44,5 @@ BigNumber.config({
 (orig => (BigNumber.config = (..._args: any[]) => orig({})))(BigNumber.config);
 BigNumber.set = BigNumber.config;
 
-export { BigNumber };
+const ZERO = new BigNumber(0)
+export {BigNumber, ZERO};

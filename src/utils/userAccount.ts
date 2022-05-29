@@ -1,10 +1,11 @@
 import {ethers, providers,} from 'ethers'
 import {ContractBase} from './contracts/index'
-import {LimitedCallSpec, NULL_ADDRESS, WalletInfo, ETH_TOKEN_ADDRESS, EIP712TypedData} from "../types";
+import {LimitedCallSpec, NULL_ADDRESS, WalletInfo, ETH_TOKEN_ADDRESS} from "../types";
 import {Asset, ElementSchemaName, ExchangeMetadata, Token} from "../agentTypes";
 import {PopulatedTransaction} from "@ethersproject/contracts";
 import {getProvider} from "./provider";
 import {Bytes} from "@ethersproject/bytes";
+import {ecSignMessage, EIP712TypedData} from "./eip712TypeData";
 
 export function assetToMetadata(asset: Asset, quantity: string = "1", data?: string): ExchangeMetadata {
     return <ExchangeMetadata>{
@@ -63,7 +64,22 @@ export class UserAccount extends ContractBase {
         super(wallet)
     }
 
-    public async signMessage(message: Bytes | string): Promise<any> {
+    /**
+     * Generate the EC signature for a hash given a private key.
+     */
+    public ecSignMessage(message: string, key?: string) {
+        const privateKey = key || this.walletInfo.priKey
+        if (!privateKey) throw "privateKey error"
+        const signMsg = ecSignMessage(message, privateKey)
+        return {
+            r: signMsg.r,
+            s: signMsg.s,
+            v: signMsg.v,
+            compact: signMsg.compact
+        }
+    }
+
+    public async signMessage(message: string | Bytes): Promise<any> {
         const {walletSigner} = getProvider(this.walletInfo)
         if (ethers.utils.isHexString(message)) {
             message = ethers.utils.arrayify(message)

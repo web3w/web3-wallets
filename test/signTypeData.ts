@@ -1,7 +1,6 @@
 import {Asset, ethSend, getEstimateGas, UserAccount} from "../index";
 import * as secrets from '../../../secrets.json'
-import {asset721, asset1155, erc20Tokens} from "./assets";
-import {ethers} from "ethers";
+
 import {EIP712TypedData} from "../src/types";
 
 const data = {

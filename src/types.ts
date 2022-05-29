@@ -1,7 +1,3 @@
-import {TypedDataDomain, TypedDataField} from "@ethersproject/abstract-signer";
-
-export type {TypedDataDomain, TypedDataField}
-
 export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
 export const NULL_BLOCK_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000'
 export const ETH_TOKEN_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"//0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
@@ -118,23 +114,6 @@ export interface IEthereumProvider extends EIP1193Provider {
     enable(): Promise<ProviderAccounts>;
 }
 
-
-export interface EIP712Types {
-    [key: string]: TypedDataField[];
-}
-
-export type EIP712ObjectValue = string | number | never[] | EIP712Object;
-
-export interface EIP712Object {
-    [key: string]: EIP712ObjectValue;
-}
-
-export interface EIP712TypedData {
-    types: EIP712Types
-    domain: TypedDataDomain
-    message: EIP712Object
-    primaryType: string
-}
 
 export interface ChainConfigType {
     rpcs: string []

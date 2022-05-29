@@ -11,14 +11,20 @@ export {
 export type {
     LimitedCallSpec,
     WalletInfo,
+    ChainConfigType
+} from './src/types'
+
+export type {
+    EIP712Domain,
     EIP712TypedData,
     EIP712Types,
     EIP712Object,
     EIP712ObjectValue,
     TypedDataDomain,
     TypedDataField,
-    ChainConfigType
-} from './src/types'
+} from "./src/utils/eip712TypeData"
+
+export {hexUtils, createTypedData, getEIP712DomainHash, getEIP712Hash, getTypeHash} from "./src/utils/eip712TypeData"
 
 export {get1559Fee} from './src/utils/fee'
 // RPC
