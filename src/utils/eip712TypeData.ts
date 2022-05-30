@@ -175,7 +175,7 @@ export function getEIP712DomainHash(eip712Domain: TypedDataDomain, domainTypeHas
         domainHex.push(hexUtils.leftPad(eip712Domain.chainId.toString()))
     }
     if (eip712Domain.verifyingContract) {
-        console.log(eip712Domain.verifyingContract)
+        // console.log(eip712Domain.verifyingContract)
         domainHex.push(hexUtils.leftPad(eip712Domain.verifyingContract))
     }
     return hexUtils.hash(hexUtils.concat(domainHex));
