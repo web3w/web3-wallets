@@ -22,6 +22,8 @@ export type {
     EIP712ObjectValue,
     TypedDataDomain,
     TypedDataField,
+    Signature,
+    SignatureType
 } from "./src/utils/eip712TypeData"
 
 export {hexUtils, createTypedData, getEIP712DomainHash, getEIP712Hash, getTypeHash} from "./src/utils/eip712TypeData"

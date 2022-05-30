@@ -102,6 +102,8 @@ export const hexUtils = {
             if (n.match(/^-?[0-9]+$/)) {
                 n = hexUtils.toHex(Number(n))
             }
+        } else if (n === 0) {
+            n = hexUtils.toHex(n)
         } else {
             n = n.toString()
         }
@@ -109,6 +111,15 @@ export const hexUtils = {
     },
     rightPad(n: string | number, _size: number = WORD_LENGTH): string {
         return ethers.BigNumber.from(n).shl(_size * 8).toHexString().substring(0, _size * 2) + "00"
+    },
+    slice(n: string | number, start: number, end?: number): string {
+        const hex = hexUtils.toHex(n).substring(2);
+        const sliceStart = start >= 0 ? start * 2 : Math.max(0, hex.length + start * 2);
+        let sliceEnd = hex.length;
+        if (end !== undefined) {
+            sliceEnd = end >= 0 ? end * 2 : Math.max(0, hex.length + end * 2);
+        }
+        return '0x'.concat(hex.substring(sliceStart, sliceEnd));
     }
 }
 
@@ -212,6 +223,8 @@ export function getTypeHash(
     return hexUtils.hash(Buffer.from(primaryStructType + referencedStructTypes.join('')));
 }
 
+// const ll = hexUtils.leftPad(0)
+// console.log(ll)
 
 // console.log(EXCHANGE_PROXY_DOMAIN_TYPEHASH)
 
