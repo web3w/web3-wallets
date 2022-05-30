@@ -55,13 +55,25 @@ export const messagePrefix = "\x19Ethereum Signed Message:\n";
 const WORD_LENGTH = 32;
 export const hexUtils = {
     concat(args: Array<string>): string {
+        const hex = args.find(val => !hexUtils.isHex(val) || val.length < 4)
+        if (hex) throw hex + " is not hex string"
         return ethers.utils.hexConcat(args);
     },
     isHex(s: string): boolean {
         return ethers.utils.isHexString(s);
     },
-    toHex(n: string | number | Buffer): string {
-        return ethers.utils.hexValue(n)
+    toShortHex(message: string | number | Buffer): string {
+        const hex = ethers.utils.hexValue(message)
+        if (hex.length === 3) {
+            const num = hex.split('x')
+            return num[0] + 'x0' + num[1]
+        } else {
+            console.warn("not short")
+            return hex
+        }
+    },
+    toHex(message: string | number | Buffer): string {
+        return ethers.utils.hexValue(message)
     },
     hashMessage(message: Bytes | string): string {
         // assert.isHexString("hash", hash)

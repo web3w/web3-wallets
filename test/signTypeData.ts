@@ -1,7 +1,6 @@
-import {Asset, ethSend, getEstimateGas, UserAccount} from "../index";
+import {Asset, EIP712TypedData, ethSend, getEstimateGas, UserAccount} from "../index";
 import * as secrets from '../../../secrets.json'
 
-import {EIP712TypedData} from "../src/types";
 
 const data = {
     "domain": {

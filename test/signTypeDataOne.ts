@@ -1,15 +1,16 @@
-
 import {getEIP712DomainHash} from "../src/utils/eip712TypeData";
+import {hexUtils} from "../index";
+import {ethers} from "ethers";
 
 const seller = '0x9F7A946d935c8Efc7A8329C0d894A69bA241345A';
 (async () => {
-    //  // "ElementEx" //ZeroEx
+  //  // "ElementEx" //ZeroEx
     const DOMAIN_DEFAULT = {
         name: 'ZeroEx',
-        chainId: "1",
+        chainId: 1,
         verifyingContract: '0x0000000000000000000000000000000000000000',
         version: '1.0.0',
-    } ;
+    };
 
     const types = [
         {name: 'name', type: 'string'},
@@ -23,8 +24,8 @@ const seller = '0x9F7A946d935c8Efc7A8329C0d894A69bA241345A';
     //     console.log(field.type,val[1])
     // })
     //
-    const hash = getEIP712DomainHash( DOMAIN_DEFAULT)
-   //0x493057d29a99de3c54e9c3c3170cb9ba580fbb470639e84b1a47dae1a27ff48e
+    const hash = getEIP712DomainHash(DOMAIN_DEFAULT)
+    //0xc92fa40dbe33b59738624b1b4ec40b30ff52e4da223f68018a7e0667ffc0e798
     console.log(hash)
 
 })()
