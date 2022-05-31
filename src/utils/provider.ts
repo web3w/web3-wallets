@@ -1,12 +1,11 @@
 import {ethers, providers, Signer} from "ethers";
 import {Web3Wallets} from "../index";
 import {ProviderNames, WalletInfo} from "../types";
-import {getChainInfo, RPR_API_TIMEOUT} from "./rpc";
-
+import {getChainInfo} from "./rpc";
+import {RPC_API_TIMEOUT} from "../constants";
 
 export function detectWallets() {
     let metamask: Web3Wallets | undefined
-
     if (typeof window === 'undefined') {
         throw "evn not sprot"
         // console.warn('not signer fo walletProvider')
@@ -23,7 +22,6 @@ export function detectWallets() {
     }
     const coinbase = new Web3Wallets(ProviderNames.Coinbase)
     const walletconnect = new Web3Wallets(ProviderNames.WalletConnect)
-
     return {metamask, coinbase, walletconnect}
 
 }
@@ -34,7 +32,7 @@ export function getProvider(walletInfo: WalletInfo, options?: {
     const {timeout} = options || {}
     const {chainId, address, priKey, rpcUrl} = walletInfo
     const rpc = rpcUrl || getChainInfo(chainId).rpcs[0]
-    const url = {url: rpc, timeout: timeout || RPR_API_TIMEOUT}
+    const url = {url: rpc, timeout: timeout || RPC_API_TIMEOUT}
     // const rpcProvider =
     let walletSigner: Signer | undefined, walletProvider: any
     const network = {

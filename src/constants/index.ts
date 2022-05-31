@@ -1,0 +1,10 @@
+export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
+export const NULL_BLOCK_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000'
+export const ETH_TOKEN_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"//0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+export const MAX_UINT_256 = '115792089237316195423570985008687907853269984665640564039457584007913129639935' //new BigNumber(2).pow(256).minus(1).toString()
+
+export const RPC_API_TIMEOUT = 6000
+
+export {CHAIN_CONFIG, CHAIN_NAME} from './chain'
+export {WALLET_CONNECT_BRIDGE} from './bridge'
+export {BigNumber, ZERO} from './bignumber'

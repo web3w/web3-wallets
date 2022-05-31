@@ -1,12 +1,11 @@
 import {ethers} from "ethers";
 import {get1559Fee} from "./fee";
 import {TransactionRequest, TransactionResponse} from '@ethersproject/abstract-provider'
-import {ChainConfigType, LimitedCallSpec, WalletInfo} from "../types";
-import {BigNumber} from "../agentTypes"
-import {getProvider} from "./provider";
-import {CHAIN_CONFIG} from '../constants/chain'
+import {ChainConfig, LimitedCallSpec, WalletInfo} from "../types";
 
-export const RPR_API_TIMEOUT=6000
+import {getProvider} from "./provider";
+import {CHAIN_CONFIG, BigNumber} from '../constants'
+
 export type {TransactionRequest, TransactionResponse}
 
 export async function getFeeHistory(rpcUrl: string, blockRange: number, percentiles: number[]) {
@@ -30,7 +29,7 @@ export async function getFeeHistory(rpcUrl: string, blockRange: number, percenti
 //     return blockNumberRes.result
 // }
 
-export function getChainInfo(chinaId: number): ChainConfigType {
+export function getChainInfo(chinaId: number): ChainConfig {
     if (CHAIN_CONFIG[chinaId]) {
         return CHAIN_CONFIG[chinaId]
     } else {

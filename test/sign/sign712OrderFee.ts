@@ -1,28 +1,11 @@
-import * as ethUtil from 'ethereumjs-util'
-import {ethers, utils} from 'ethers'
-import {getStructHash} from "../../src/utils/eip712TypeData";
 
-const abiCoder = new utils.AbiCoder()
+import {
+    getEIP712Hash,
+} from "../../src/signature/eip712TypeData";
+
 const typedData = {
     "types": {
-        "EIP712Domain": [
-            {
-                "name": "name",
-                "type": "string"
-            },
-            {
-                "name": "version",
-                "type": "string"
-            },
-            {
-                "name": "chainId",
-                "type": "uint256"
-            },
-            {
-                "name": "verifyingContract",
-                "type": "address"
-            }
-        ],
+        "EIP712Domain": [],
         "ERC721Order": [
             {
                 "type": "uint8",
@@ -107,8 +90,8 @@ const typedData = {
         "taker": "0x0000000000000000000000000000000000000000",
         "expiry": "86410",
         "nonce": "10",
-        "erc20Token": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-        "erc20TokenAmount": "1",
+        "erc20Token": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+        "erc20TokenAmount": "100000000000000000000",
         "fees": [],
         "erc721Token": "0x9F7A946d935c8Efc7A8329C0d894A69bA241345A",
         "erc721TokenId": "2",
@@ -117,33 +100,7 @@ const typedData = {
 }
 
 
-const types = typedData.types
-
-
-
-function signHash() {
-    const buff1 = ethers.utils.hexValue('0x1901')
-    const buff2 = getStructHash('EIP712Domain',typedData.types.EIP712Domain, typedData.domain)
-    const buff3 = structHash(typedData.primaryType, typedData.message)
-    const buffAll = ethers.utils.concat([buff1, buff2, buff3])
-    return ethers.utils.keccak256(buffAll)
-}
-
-const privateKey = ethUtil.keccakFromString('cow')
-const privateKeyS = ethers.utils.keccak256(Buffer.from('cow'))
-console.log(ethers.utils.hexValue(privateKey))
-
-const buff = ethUtil.keccak256(Buffer.from('cow'))
-console.log(ethers.utils.hexValue(privateKey))
-
-
-//0x20a92ab9a8c21bb464adf47af4d641be8efda957ce52981ae3deeec95446d509
-const hash =signHash()
-console.log(hash)
-// console.log(ethers.utils.hexValue(signHash()))
-
-const address = ethUtil.privateToAddress(privateKey)
-const sig = ethUtil.ecsign(ethUtil.toBuffer(hash), privateKey)
-
-//0xd551782de37f6a3b23c3bb8b0c75c8ebacd5043d6ecd4ea1eaa17a5f9087c818
-console.log(ethers.utils.hexValue(sig.r))
+const hash1 = getEIP712Hash(typedData)
+console.log(hash1)
+// Sign Hash 0x90d2fa3eac54c631095fd1b46d821ad7729c29cbcd1194a0e29c8e05c780717b
+// 0x4b46f2e388b831bcafa1f0af591fa38fdece345ad837870c3a1e32ff76c09388

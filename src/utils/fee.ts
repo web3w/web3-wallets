@@ -1,6 +1,6 @@
 import {ethers, Signer, providers} from "ethers";
 import {Block} from '@ethersproject/abstract-provider'
-import BigNumber from "bignumber.js";
+import {BigNumber} from "../constants";
 import {getFeeHistory} from "./rpc";
 
 // 取中间3个数的平均数

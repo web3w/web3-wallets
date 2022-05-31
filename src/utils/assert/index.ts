@@ -1,6 +1,7 @@
 import {Schema, SchemaValidator, schemas} from './src'
-import {BigNumber} from "../bignumber"
+import BigNumber from "bignumber.js";
 import {ethers} from "ethers";
+
 
 export {schemas}
 const HEX_REGEX = /^0x[0-9A-F]*$/i

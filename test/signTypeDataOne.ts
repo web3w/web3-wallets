@@ -1,4 +1,4 @@
-import {getEIP712DomainHash} from "../src/utils/eip712TypeData";
+import {getEIP712DomainHash} from "../src/signature/eip712TypeData";
 import {hexUtils} from "../index";
 import {ethers} from "ethers";
 

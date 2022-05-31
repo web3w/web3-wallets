@@ -4,19 +4,19 @@ import QRCodeModal from '@walletconnect/qrcode-modal'
 import EthereumProvider from "./provider/ethereumProvider";
 import {ProviderNames} from "../types";
 import {BaseWallet} from "./baseWallet";
+import {CHAIN_CONFIG,WALLET_CONNECT_BRIDGE} from "../constants";
 
-const signingMethods = ['eth_signTypedData', 'eth_signTypedData_v4', 'eth_sign', 'personal_sign', 'eth_sendTransaction']
+// const signingMethods = ['eth_signTypedData', 'eth_signTypedData_v4', 'eth_sign', 'personal_sign', 'eth_sendTransaction']
 
 //    EthereumProvider config   signingMethods
-const CHAIN_ID_RPC: { [chainId: number]: string } = {
-    1: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
-    4: 'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
-    56: 'https://bsc-dataseed1.defibit.io/', // BSC
-    97: 'https://data-seed-prebsc-1-s1.binance.org:8545', //BSC TEST
-    137: 'https://rpc-mainnet.maticvigil.com', // Polygen
-    80001: 'https://rpc-mumbai.matic.today'
-}
-
+// const CHAIN_ID_RPC: { [chainId: number]: string } = {
+//     1: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
+//     4: 'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
+//     56: 'https://bsc-dataseed1.defibit.io/', // BSC
+//     97: 'https://data-seed-prebsc-1-s1.binance.org:8545', //BSC TEST
+//     137: 'https://rpc-mainnet.maticvigil.com', // Polygen
+//     80001: 'https://rpc-mumbai.matic.today'
+// }
 export class ConnectWallet extends BaseWallet {
     public walletName: string = ProviderNames.WalletConnect//
     public peerMetaName: string = ""
@@ -27,15 +27,15 @@ export class ConnectWallet extends BaseWallet {
     public rpcList: { [chainId: number]: string }
 
     // Create a connector
-    constructor(config: { bridge: string, rpc?: { [chainId: number]: string } }) {
+    constructor(config: { bridge?: string, rpc?: { [chainId: number]: string } }) {
         super()
-        const bridge = config.bridge
+        const bridge = config.bridge || WALLET_CONNECT_BRIDGE.urls[0]
         let connector = new WalletConnectClient({
             bridge,// Required
             qrcodeModal: QRCodeModal
         })
 
-        this.rpcList = config.rpc || CHAIN_ID_RPC
+        this.rpcList = config.rpc || {[this.chainId]: CHAIN_CONFIG[this.chainId].rpcs[0]}
 
         const walletStr = localStorage.getItem('walletconnect')
         if (walletStr) {

@@ -8,10 +8,9 @@ import {
     RequestArguments,
     ProviderNames
 } from "./types";
-import {ethers, providers, Signer} from "ethers";
+import {ethers} from "ethers";
 import {JsonRpcSigner} from "@ethersproject/providers";
 import {BaseWallet} from "./connectors/baseWallet";
-import {UserAccount} from "./utils/userAccount";
 
 declare global {
     interface Window {
@@ -21,16 +20,12 @@ declare global {
     }
 }
 
-const bridgeUrl = 'https://bridge.walletconnect.org'
-
-
 // https://eips.ethereum.org/EIPS/eip-1193#disconnect
 //A JavaScript Ethereum Provider API for consistency across clients and applications.
 export class Web3Wallets extends EventEmitter implements IEthereumProvider {
     public walletProvider: BaseWallet | undefined
     public walletSigner: JsonRpcSigner | undefined
     public walletName: ProviderNames | undefined
-    public userAccount: UserAccount | undefined
 
     constructor(name?: ProviderNames, config?: {
         bridge?: string, rpc?: { [chainId: number]: string }
@@ -49,7 +44,7 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
                     break;
                 case ProviderNames.WalletConnect:
                     const conf = {
-                        bridge: config?.bridge || bridgeUrl,
+                        bridge: config?.bridge,
                         rpc: config?.rpc
                     }
                     this.walletProvider = new ConnectWallet(conf);
@@ -67,10 +62,6 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
 
             if (this.walletProvider) {
                 this.walletSigner = new ethers.providers.Web3Provider(this.walletProvider).getSigner()
-                this.userAccount = new UserAccount({
-                    chainId: this.walletProvider.chainId,
-                    address: this.walletProvider.address
-                })
                 // if (typeof window !== 'undefined') {
                 //     window.walletProvider = this.walletProvider
                 //     window.walletSigner = this.walletSigner
