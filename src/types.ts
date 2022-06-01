@@ -1,3 +1,12 @@
+export enum TokenSchemaName {
+    ERC20 = 'ERC20',
+    ERC721 = 'ERC721',
+    ERC1155 = 'ERC1155',
+    CryptoKitties = 'CryptoKitties',
+    ENSShortNameAuction = 'ENSShortNameAuction',
+    LegacyEnjin = 'Enjin',
+    CryptoPunks = 'CryptoPunks'
+}
 
 export enum ProviderNames {
     Metamask = 'MetaMask',

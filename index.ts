@@ -8,7 +8,7 @@ export type {
     WalletInfo,
     ChainConfig
 } from './src/types'
-export {ProviderNames} from './src/types'
+export {TokenSchemaName, ProviderNames} from './src/types'
 
 export type {
     EIP712TypedData,
@@ -32,12 +32,13 @@ export {
     ecSignHash,
     joinECSignature,
     splitECSignature,
+    privateKeyToAddress,
     EIP712_DOMAIN_TYPEHASH,
     hexUtils, assert, schemas
 } from "./src/signature/eip712TypeData"
 
 export {get1559Fee} from './src/utils/fee'
-// RPC
+
 export {
     ethSend, getEstimateGas, getChainRpcUrl, getChainInfo
 } from './src/utils/rpc'

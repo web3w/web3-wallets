@@ -43,7 +43,7 @@ export interface EIP712Domain {
     verifyingContract: string;
 }
 
-export type EIP712MessageValue = string | number | never[] | EIP712Message;
+export type EIP712MessageValue = string | number | unknown[] | EIP712Message;
 
 export interface EIP712Message {
     [key: string]: EIP712MessageValue;
@@ -181,25 +181,51 @@ export function getEIP712TypeHash(
         .sort(([nameA], [nameB]) => nameA.localeCompare(nameB))
         .map(([name, abi]) => encodeType(name, abi));
     // console.log(referencedStructTypes)
-    return hexUtils.hash(Buffer.from(primaryStructType + referencedStructTypes.join('')));
+    return hexUtils.hash(primaryStructType + referencedStructTypes.join(''));
 }
 
 //-------------- get struct Hash -----------------
 
-function encodeDataRefer(types, values, encTypes, encValues) {
+function encodeDataRefer(primaryType, types, values) {
+    let hashValues: string[] = []
     for (let message of values) {
+        let encTypes: string[] = []
+        let encValues: string[] = []
+        encTypes.push('bytes32')
+        encValues.push(getEIP712TypeHash(primaryType, types))
         for (let field of types) {
             let value = message[field.name] as any
             if (field.type == 'string' || field.type == 'bytes') {
                 encTypes.push('bytes32')
-                value = ethers.utils.keccak256(Buffer.from(value))
-                encValues.push(value)
+                encValues.push(hexUtils.hash(value))
             } else {
                 encTypes.push(field.type)
                 encValues.push(value)
             }
         }
+        hashValues.push(hexUtils.hash(abiCoder.encode(encTypes, encValues)))
     }
+    return hexUtils.hash(hexUtils.concat(hashValues))
+}
+
+function encodeObjectData(primaryType, types: EIP712TypedDataField[], message) {
+    let encTypes: string[] = []
+    let encValues: string[] = []
+    encTypes.push('bytes32')
+    encValues.push(getEIP712TypeHash(primaryType, types))
+    for (let field of types) {
+        let value = message[field.name]
+        if (field.type == 'string' || field.type == 'bytes') {
+            encTypes.push('bytes32')
+            // const value2 = ethers.utils.keccak256(Buffer.from(value))
+            encValues.push(hexUtils.hash(value))
+        } else {
+            encTypes.push(field.type)
+            encValues.push(value)
+        }
+    }
+
+    return hexUtils.hash(abiCoder.encode(encTypes, encValues))
 }
 
 function encodeData(primaryType: string, typeData: EIP712TypedData) {
@@ -219,26 +245,34 @@ function encodeData(primaryType: string, typeData: EIP712TypedData) {
     // @ts-ignore
     for (let field of primaryTypeData) {
         let value = message[field.name] as any
+        // console.log(field.name)
         if (field.type == 'string' || field.type == 'bytes') {
             encTypes.push('bytes32')
-            value = ethers.utils.keccak256(Buffer.from(value))
-            encValues.push(value)
+            encValues.push(hexUtils.hash(value))
+        } else if (types[field.type] !== undefined) {
+            encTypes.push('bytes32')
+            const value1 = encodeObjectData(field.type, types[field.type], value)
+            encValues.push(value1)
         } else { // @ts-ignore
             if (field.type.lastIndexOf(']') === field.type.length - 1) {
                 encTypes.push('bytes32')
-                const type = field.type.substring(0, field.type.length - 2);
-                encValues.push(getEIP712TypeHash(type, types[type]))
-                encodeDataRefer(types[type], value, encTypes, encValues)
-                // throw 'TODO: Arrays currently unimplemented in encodeData'
+                if (value.length) {
+                    const type = field.type.substring(0, field.type.length - 2);
+                    const encodeHash = encodeDataRefer(type, types[type], value)
+                    encValues.push(encodeHash)
+                } else {
+                    encValues.push(hexUtils.hash([]))
+                }
             } else {
                 encTypes.push(field.type)
                 encValues.push(value)
             }
         }
     }
-    // console.log(encTypes, encValues)
+    // console.log(encValues)
     return abiCoder.encode(encTypes, encValues)
 }
+
 
 export function getEIP712StructHash(typeData: EIP712TypedData) {
     // console.log(primaryType)
@@ -252,10 +286,13 @@ export function getEIP712StructHash(typeData: EIP712TypedData) {
  */
 export function getEIP712Hash(typeData: EIP712TypedData): string {
     const domainHash = getEIP712DomainHash(typeData.domain)
-    // console.log("domainHash", domainHash)
     const structHash = getEIP712StructHash(typeData)
-    // console.log("structHash", structHash)
     return hexUtils.hash(
         hexUtils.concat(['0x1901', domainHash, structHash])
     );
+}
+
+export function privateKeyToAddress(privateKey: string) {
+    assert.isHexString("privateKey", privateKey)
+    return new ethers.Wallet(privateKey).address
 }

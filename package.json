@@ -1,6 +1,6 @@
 {
   "name": "web3-wallets",
-  "version": "2.0.1",
+  "version": "2.0.5",
   "description": "Javascript SDK for Web3 wallets ",
   "main": "lib/index.js",
   "type": "lib/index.d.ts",
