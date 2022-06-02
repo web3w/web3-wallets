@@ -1,5 +1,5 @@
 import {
-    ProviderNames,
+    WalletNames,
     ProviderConnectInfo,
     ProviderMessage,
     ProviderRpcError,
@@ -10,7 +10,7 @@ import {BaseWallet} from "./baseWallet";
 // https://metamask.github.io/test-dapp/
 
 export class MetaMaskWallet extends BaseWallet {
-    public walletName: string = ProviderNames.Metamask
+    public walletName: string = WalletNames.Metamask
     public provider: any
     public chainId: number
     public address: string
@@ -32,13 +32,13 @@ export class MetaMaskWallet extends BaseWallet {
         // 判断钱包
         const provider = this.provider
         if (provider && provider.isImToken) {
-            this.walletName = ProviderNames.ImToken
+            this.walletName = WalletNames.ImToken
         }
         if (provider && provider.isMathWallet) {
-            this.walletName = ProviderNames.MathWallet
+            this.walletName = WalletNames.MathWallet
         }
         if (provider && provider.isTokenPocket) {
-            this.walletName = ProviderNames.TokenPocket
+            this.walletName = WalletNames.TokenPocket
         }
 
         // Events

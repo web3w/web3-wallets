@@ -12,7 +12,7 @@ export abstract class BaseWallet extends EventEmitter implements IEthereumProvid
     chainId = 0
     provider: any
 
-    async request(args: RequestArguments): Promise<unknown> {
+    async request(args: RequestArguments) {
         return this.provider.request(args)
     };
 

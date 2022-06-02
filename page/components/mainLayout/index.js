@@ -2,7 +2,7 @@ import {message, Layout, Descriptions, Menu} from 'antd';
 import React, {useState} from "react";
 
 import {AppContext} from '../AppContext'
-import {DesktopOutlined, FileOutlined, PieChartOutlined,} from '@ant-design/icons';
+import { FileOutlined } from '@ant-design/icons';
 import {DetectWallets} from "./DetectWallets";
 import "./index.css"
 import {ProviderNames} from "../../../src/types";

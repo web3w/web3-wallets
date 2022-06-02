@@ -1,4 +1,4 @@
-import {getEIP712DomainHash} from "../src/signature/eip712TypeData";
+import {} from "../../src/index";
 
 const seller = '0x9F7A946d935c8Efc7A8329C0d894A69bA241345A';
 (async () => {

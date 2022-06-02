@@ -1,6 +1,6 @@
 // TypeScript
 import CoinbaseWalletSDK from "@coinbase/wallet-sdk";
-import {ProviderAccounts, ProviderNames, IEthereumProvider, RequestArguments} from '../types'
+import {ProviderAccounts, WalletNames, IEthereumProvider, RequestArguments} from '../types'
 import {BaseWallet} from "./baseWallet";
 
 
@@ -11,7 +11,7 @@ const DEFAULT_CHAIN_ID = 1;
 
 export class CoinbaseWallet extends BaseWallet {
     // public ethereum: WalletLinkProvider
-    public walletName = ProviderNames.Coinbase
+    public walletName = WalletNames.Coinbase
     public provider: any
     public address: string = ''
     public chainId: number = 0

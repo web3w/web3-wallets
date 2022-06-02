@@ -2,9 +2,9 @@ import WalletConnectClient from '@walletconnect/client'
 import {IConnector, IWalletConnectSession} from '@walletconnect/types'
 import QRCodeModal from '@walletconnect/qrcode-modal'
 import EthereumProvider from "./provider/ethereumProvider";
-import {ProviderNames} from "../types";
+import {WalletNames} from "../types";
 import {BaseWallet} from "./baseWallet";
-import {CHAIN_CONFIG,WALLET_CONNECT_BRIDGE} from "../constants";
+import {CHAIN_CONFIG, WALLET_CONNECT_BRIDGE} from "../constants";
 
 // const signingMethods = ['eth_signTypedData', 'eth_signTypedData_v4', 'eth_sign', 'personal_sign', 'eth_sendTransaction']
 
@@ -18,7 +18,7 @@ import {CHAIN_CONFIG,WALLET_CONNECT_BRIDGE} from "../constants";
 //     80001: 'https://rpc-mumbai.matic.today'
 // }
 export class ConnectWallet extends BaseWallet {
-    public walletName: string = ProviderNames.WalletConnect//
+    public walletName: string = WalletNames.WalletConnect//
     public peerMetaName: string = ""
     public provider: any
     // public connector: IConnector
@@ -30,6 +30,7 @@ export class ConnectWallet extends BaseWallet {
     constructor(config: { bridge?: string, rpc?: { [chainId: number]: string } }) {
         super()
         const bridge = config.bridge || WALLET_CONNECT_BRIDGE.urls[0]
+
         let connector = new WalletConnectClient({
             bridge,// Required
             qrcodeModal: QRCodeModal
@@ -44,7 +45,7 @@ export class ConnectWallet extends BaseWallet {
             const {chainId, accounts, peerMeta} = walletSession
             this.address = accounts[0]
             this.chainId = Number(chainId)
-            this.walletName = ProviderNames.WalletConnect;
+            this.walletName = WalletNames.WalletConnect;
             this.peerMetaName = peerMeta?.name || ""
 
             this.provider = new EthereumProvider({
@@ -80,7 +81,7 @@ export class ConnectWallet extends BaseWallet {
             const {accounts, chainId, peerMeta} = payload.params[0]
             this.address = accounts[0]
             this.chainId = Number(chainId)
-            this.walletName = ProviderNames.WalletConnect;
+            this.walletName = WalletNames.WalletConnect;
 
             this.peerMetaName = peerMeta?.name || ""
 

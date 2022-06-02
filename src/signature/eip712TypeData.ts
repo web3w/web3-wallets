@@ -231,7 +231,7 @@ function encodeObjectData(primaryType, types: EIP712TypedDataField[], message) {
 function encodeData(primaryType: string, typeData: EIP712TypedData) {
     let encTypes: string[] = []
     let encValues: string[] = []
-    const types = typeData.types
+    const types = Object.assign(typeData.types,{})
     const primaryTypeData = types[primaryType]
     if (types[primaryType]) {
         delete types[primaryType]

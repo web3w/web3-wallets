@@ -1,22 +1,24 @@
+import WebSocket from "ws";
+
 export enum TokenSchemaName {
     ERC20 = 'ERC20',
     ERC721 = 'ERC721',
     ERC1155 = 'ERC1155',
-    CryptoKitties = 'CryptoKitties',
     ENSShortNameAuction = 'ENSShortNameAuction',
-    LegacyEnjin = 'Enjin',
     CryptoPunks = 'CryptoPunks'
 }
 
-export enum ProviderNames {
+export enum WalletNames {
     Metamask = 'MetaMask',
     Coinbase = 'Coinbase',
     ImToken = 'ImToken',
     MathWallet = 'MathWallet',
     TokenPocket = 'TokenPocket',
     WalletConnect = 'WalletConnect',
+    BitKeep = 'BitKeep',
+    Coin98 = 'Coin98',
     ProxyWallet = 'ProxyWallet',
-    KeyStroeWallet = 'KeyStroe'
+    KeyStoreWallet = 'KeyStoreWallet'
 }
 
 export interface WalletInfo {
@@ -24,6 +26,8 @@ export interface WalletInfo {
     address: string
     priKey?: string
     rpcUrl?: string
+    bridge?: string
+    timeout?: number
     offsetGasLimitRatio?: number
     isSetGasPrice?: boolean
 }
@@ -62,7 +66,7 @@ export interface ProviderConnectInfo {
     readonly chainId: string
 }
 
-export type ProviderAccounts = string[];
+export type  ProviderAccounts = string[];
 
 export interface EIP1102Request extends RequestArguments {
     method: "eth_requestAccounts";
@@ -120,3 +124,13 @@ export interface ChainConfig {
     websiteDead?: boolean
     rpcWorking?: boolean
 }
+
+export type JsonRpcId = string | number
+export type JsonRpcParams<T> = T[] | Record<string, T>
+export interface JsonRpcRequest<T> {
+    jsonrpc: '2.0'
+    id: JsonRpcId
+    method: string
+    params: JsonRpcParams<T>
+}
+
