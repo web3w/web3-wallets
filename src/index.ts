@@ -10,8 +10,7 @@ import {
 } from "./types";
 import {ethers} from "ethers";
 import {JsonRpcSigner} from "@ethersproject/providers";
-import {BaseWallet} from "./connectors/baseWallet";
-import {ProxyWallet} from "./connectors/proxyWallet";
+import {BaseWallet} from "./connectors/baseWallet"
 import {CHAIN_CONFIG} from "./constants/chain";
 
 declare global {
@@ -74,7 +73,7 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
                     break;
                 case WalletNames.ProxyWallet:
                     const walletInfo = {address: address || "", chainId: chainId || 1}
-                    this.walletProvider = new ProxyWallet(walletInfo)
+                    // this.walletProvider = new ProxyWallet(walletInfo)
                     break;
             }
             if (this.walletProvider) {

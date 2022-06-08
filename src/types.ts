@@ -5,7 +5,8 @@ export enum TokenSchemaName {
     ERC721 = 'ERC721',
     ERC1155 = 'ERC1155',
     ENSShortNameAuction = 'ENSShortNameAuction',
-    CryptoPunks = 'CryptoPunks'
+    CryptoPunks = 'CryptoPunks',
+    CryptoKitties = 'CryptoKitties'
 }
 
 export enum WalletNames {
@@ -21,13 +22,22 @@ export enum WalletNames {
     KeyStoreWallet = 'KeyStoreWallet'
 }
 
+export interface RpcInfo {
+    url: string,
+    headers?: { [key: string]: string | number }
+    user?: string,
+    password?: string,
+    timeout?: number
+}
+
 export interface WalletInfo {
     chainId: number
     address: string
-    priKey?: string
-    rpcUrl?: string
+    privateKeys?: string[]
+    rpcUrl?: RpcInfo
+    port?: number
+    cacheExpiration?: number
     bridge?: string
-    timeout?: number
     offsetGasLimitRatio?: number
     isSetGasPrice?: boolean
 }
@@ -127,6 +137,7 @@ export interface ChainConfig {
 
 export type JsonRpcId = string | number
 export type JsonRpcParams<T> = T[] | Record<string, T>
+
 export interface JsonRpcRequest<T> {
     jsonrpc: '2.0'
     id: JsonRpcId

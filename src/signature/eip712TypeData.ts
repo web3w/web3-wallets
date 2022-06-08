@@ -3,6 +3,7 @@
 import {ethers, utils} from "ethers";
 import {assert, schemas} from "../utils/assert";
 import {hexUtils, abiCoder} from "./hexUtils";
+import {objectClone} from "../utils/hepler";
 
 
 export {hexUtils, assert, schemas, abiCoder}
@@ -231,7 +232,7 @@ function encodeObjectData(primaryType, types: EIP712TypedDataField[], message) {
 function encodeData(primaryType: string, typeData: EIP712TypedData) {
     let encTypes: string[] = []
     let encValues: string[] = []
-    const types = Object.assign(typeData.types,{})
+    const types = objectClone(typeData.types)
     const primaryTypeData = types[primaryType]
     if (types[primaryType]) {
         delete types[primaryType]
@@ -293,6 +294,19 @@ export function getEIP712Hash(typeData: EIP712TypedData): string {
 }
 
 export function privateKeyToAddress(privateKey: string) {
+    privateKey = privateKey.substring(0, 2) == '0x' ? privateKey : '0x' + privateKey
     assert.isHexString("privateKey", privateKey)
     return new ethers.Wallet(privateKey).address
+}
+
+export function privateKeysToAddress(privateKeys: string[]) {
+    if (!privateKeys || privateKeys.length == 0) throw new Error("Private keys undefind")
+    let accounts = {}
+    for (const val of privateKeys) {
+        const address = privateKeyToAddress(val).toLowerCase();
+        if (!accounts[address]) {
+            accounts[address] = val.substring(0, 2) == '0x' ? val : '0x' + val
+        }
+    }
+    return accounts
 }

@@ -6,9 +6,10 @@ export {Web3Wallets} from './src'
 export type {
     LimitedCallSpec,
     WalletInfo,
-    ChainConfig
+    ChainConfig,
+    RpcInfo
 } from './src/types'
-export {TokenSchemaName, ProviderNames} from './src/types'
+export {TokenSchemaName, WalletNames} from './src/types'
 
 export type {
     EIP712TypedData,
@@ -33,11 +34,13 @@ export {
     joinECSignature,
     splitECSignature,
     privateKeyToAddress,
+    privateKeysToAddress,
     EIP712_DOMAIN_TYPEHASH,
     hexUtils, assert, schemas
 } from "./src/signature/eip712TypeData"
 
 export {get1559Fee} from './src/utils/fee'
+export {objectClone} from './src/utils/hepler'
 
 export {
     ethSend, getEstimateGas, getChainRpcUrl, getChainInfo

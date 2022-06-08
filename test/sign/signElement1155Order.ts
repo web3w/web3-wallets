@@ -89,4 +89,4 @@ const typedData = {
 
 const hash1 = getEIP712Hash(typedData)
 
-console.log(hash1)
+console.log(hash1,typedData)

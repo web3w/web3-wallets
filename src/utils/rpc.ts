@@ -79,7 +79,7 @@ export async function getEstimateGas(rpcUrl: string, callData: LimitedCallSpec) 
 }
 
 export async function ethSend(wallet: WalletInfo, callData: LimitedCallSpec): Promise<TransactionResponse> {
-    const {walletSigner, rpc} = getProvider(wallet)
+    const {walletSigner, rpcUrl} = getProvider(wallet)
 
     let value = ethers.BigNumber.from(0)
     if (callData.value) {
@@ -109,7 +109,7 @@ export async function ethSend(wallet: WalletInfo, callData: LimitedCallSpec): Pr
             throw error
         })
         if (tx?.type == 2) {
-            const fee = await get1559Fee(rpc)
+            const fee = await get1559Fee(rpcUrl?.url)
             transactionObject.maxFeePerGas = ethers.BigNumber.from(fee.maxFeePerGas) //?.mul(gasPriceOffset).div(100).toNumber()
             transactionObject.maxPriorityFeePerGas = ethers.BigNumber.from(fee.maxPriorityFeePerGas) //?.mul(gasPriceOffset).div(100).toNumber()
         } else {
