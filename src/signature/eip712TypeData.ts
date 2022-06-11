@@ -1,5 +1,3 @@
-// import {TypedDataDomain, TypedDataField} from "@ethersproject/abstract-signer";
-
 import {ethers, utils} from "ethers";
 import {assert, schemas} from "../utils/assert";
 import {hexUtils, abiCoder} from "./hexUtils";
@@ -28,14 +26,6 @@ export interface EIP712TypedDataField {
 export interface EIP712Types {
     [key: string]: EIP712TypedDataField[];
 }
-
-// export interface TypedDataDomain {
-//     name?: string;
-//     version?: string;
-//     chainId?: BigNumberish;
-//     verifyingContract?: string;
-//     salt?: BytesLike;
-// };
 
 export interface EIP712Domain {
     name: string;
@@ -89,6 +79,21 @@ export function createEIP712TypedData(
     return typedData
 }
 
+
+export function joinECSignature(sign: ECSignature) {
+    return sign.r + hexUtils.toHex(sign.s, false) + hexUtils.toHex(sign.v, false)
+}
+
+export function splitECSignature(signature: string): ECSignature {
+    const sign = ethers.utils.splitSignature(signature)
+    return {
+        r: sign.r,
+        s: sign.s,
+        v: sign.v
+    }
+}
+
+
 export function ecSignHash(hash: string, privateKey: string): ECSignature {
     if (!hexUtils.isHex(hash, 32)) throw new Error('Message not hex')
     if (!hexUtils.isHex(privateKey, 32)) throw new Error("Private key error")
@@ -107,19 +112,6 @@ export function ecSignMessage(message: string, privateKey: string): ECSignature 
     return ecSignHash(hash, privateKey)
 }
 
-export function joinECSignature(sign: ECSignature) {
-    return sign.r + hexUtils.toHex(sign.s, false) + hexUtils.toHex(sign.v, false)
-}
-
-export function splitECSignature(signature: string): ECSignature {
-    const sign = ethers.utils.splitSignature(signature)
-    return {
-        r: sign.r,
-        s: sign.s,
-        v: sign.v
-    }
-}
-
 export function signMessage(message: string, privateKey: string): ECSignature {
     const hash = hexUtils.hashMessage(message)
     if (!hexUtils.isHex(privateKey, 32)) throw new Error("Private key error")
@@ -131,6 +123,12 @@ export function signMessage(message: string, privateKey: string): ECSignature {
         s: sign.s,
         v: sign.v
     }
+}
+
+export function signTypedData(typedData: EIP712TypedData, privateKey: string): ECSignature {
+    const hash = getEIP712Hash(typedData)
+    return ecSignHash(hash, privateKey)
+
 }
 
 // hash = 0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f
@@ -273,7 +271,6 @@ function encodeData(primaryType: string, typeData: EIP712TypedData) {
     // console.log(encValues)
     return abiCoder.encode(encTypes, encValues)
 }
-
 
 export function getEIP712StructHash(typeData: EIP712TypedData) {
     // console.log(primaryType)

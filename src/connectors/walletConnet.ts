@@ -8,17 +8,9 @@ import {CHAIN_CONFIG, WALLET_CONNECT_BRIDGE} from "../constants";
 
 // const signingMethods = ['eth_signTypedData', 'eth_signTypedData_v4', 'eth_sign', 'personal_sign', 'eth_sendTransaction']
 
-//    EthereumProvider config   signingMethods
-// const CHAIN_ID_RPC: { [chainId: number]: string } = {
-//     1: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
-//     4: 'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
-//     56: 'https://bsc-dataseed1.defibit.io/', // BSC
-//     97: 'https://data-seed-prebsc-1-s1.binance.org:8545', //BSC TEST
-//     137: 'https://rpc-mainnet.maticvigil.com', // Polygen
-//     80001: 'https://rpc-mumbai.matic.today'
-// }
+
 export class ConnectWallet extends BaseWallet {
-    public walletName: string = WalletNames.WalletConnect//
+    public walletName: WalletNames = 'wallet_connect'//
     public peerMetaName: string = ""
     public provider: any
     // public connector: IConnector
@@ -45,7 +37,7 @@ export class ConnectWallet extends BaseWallet {
             const {chainId, accounts, peerMeta} = walletSession
             this.address = accounts[0]
             this.chainId = Number(chainId)
-            this.walletName = WalletNames.WalletConnect;
+            this.walletName = "wallet_connect";
             this.peerMetaName = peerMeta?.name || ""
 
             this.provider = new EthereumProvider({
@@ -81,7 +73,7 @@ export class ConnectWallet extends BaseWallet {
             const {accounts, chainId, peerMeta} = payload.params[0]
             this.address = accounts[0]
             this.chainId = Number(chainId)
-            this.walletName = WalletNames.WalletConnect;
+            this.walletName = 'wallet_connect';
 
             this.peerMetaName = peerMeta?.name || ""
 
@@ -115,7 +107,7 @@ export class ConnectWallet extends BaseWallet {
             console.log('disconnect', error)
             this.address = ''
             this.chainId = 0
-            this.walletName = ""
+            // this.walletName = ""
             this.peerMetaName = ""
             this.emit('disconnect', error)
         })

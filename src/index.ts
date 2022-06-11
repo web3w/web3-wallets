@@ -33,18 +33,18 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
         // bridge?: string, rpc?: { [chainId: number]: string }
         const {address, chainId, bridge, rpcUrl} = options || {}
 
-        this.walletName = name || WalletNames.WalletConnect
+        this.walletName = name || 'wallet_connect'
         if (typeof window === 'undefined') {
             throw 'not support node evn'
         } else {
             switch (name) {
-                case WalletNames.Metamask:
+                case 'metamask':
                     this.walletProvider = new MetaMaskWallet();
                     break;
-                case WalletNames.Coinbase:
+                case 'coinbase':
                     this.walletProvider = new CoinbaseWallet();
                     break;
-                case WalletNames.WalletConnect:
+                case 'wallet_connect':
                     let rpc
                     if (chainId && !rpcUrl) {
                         const url = CHAIN_CONFIG[chainId].rpcs[0]
@@ -59,19 +59,16 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
                     }
                     this.walletProvider = new ConnectWallet(conf);
                     break;
-                case WalletNames.TokenPocket:
+                case 'token_pocket':
                     this.walletProvider = new MetaMaskWallet();
                     break;
-                case WalletNames.BitKeep:
+                case 'bitkeep':
                     this.walletProvider = new MetaMaskWallet();
                     break;
-                case WalletNames.Coin98:
+                case 'coin98':
                     this.walletProvider = new MetaMaskWallet();
                     break;
-                case WalletNames.KeyStoreWallet:
-                    // TODO
-                    break;
-                case WalletNames.ProxyWallet:
+                case 'wallet_proxy':
                     const walletInfo = {address: address || "", chainId: chainId || 1}
                     // this.walletProvider = new ProxyWallet(walletInfo)
                     break;

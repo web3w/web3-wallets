@@ -7,9 +7,10 @@ export type {
     LimitedCallSpec,
     WalletInfo,
     ChainConfig,
-    RpcInfo
+    RpcInfo,
+    TokenSchemaNames,
+    WalletNames
 } from './src/types'
-export {TokenSchemaName, WalletNames} from './src/types'
 
 export type {
     EIP712TypedData,
@@ -40,7 +41,7 @@ export {
 } from "./src/signature/eip712TypeData"
 
 export {get1559Fee} from './src/utils/fee'
-export {objectClone} from './src/utils/hepler'
+export {objectClone, itemsIsEquality} from './src/utils/hepler'
 
 export {
     ethSend, getEstimateGas, getChainRpcUrl, getChainInfo

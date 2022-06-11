@@ -20,15 +20,6 @@ export async function getFeeHistory(rpcUrl: string, blockRange: number, percenti
     // console.log(Number(feeHistoryRes.result.oldestBlock))
 }
 
-// export async function getBlockNumber(rpcUrl: string) {
-//     const blockNumber = `{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":0}`
-//     const blockNumberRes = await ethers.utils.fetchJson(rpcUrl, blockNumber)
-//
-//     // return ethers.utils.fetchJson({url,timeout:2000})
-//     // console.log(Number(blockNumberRes.result))
-//     return blockNumberRes.result
-// }
-
 export function getChainInfo(chinaId: number): ChainConfig {
     if (CHAIN_CONFIG[chinaId]) {
         return CHAIN_CONFIG[chinaId]
@@ -92,7 +83,10 @@ export async function ethSend(wallet: WalletInfo, callData: LimitedCallSpec): Pr
         value
     } as TransactionRequest
 
-    if (wallet.chainId == 97 || wallet.chainId == 56) {
+    if (wallet.chainId == 97 || wallet.chainId == 56
+        || wallet.chainId == 43113 || wallet.chainId == 43114
+        || wallet.chainId == 137 || wallet.chainId == 80001
+    ) {
         wallet.offsetGasLimitRatio = wallet.offsetGasLimitRatio || 1.18
     }
 
@@ -115,7 +109,7 @@ export async function ethSend(wallet: WalletInfo, callData: LimitedCallSpec): Pr
         } else {
             const fee = await walletSigner.getFeeData()
             const gasPrice = ethers.utils.formatUnits(fee.gasPrice || 5, 'gwei')
-            console.log("gasPrice", gasPrice)
+            // console.log("GasPrice", gasPrice)
             transactionObject.gasPrice = ethers.BigNumber.from(gasPrice)
         }
     }
@@ -128,78 +122,3 @@ export async function ethSend(wallet: WalletInfo, callData: LimitedCallSpec): Pr
         throw e
     }
 }
-
-
-// export async function ethSendGasLimit(wallet: WalletInfo, callData: LimitedCallSpec, gasLimit: string): Promise<TransactionResponse> {
-//     const offsetRatio = wallet.offsetGasLimitRatio || 1
-//     const offsetGasLimit = new BigNumber(gasLimit).times(offsetRatio).toFixed(0)
-//     const {walletSigner, rpc} = getProvider(wallet)
-//     let value = ethers.BigNumber.from(0)
-//     if (callData.value) {
-//         value = ethers.BigNumber.from(callData.value)
-//     }
-//
-//     const transactionObject = {
-//         from: wallet.address,
-//         to: callData.to,
-//         data: callData.data,
-//         gasLimit: ethers.BigNumber.from(offsetGasLimit),
-//         value
-//     } as TransactionRequest
-//
-//     console.log('value', value.toString(), 'gasLimit', transactionObject.gasLimit?.toString(),)
-//
-//     if (wallet.isSetGasPrice) {
-//         const tx = await walletSigner.populateTransaction(transactionObject).catch(async (error: any) => {
-//             throw error
-//         })
-//         if (tx?.type == 2) {
-//             const fee = await get1559Fee(rpc)
-//             transactionObject.maxFeePerGas = ethers.BigNumber.from(fee.maxFeePerGas) //?.mul(gasPriceOffset).div(100).toNumber()
-//             transactionObject.maxPriorityFeePerGas = ethers.BigNumber.from(fee.maxPriorityFeePerGas) //?.mul(gasPriceOffset).div(100).toNumber()
-//         } else {
-//             const fee = await walletSigner.getFeeData()
-//             const gasPrice = ethers.utils.formatUnits(fee.gasPrice || 5, 'gwei')
-//             console.log("gasPrice", gasPrice)
-//             transactionObject.gasPrice = ethers.BigNumber.from(gasPrice)
-//         }
-//     }
-//
-//     console.log('value', value.toString(), 'gasLimit', transactionObject.gasLimit?.toString(),)
-//
-//     return walletSigner.sendTransaction(transactionObject).catch((e: any) => {
-//         throw e
-//     })
-// }
-
-
-// export async function ethSendGas(wallet: WalletInfo, callData: LimitedCallSpec): Promise<TransactionResponse> {
-//     const {walletSigner, rpc} = getProvider(wallet)
-//     let value = ethers.BigNumber.from(0)
-//     if (callData.value) {
-//         value = ethers.BigNumber.from(callData.value)
-//     }
-//     const transactionObject = {
-//         to: callData.to,
-//         data: callData.data,
-//         value
-//     }
-//
-//     try {
-//         const tx = await walletSigner.populateTransaction(transactionObject).catch(async (error: any) => {
-//             throw error
-//         })
-//         console.log('EthSend tx.type', tx.type, 'tx.value', tx.value?.toString(), 'gasPrice', tx.gasPrice?.toString(), 'gasLimit', tx.gasLimit?.toString())
-//         let signTx = {...tx}
-//         if (tx.type == 2) {
-//             const fee = await get1559Fee(rpc)
-//             signTx.maxFeePerGas = ethers.BigNumber.from(fee.maxFeePerGas) //?.mul(gasPriceOffset).div(100).toNumber()
-//             signTx.maxPriorityFeePerGas = ethers.BigNumber.from(fee.maxPriorityFeePerGas) //?.mul(gasPriceOffset).div(100).toNumber()
-//         }
-//         return walletSigner.sendTransaction(signTx).catch((e: any) => {
-//             throw e
-//         })
-//     } catch (e: any) {
-//         throw e
-//     }
-// }

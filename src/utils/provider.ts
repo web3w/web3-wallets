@@ -24,11 +24,11 @@ export function detectWallets() {
         // }
 
         if (walletProvider.isMetaMask) {
-            metamask = new Web3Wallets(WalletNames.Metamask)
+            metamask = new Web3Wallets('metamask')
         }
     }
-    const coinbase = new Web3Wallets(WalletNames.Coinbase)
-    const walletconnect = new Web3Wallets(WalletNames.WalletConnect)
+    const coinbase = new Web3Wallets('coinbase')
+    const walletconnect = new Web3Wallets('wallet_connect')
     return {metamask, coinbase, walletconnect}
 
 }

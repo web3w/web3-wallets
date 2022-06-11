@@ -1,26 +1,35 @@
-import WebSocket from "ws";
+export type TokenSchemaNames =
+    'erc20'
+    | 'erc721'
+    | 'erc1155'
+    | 'cryptokitties'
+    | 'ensshortnameauction'
+    | 'cryptopunks'
 
-export enum TokenSchemaName {
-    ERC20 = 'ERC20',
-    ERC721 = 'ERC721',
-    ERC1155 = 'ERC1155',
-    ENSShortNameAuction = 'ENSShortNameAuction',
-    CryptoPunks = 'CryptoPunks',
-    CryptoKitties = 'CryptoKitties'
-}
+// export enum TokenSchemaName {
+//     ERC20 = 'ERC20',
+//     ERC721 = 'ERC721',
+//     ERC1155 = 'ERC1155',
+//     ENSShortNameAuction = 'ENSShortNameAuction',
+//     CryptoPunks = 'CryptoPunks',
+//     CryptoKitties = 'CryptoKitties'
+// }
 
-export enum WalletNames {
-    Metamask = 'MetaMask',
-    Coinbase = 'Coinbase',
-    ImToken = 'ImToken',
-    MathWallet = 'MathWallet',
-    TokenPocket = 'TokenPocket',
-    WalletConnect = 'WalletConnect',
-    BitKeep = 'BitKeep',
-    Coin98 = 'Coin98',
-    ProxyWallet = 'ProxyWallet',
-    KeyStoreWallet = 'KeyStoreWallet'
-}
+export type WalletNames = 'metamask' | 'coinbase' | 'imtoken' | 'math_wallet'
+    | 'token_pocket' | 'wallet_connect' | 'bitkeep' | 'coin98' | 'wallet_proxy'
+
+// export enum WalletNames {
+//     Metamask = 'MetaMask',
+//     Coinbase = 'Coinbase',
+//     ImToken = 'ImToken',
+//     MathWallet = 'MathWallet',
+//     TokenPocket = 'TokenPocket',
+//     WalletConnect = 'WalletConnect',
+//     BitKeep = 'BitKeep',
+//     Coin98 = 'Coin98',
+//     ProxyWallet = 'ProxyWallet',
+//     KeyStoreWallet = 'KeyStoreWallet'
+// }
 
 export interface RpcInfo {
     url: string,

@@ -8,9 +8,8 @@ import {BaseWallet} from "./baseWallet";
 
 // https://github.com/metamask/test-dapp
 // https://metamask.github.io/test-dapp/
-
 export class MetaMaskWallet extends BaseWallet {
-    public walletName: string = WalletNames.Metamask
+    public walletName: WalletNames = 'metamask'
     public provider: any
     public chainId: number
     public address: string
@@ -32,13 +31,13 @@ export class MetaMaskWallet extends BaseWallet {
         // 判断钱包
         const provider = this.provider
         if (provider && provider.isImToken) {
-            this.walletName = WalletNames.ImToken
+            this.walletName = 'imtoken'
         }
         if (provider && provider.isMathWallet) {
-            this.walletName = WalletNames.MathWallet
+            this.walletName = 'math_wallet'
         }
         if (provider && provider.isTokenPocket) {
-            this.walletName = WalletNames.TokenPocket
+            this.walletName = 'token_pocket'
         }
 
         // Events
