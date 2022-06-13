@@ -2,7 +2,7 @@ import {message} from 'antd';
 import {Button, notification, Space} from "antd";
 import React, {useContext} from "react";
 import {signMessage, signTypedData, RPC_PROVIDER} from '../js/index'
-import {ethers, ProviderNames} from "../../../index";
+import {ethers} from "../../../index";
 import {AppContext} from '../AppContext'
 
 export function CommonFuncBtn() {
@@ -87,7 +87,7 @@ export function CommonFuncBtn() {
             const weth = new ethers.Contract(wethAddress, wethAbi, walletSigner)
             console.log(await weth.name())
 
-            if (walletProvider.walletName == ProviderNames.WalletConnect) {
+            if (walletProvider.walletName == 'wallet_connect') {
                 const {walletName, peerMetaName} = walletProvider
                 notification['info']({
                     message: walletName,

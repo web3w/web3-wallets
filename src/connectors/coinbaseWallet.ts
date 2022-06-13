@@ -11,7 +11,7 @@ const DEFAULT_CHAIN_ID = 1;
 
 export class CoinbaseWallet extends BaseWallet {
     // public ethereum: WalletLinkProvider
-    public walletName = 'coinbase'
+    public walletName: WalletNames = 'coinbase'
     public provider: any
     public address: string = ''
     public chainId: number = 0

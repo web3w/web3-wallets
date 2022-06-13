@@ -1,6 +1,5 @@
 import React from "react";
 import {CommonFuncBtn} from "./CommonFunc";
-import {ProviderNames} from "../../../src/types";
 import {Breadcrumb, Button, Space, Layout} from "antd";
 
 const {Content} = Layout
@@ -15,7 +14,7 @@ export function WalletFunc(props) {
         {/*</Breadcrumb>*/}
         <div style={{padding: 24, minHeight: 360}}>
             {wallet.walletName && < CommonFuncBtn/>}
-            {wallet.walletName == ProviderNames.Metamask
+            {wallet.walletName == 'metamask'
             && <Space size={10}>
                 <Button onClick={() => {
                     wallet.walletProvider.switchBSCTEST()
@@ -24,12 +23,12 @@ export function WalletFunc(props) {
                     wallet.walletProvider.switchRinkeby()
                 }}>Switch-Rinkeby</Button>
             </Space>}
-            {wallet.walletName == ProviderNames.WalletConnect &&  <Space size={10}>
+            {wallet.walletName == 'wallet-connect' && <Space size={10}>
                 <Button onClick={() => {
                     wallet.walletProvider.disconnect()
                 }}>Disconnect</Button>
             </Space>}
-            {wallet.walletName == ProviderNames.Coinbase && <div>Coinbase</div>}
+            {wallet.walletName == 'coinbase' && <div>Coinbase</div>}
         </div>
     </Content>)
 }

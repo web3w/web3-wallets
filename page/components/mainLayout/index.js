@@ -2,10 +2,9 @@ import {message, Layout, Descriptions, Menu} from 'antd';
 import React, {useState} from "react";
 
 import {AppContext} from '../AppContext'
-import { FileOutlined } from '@ant-design/icons';
+import {FileOutlined} from '@ant-design/icons';
 import {DetectWallets} from "./DetectWallets";
 import "./index.css"
-import {ProviderNames} from "../../../src/types";
 import * as walletSDK from '../../../index'
 import {WalletFunc} from "./WalletFunc";
 
@@ -30,11 +29,11 @@ export function MainLayout() {
             return
         }
         const wallet = new walletSDK.Web3Wallets(obj.key)
-        if (obj.key == ProviderNames.Metamask) {
+        if (obj.key == 'metamask') {
             const accounts = await wallet.walletProvider.enable() // enable ethereum
             setWallet(wallet)
         }
-        if (obj.key == ProviderNames.WalletConnect) {
+        if (obj.key == "wallet_connect") {
             const connector = wallet.walletProvider.getConnector()
             if (connector.connected) {
                 setWallet(wallet)
@@ -55,14 +54,14 @@ export function MainLayout() {
             })
         }
 
-        if (obj.key == ProviderNames.Coinbase) {
+        if (obj.key == 'coinbase') {
             const accounts = await wallet.walletProvider.enable() // enable ethereum
             setWallet(wallet)
         }
 
     };
     console.log('MainLayout', wallet)
-    const SupportWallet = ["DetectWallets", ProviderNames.Metamask, ProviderNames.WalletConnect, ProviderNames.Coinbase]
+    const SupportWallet = ["DetectWallets", 'metamask', 'wallet_connect', 'coinbase']
     return (
         <AppContext.Provider value={[wallet, setWallet]}>
             <Layout style={{minHeight: '100vh'}}>

@@ -1,5 +1,5 @@
 import {
-    IEthereumProvider, ProviderAccounts, RequestArguments
+    IEthereumProvider, ProviderAccounts, RequestArguments, WalletNames
 } from '../types'
 import EventEmitter from "events";
 
@@ -7,8 +7,8 @@ import EventEmitter from "events";
 // https://metamask.github.io/test-dapp/
 
 export abstract class BaseWallet extends EventEmitter implements IEthereumProvider {
-    address = ""
-    walletName = ""
+    address: string
+    walletName: WalletNames
     chainId = 0
     provider: any
 

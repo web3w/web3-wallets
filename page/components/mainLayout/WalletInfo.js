@@ -1,6 +1,5 @@
 import React from "react";
 import {CommonFuncBtn} from "./CommonFunc";
-import {ProviderNames} from "../../../src/types";
 import {Breadcrumb, Layout} from "antd";
 
 const {Content} = Layout
@@ -14,9 +13,9 @@ export function ContentInfo(props) {
         {/*</Breadcrumb>*/}
         <div style={{padding: 24, minHeight: 360}}>
             {wallet.walletName && < CommonFuncBtn/>}
-            {wallet.walletName == ProviderNames.Metamask && <div>MetaMask</div>}
-            {wallet.walletName == ProviderNames.WalletConnect && <div>WalletConnect</div>}
-            {wallet.walletName == ProviderNames.Coinbase && <div>Coinbase</div>}
+            {wallet.walletName == "metamask" && <div>MetaMask</div>}
+            {wallet.walletName == "wallet_connect" && <div>WalletConnect</div>}
+            {wallet.walletName == "coinbase" && <div>Coinbase</div>}
         </div>
     </Content>)
 }
