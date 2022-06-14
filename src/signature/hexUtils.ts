@@ -60,17 +60,22 @@ export const hexUtils = {
     },
     leftPad(n: string | number, _size: number = WORD_LENGTH): string {
         if (ethers.utils.isHexString(n)) {
+
             n = hexUtils.toHex(n)
         } else if (typeof (n) === "string") {
             if (n.match(/^-?[0-9]+$/)) {
                 n = hexUtils.toHex(Buffer.from(n))
+                // if (n.toString().length > _size) throw new Error("n length > size")
+                if (n.toString().length > _size) {
+                    n = hexUtils.hash(n)
+                }
             }
         } else if (n === 0) {
             n = hexUtils.toHex(n)
         } else {
             n = hexUtils.toHex(n)
         }
-        if (n.length > _size) throw new Error("n length > size")
+
         return ethers.utils.hexZeroPad(n, _size)
     },
     rightPad(n: string | number, _size: number = WORD_LENGTH): string {

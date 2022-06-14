@@ -21,9 +21,20 @@ const seller = '0x9F7A946d935c8Efc7A8329C0d894A69bA241345A';
     //     const field = types.find(field=>field.name == val[0])
     //     console.log(field.type,val[1])
     // })
+
+    const element = {
+        "chainId": 4,
+        "verifyingContract": "0x8D6022B8A421B08E9E4cEf45E46f1c83C85d402F",
+        "name": "ElementEx",
+        "version": "1.0.0"
+    }
     //
-    const hash = getEIP712DomainHash(DOMAIN_DEFAULT)
+
+    const elementHash =   getEIP712DomainHash(element)
+    console.log(elementHash)
+
+    const zeroV3hash = getEIP712DomainHash(DOMAIN_DEFAULT)
     //0xc92fa40dbe33b59738624b1b4ec40b30ff52e4da223f68018a7e0667ffc0e798
-    console.log(hash)
+    console.log(zeroV3hash)
 
 })()

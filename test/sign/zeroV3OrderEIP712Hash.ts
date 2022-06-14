@@ -206,7 +206,6 @@ function mySplit(str: string, leng: number) {
 
 function getStructHash(primaryType: string, data: any) {
     const strBuff = encodeData(primaryType, data)
-
     mySplit(strBuff.substring(2), 64)
     return hexUtils.hash(strBuff)
 }

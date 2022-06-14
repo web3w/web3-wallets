@@ -104,6 +104,7 @@ const typedData = {
     }
 }
 
+
 const hash1 = getEIP712Hash(typedData)
 const orderHash = '0xfc61e1f209df8981854756c6377aae52cb7587f877f49fc6b5a9400c8af9e3fd'
 console.assert(hash1==orderHash,"error")
