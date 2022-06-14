@@ -7,3 +7,7 @@ export function objectClone(str: object) {
 export function itemsIsEquality(items: string[]) {
     return items.every(el => el === items[0])
 }
+
+export function isAddress(address: string) {
+    return ethers.utils.isAddress(address)
+}

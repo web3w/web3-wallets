@@ -1,4 +1,4 @@
-import {Schema, SchemaValidator, schemas} from './src'
+import {Schema, SchemaValidator, schemas} from './src/index'
 import BigNumber from "bignumber.js";
 import {ethers} from "ethers";
 

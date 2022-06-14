@@ -6,8 +6,15 @@ export type TokenSchemaNames =
     | 'ensshortnameauction'
     | 'cryptopunks'
 
-export type WalletNames = 'metamask' | 'coinbase' | 'imtoken' | 'math_wallet'
-    | 'token_pocket' | 'wallet_connect' | 'bitkeep' | 'coin98' | 'wallet_proxy'
+export type WalletNames = 'metamask'
+    | 'coinbase'
+    | 'imtoken'
+    | 'math_wallet'
+    | 'token_pocket'
+    | 'wallet_connect'
+    | 'bitkeep'
+    | 'coin98'
+    | 'wallet_proxy'
 
 
 export interface RpcInfo {

@@ -41,7 +41,7 @@ export {
 } from "./src/signature/eip712TypeData"
 
 export {get1559Fee} from './src/utils/fee'
-export {objectClone, itemsIsEquality} from './src/utils/hepler'
+export {objectClone, itemsIsEquality, isAddress} from './src/utils/hepler'
 
 export {
     ethSend, getEstimateGas, getChainRpcUrl, getChainInfo

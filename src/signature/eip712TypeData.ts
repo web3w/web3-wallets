@@ -1,5 +1,5 @@
 import {ethers, utils} from "ethers";
-import {assert, schemas} from "../utils/assert";
+import {assert, schemas} from "./assert";
 import {hexUtils, abiCoder} from "./hexUtils";
 import {objectClone} from "../utils/hepler";
 

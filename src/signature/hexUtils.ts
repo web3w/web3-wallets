@@ -70,6 +70,7 @@ export const hexUtils = {
         } else {
             n = hexUtils.toHex(n)
         }
+        if (n.length > _size) throw new Error("n length > size")
         return ethers.utils.hexZeroPad(n, _size)
     },
     rightPad(n: string | number, _size: number = WORD_LENGTH): string {

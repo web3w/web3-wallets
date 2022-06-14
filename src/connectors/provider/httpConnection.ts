@@ -1,6 +1,6 @@
 import {EventEmitter} from 'events'
 // import fetch from "cross-fetch";
-import fetch from 'isomorphic-unfetch'
+// import fetch from 'isomorphic-unfetch'
 import {safeJsonParse, safeJsonStringify} from '@walletconnect/safe-json'
 import {
     formatJsonRpcError,

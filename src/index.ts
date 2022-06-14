@@ -97,13 +97,6 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
         return this.walletProvider.enable()
     };
 
-    // sendAsync(request: Object, callback: Function): void {
-    //     this.errorHandle()
-    // };
-    //
-    // async send(...args: unknown[]) {
-    //     this.errorHandle()
-    // };
 
 }
 

@@ -5,10 +5,6 @@ import {getChainInfo} from "./rpc";
 import {RPC_API_TIMEOUT} from "../constants";
 
 
-// import Helmet from 'fastify-helmet'
-//@fastify/helmet
-
-import pkg from '../../package.json'
 import {privateKeysToAddress, privateKeyToAddress} from "../signature/eip712TypeData";
 
 export function detectWallets() {
