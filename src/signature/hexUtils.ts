@@ -82,13 +82,14 @@ export const hexUtils = {
         return ethers.BigNumber.from(n).shl(_size * 8).toHexString().substring(0, _size * 2) + "00"
     },
     slice(n: string | number, start: number, end?: number): string {
-        const hex = hexUtils.toHex(n).substring(2);
-        const sliceStart = start >= 0 ? start * 2 : Math.max(0, hex.length + start * 2);
-        let sliceEnd = hex.length;
-        if (end !== undefined) {
-            sliceEnd = end >= 0 ? end * 2 : Math.max(0, hex.length + end * 2);
+        let hex = ""
+        if (typeof (n) == "string") {
+            hex = n
         }
-        return '0x'.concat(hex.substring(sliceStart, sliceEnd));
+        if (typeof (n) == "number") {
+            hex = hexUtils.toHex(n)
+        }
+        return ethers.utils.hexDataSlice(hex, start, end)
     },
     split(hex: string, _size: number = WORD_LENGTH, isPrefix?: boolean): string[] {
         const str = hex.substring(0, 2) == '0x' ? hex.substring(2) : hex;

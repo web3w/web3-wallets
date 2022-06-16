@@ -5,12 +5,28 @@ import {getChainInfo} from "./rpc";
 import {RPC_API_TIMEOUT} from "../constants";
 
 
-import {privateKeysToAddress, privateKeyToAddress} from "../signature/eip712TypeData";
+import {privateKeysToAddress} from "../signature/eip712TypeData";
+
+export async function getWalletInfo(): Promise<WalletInfo> {
+    const {metamask, walletconnect} = detectWallets()
+    let address = ""
+    let chainId = 1
+    if (metamask) {
+        const accounts = await metamask.enable()
+        address = accounts[0]
+        chainId = metamask.walletProvider?.chainId || 1
+        return {address, chainId}
+    }
+    const accounts = await walletconnect.enable()
+    address = accounts[0]
+    chainId = walletconnect.walletProvider?.chainId || 1
+    return {address, chainId}
+}
 
 export function detectWallets() {
     let metamask: Web3Wallets | undefined
     if (typeof window === 'undefined') {
-        throw "evn not sprot"
+        throw new Error("Only the browser environment is supported")
         // console.warn('not signer fo walletProvider')
     }
     if (window.ethereum) {
@@ -18,7 +34,6 @@ export function detectWallets() {
         // if (walletProvider.overrideIsMetaMask) {
         //     this.provider = walletProvider.provider.providers.find(val => val.isMetaMask)
         // }
-
         if (walletProvider.isMetaMask) {
             metamask = new Web3Wallets('metamask')
         }

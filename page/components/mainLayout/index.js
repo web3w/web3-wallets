@@ -58,7 +58,6 @@ export function MainLayout() {
             const accounts = await wallet.walletProvider.enable() // enable ethereum
             setWallet(wallet)
         }
-
     };
     console.log('MainLayout', wallet)
     const SupportWallet = ["DetectWallets", 'metamask', 'wallet_connect', 'coinbase']
@@ -92,7 +91,9 @@ export function MainLayout() {
                                 label="PeerMetaName">{wallet.walletProvider.peerMetaName}</Descriptions.Item>}
                         </Descriptions>}
                     </Header>
-                    {walletList.length > 0 ? <DetectWallets walletList={walletList}/> : <WalletFunc wallet={wallet}/>}
+                    {walletList.length > 0
+                        ? <DetectWallets walletList={walletList}/>
+                        : <WalletFunc wallet={wallet}/>}
                 </Layout>
             </Layout>
         </AppContext.Provider>

@@ -87,7 +87,7 @@ export async function ethSend(wallet: WalletInfo, callData: LimitedCallSpec): Pr
         || wallet.chainId == 43113 || wallet.chainId == 43114
         || wallet.chainId == 137 || wallet.chainId == 80001
     ) {
-        wallet.offsetGasLimitRatio = wallet.offsetGasLimitRatio || 1.18
+        wallet.offsetGasLimitRatio = wallet.offsetGasLimitRatio || 1.5
     }
 
     if (wallet.offsetGasLimitRatio) {

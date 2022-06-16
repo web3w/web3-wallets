@@ -1,3 +1,7 @@
+export {ethers, Signer, Contract, Wallet, providers, BaseContract, constants, utils} from 'ethers'
+
+export type {ContractInterface} from 'ethers'
+
 export type TokenSchemaNames =
     'erc20'
     | 'erc721'

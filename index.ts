@@ -9,8 +9,11 @@ export type {
     ChainConfig,
     RpcInfo,
     TokenSchemaNames,
-    WalletNames
+    WalletNames,
+    ContractInterface
 } from './src/types'
+
+export {ethers, Signer, Contract, Wallet, providers, BaseContract, constants, utils} from './src/types'
 
 export type {
     EIP712TypedData,
@@ -40,19 +43,19 @@ export {
     hexUtils, assert, schemas
 } from "./src/signature/eip712TypeData"
 
-export {get1559Fee} from './src/utils/fee'
-export {objectClone, itemsIsEquality, isAddress} from './src/utils/hepler'
+export {
+    objectClone, itemsIsEquality, isAddress, stringToBytes, stringToByte32
+} from './src/utils/hepler'
 
 export {
     ethSend, getEstimateGas, getChainRpcUrl, getChainInfo
 } from './src/utils/rpc'
+
 export type {TransactionRequest, TransactionResponse} from './src/utils/rpc'
 
-export {getProvider, detectWallets} from './src/utils/provider'
+export {getWalletInfo, getProvider, detectWallets} from './src/utils/provider'
 
 export {
     CHAIN_NAME, CHAIN_CONFIG, NULL_ADDRESS, NULL_BLOCK_HASH, ETH_TOKEN_ADDRESS, MAX_UINT_256, BigNumber, ZERO
 } from './src/constants'
 
-export {ethers, Signer, Contract, Wallet, providers, BaseContract, constants, utils} from 'ethers'
-export type {ContractInterface} from 'ethers'
