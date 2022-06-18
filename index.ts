@@ -44,12 +44,13 @@ export {
 } from "./src/signature/eip712TypeData"
 
 export {
-    objectClone, itemsIsEquality, isAddress, stringToBytes, stringToByte32
+    objectClone, itemsIsEquality
 } from './src/utils/hepler'
 
 export {
     ethSend, getEstimateGas, getChainRpcUrl, getChainInfo
 } from './src/utils/rpc'
+
 
 export type {TransactionRequest, TransactionResponse} from './src/utils/rpc'
 

@@ -17,6 +17,9 @@ export const hexUtils = {
     isHex(s: string, length?: number): boolean {
         return ethers.utils.isHexString(s, length);
     },
+    isAddress(address: string) {
+        return ethers.utils.isAddress(address)
+    },
     toShortHex(message: string | number | Buffer, isPrefix = true): string {
         const hex = ethers.utils.hexValue(message)
         if (hex.length === 3) {
@@ -102,5 +105,15 @@ export const hexUtils = {
             index = end
         }
         return arr
+    },
+    stringToByte32(str: string) {
+        return ethers.utils.keccak256(
+            ethers.utils.toUtf8Bytes(str)
+        );
+    },
+    stringToBytes(str: string) {
+        return ethers.utils.hexValue(
+            ethers.utils.toUtf8Bytes(str)
+        )
     }
 }

@@ -227,16 +227,15 @@ function encodeObjectData(primaryType, types: EIP712TypedDataField[], message) {
     return hexUtils.hash(abiCoder.encode(encTypes, encValues))
 }
 
-function encodeData(primaryType: string, typeData: EIP712TypedData) {
+export function getEIP712StructHash(primaryType: string, eip712Types: EIP712Types, message: EIP712Message) {
     let encTypes: string[] = []
     let encValues: string[] = []
-    const types = objectClone(typeData.types)
+    const types = objectClone(eip712Types)
     const primaryTypeData = types[primaryType]
     if (types[primaryType]) {
         delete types[primaryType]
         delete types.EIP712Domain
     }
-    const message = typeData.message
     // Add typehash
     encTypes.push('bytes32')
     encValues.push(getEIP712TypeHash(primaryType, primaryTypeData, types))
@@ -269,22 +268,22 @@ function encodeData(primaryType: string, typeData: EIP712TypedData) {
         }
     }
     // console.log(encValues)
-    return abiCoder.encode(encTypes, encValues)
+    return ethers.utils.keccak256(abiCoder.encode(encTypes, encValues))
 }
 
-export function getEIP712StructHash(typeData: EIP712TypedData) {
-    // console.log(primaryType)
-    const primaryType = typeData.primaryType
-    const strBuff = encodeData(primaryType, typeData)
-    return ethers.utils.keccak256(strBuff)
-}
+// export function getEIP712StructHash(typeData: EIP712TypedData) {
+//     // console.log(primaryType)
+//     // const primaryType = typeData.primaryType
+//     const strBuff = encodeData(typeData.primaryType, typeData.types, typeData.message)
+//     return ethers.utils.keccak256(strBuff)
+// }
 
 /**
  * Compute a complete EIP712 hash given a struct hash.
  */
 export function getEIP712Hash(typeData: EIP712TypedData): string {
     const domainHash = getEIP712DomainHash(typeData.domain)
-    const structHash = getEIP712StructHash(typeData)
+    const structHash = getEIP712StructHash(typeData.primaryType, typeData.types, typeData.message)
     return hexUtils.hash(
         hexUtils.concat(['0x1901', domainHash, structHash])
     );
@@ -307,3 +306,5 @@ export function privateKeysToAddress(privateKeys: string[]) {
     }
     return accounts
 }
+
+//Transfer(address,address,uint256)
