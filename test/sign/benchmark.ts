@@ -8,7 +8,6 @@ import {hexUtils} from "../../src/signature/hexUtils";
 import {ecSignHash, joinECSignature} from "../../src/signature/eip712TypeData";
 
 export function ecSignHashWithKey(hash: string, key: string) {
-    // console.log(hash)
     const {v, r, s} = ethjs.ecsign(ethjs.toBuffer(hash), ethjs.toBuffer(key));
     return {
         v,
@@ -39,11 +38,11 @@ export function ecSignHashWithKey(hash: string, key: string) {
     const ecSignMsg1 = ecSignHashWithKey(ethMsgHash1, signerPrivate)
     console.assert(signMsg1.r == ecSignMsg1.r, 'ecSignMessage1')
 
-    try {
-         ecSignHash("0x11", signerPrivate)
-    }catch (err:any){
-        console.log(err.message)
-    }
+    // try {
+    //      ecSignHash("0x11", signerPrivate)
+    // }catch (err:any){
+    //     console.log(err.message)
+    // }
 
 
 

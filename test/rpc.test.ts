@@ -1,17 +1,18 @@
+import {getBlockByNumber, getChainRpcUrl, getTransactionByHash, getTransactionReceipt} from "../src/utils/rpc";
 
-import {getChainRpcUrl} from "../src/utils/rpc";
-import {hexUtils} from "../src/signature/hexUtils";
-
-const seller = '0x9F7A946d935c8Efc7A8329C0d894A69bA241345A';
 (async () => {
-    const chainId = 97
+    const chainId = 4
+    const rpcUrl = await getChainRpcUrl(chainId, true)
+    console.log(rpcUrl)
+    const blockNum = 10862111
+    const block = await getBlockByNumber(rpcUrl, blockNum)
 
+    console.assert(Number(block.result.number) == blockNum)
 
-    // 29865734822577046633707807835512349254952034870712741802666134457736402829313
-
-    const url = "https://segmentfault.com/q/1010000013437141"
-    const ff = await fetch(url, {method: 'HEAD'})
-    const res = await getChainRpcUrl(chainId,true)
-    console.log(res)
+    const txHash = "0xbfe24528d5e90822924687d28d55dc492a65660d205c5619d8116780c69497f6"
+    const receipt = await getTransactionReceipt(rpcUrl, txHash)
+    console.assert(receipt.result.transactionHash == txHash)
+    const tx = await getTransactionByHash(rpcUrl, txHash)
+    console.assert(tx.result.hash == txHash)
 
 })()

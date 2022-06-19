@@ -1,5 +1,8 @@
 export {ethers, Signer, Contract, Wallet, providers, BaseContract, constants, utils} from 'ethers'
 
+
+export type {TransactionRequest, TransactionResponse} from '@ethersproject/abstract-provider'
+
 export type {ContractInterface} from 'ethers'
 
 export type TokenSchemaNames =

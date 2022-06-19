@@ -10,7 +10,8 @@ export type {
     RpcInfo,
     TokenSchemaNames,
     WalletNames,
-    ContractInterface
+    ContractInterface,
+    TransactionRequest, TransactionResponse
 } from './src/types'
 
 export {ethers, Signer, Contract, Wallet, providers, BaseContract, constants, utils} from './src/types'
@@ -44,15 +45,18 @@ export {
 } from "./src/signature/eip712TypeData"
 
 export {
-    objectClone, itemsIsEquality
+    objectClone,
+    itemsIsEquality,
+    fetchJson,
+    fetch,
+    sleep,
+    checkURL
 } from './src/utils/hepler'
 
 export {
-    ethSend, getEstimateGas, getChainRpcUrl, getChainInfo
+    ethSend, getEstimateGas, getChainRpcUrl, getChainInfo, getTransactionReceipt, getBlockByNumber, getTransactionByHash
 } from './src/utils/rpc'
 
-
-export type {TransactionRequest, TransactionResponse} from './src/utils/rpc'
 
 export {getWalletInfo, getProvider, detectWallets} from './src/utils/provider'
 

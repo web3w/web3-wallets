@@ -1,6 +1,6 @@
 {
   "name": "web3-wallets",
-  "version": "2.0.19",
+  "version": "2.0.23",
   "description": "Javascript SDK for Web3 wallets ",
   "main": "lib/index.js",
   "type": "lib/index.d.ts",
@@ -22,12 +22,13 @@
     "@walletconnect/safe-json": "^1.0.0",
     "@walletconnect/types": "^1.7.7",
     "assert": "^2.0.0",
-    "jsonschema": "^1.4.1",
     "bignumber.js": "^9.0.1",
     "buffer": "^6.0.3",
     "eip1193-provider": "^1.0.1",
     "ethers": "^5.5.1",
     "https-browserify": "^1.0.0",
+    "https-proxy-agent": "^5.0.1",
+    "jsonschema": "^1.4.1",
     "os-browserify": "^0.3.0",
     "stream-http": "^3.2.0",
     "url": "^0.11.0"

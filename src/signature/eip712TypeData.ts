@@ -128,7 +128,6 @@ export function signMessage(message: string, privateKey: string): ECSignature {
 export function signTypedData(typedData: EIP712TypedData, privateKey: string): ECSignature {
     const hash = getEIP712Hash(typedData)
     return ecSignHash(hash, privateKey)
-
 }
 
 // hash = 0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f
@@ -271,13 +270,6 @@ export function getEIP712StructHash(primaryType: string, eip712Types: EIP712Type
     return ethers.utils.keccak256(abiCoder.encode(encTypes, encValues))
 }
 
-// export function getEIP712StructHash(typeData: EIP712TypedData) {
-//     // console.log(primaryType)
-//     // const primaryType = typeData.primaryType
-//     const strBuff = encodeData(typeData.primaryType, typeData.types, typeData.message)
-//     return ethers.utils.keccak256(strBuff)
-// }
-
 /**
  * Compute a complete EIP712 hash given a struct hash.
  */
@@ -307,4 +299,3 @@ export function privateKeysToAddress(privateKeys: string[]) {
     return accounts
 }
 
-//Transfer(address,address,uint256)
