@@ -6,6 +6,7 @@ import {RPC_API_TIMEOUT} from "../constants";
 
 
 import {privateKeysToAddress} from "../signature/eip712TypeData";
+import {JsonRpcSigner} from "@ethersproject/providers";
 
 export async function getWalletInfo(): Promise<WalletInfo> {
     const {metamask, walletconnect} = detectWallets()
@@ -29,12 +30,12 @@ export function detectWallets() {
         throw new Error("Only the browser environment is supported")
         // console.warn('not signer fo walletProvider')
     }
-    if (window.ethereum) {
-        const walletProvider = window.ethereum
+    if (window?.ethereum) {
+        const walletProvider = window?.ethereum as JsonRpcSigner | any
         // if (walletProvider.overrideIsMetaMask) {
         //     this.provider = walletProvider.provider.providers.find(val => val.isMetaMask)
         // }
-        if (walletProvider.isMetaMask) {
+        if (walletProvider?.isMetaMask) {
             metamask = new Web3Wallets('metamask')
         }
     }
@@ -74,9 +75,9 @@ export function getProvider(walletInfo: WalletInfo) {
         } else {
             if (window.ethereum && !window.walletProvider || window.ethereum && !window.elementWeb3) {
                 console.log('getProvider:ethereum')
-                walletProvider = window.ethereum
-                if (!window.ethereum.selectedAddress) {
-                    window.ethereum.enable()
+                walletProvider = window?.ethereum as JsonRpcSigner | any
+                if (walletProvider.selectedAddress) {
+                    walletProvider.enable()
                 }
                 walletSigner = new ethers.providers.Web3Provider(walletProvider).getSigner(address)
             }

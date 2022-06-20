@@ -1,6 +1,6 @@
 {
   "name": "web3-wallets",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Javascript SDK for Web3 wallets ",
   "main": "lib/index.js",
   "type": "lib/index.d.ts",
@@ -16,11 +16,11 @@
     "link": "sudo npm link web3-wallets"
   },
   "dependencies": {
-    "@coinbase/wallet-sdk": "^3.0.5",
-    "@walletconnect/client": "^1.7.7",
-    "@walletconnect/qrcode-modal": "^1.7.7",
+    "@coinbase/wallet-sdk": "^3.3.0",
+    "@walletconnect/client": "^1.7.8",
+    "@walletconnect/qrcode-modal": "^1.7.8",
     "@walletconnect/safe-json": "^1.0.0",
-    "@walletconnect/types": "^1.7.7",
+    "@walletconnect/types": "^1.7.8",
     "assert": "^2.0.0",
     "bignumber.js": "^9.0.1",
     "buffer": "^6.0.3",
