@@ -1,6 +1,6 @@
 {
   "name": "web3-wallets",
-  "version": "2.0.23",
+  "version": "2.1.0",
   "description": "Javascript SDK for Web3 wallets ",
   "main": "lib/index.js",
   "type": "lib/index.d.ts",
@@ -25,7 +25,7 @@
     "bignumber.js": "^9.0.1",
     "buffer": "^6.0.3",
     "eip1193-provider": "^1.0.1",
-    "ethers": "^5.5.1",
+    "ethers": "^5.6.9",
     "https-browserify": "^1.0.0",
     "https-proxy-agent": "^5.0.1",
     "jsonschema": "^1.4.1",
