@@ -1,11 +1,17 @@
 import {ethers, utils} from "ethers";
-import {assert, schemas} from "./assert";
-import {hexUtils, abiCoder} from "./hexUtils";
-import {objectClone} from "../utils/hepler";
+import {hexUtils} from "./hexUtils";
+import {objectClone} from "./hepler";
+import {Web3Assert, web3BaseAssert} from "web3-assert";
+import {_TypedDataEncoder as TypedDataEncoder} from "@ethersproject/hash";
+import {AbiCoder} from "@ethersproject/abi";
+import {computePublicKey} from "@ethersproject/signing-key";
+import {arrayify, hexDataSlice, hexZeroPad, joinSignature, splitSignature} from "@ethersproject/bytes";
+import {keccak256} from "@ethersproject/keccak256";
+import {ec as EC} from "elliptic";
 
+const abiCoder = new AbiCoder()
 
-export {hexUtils, assert, schemas, abiCoder}
-
+const assert = new Web3Assert().getValidator()
 
 export interface ECSignature {
     v: number;
@@ -53,9 +59,9 @@ export function createEIP712TypedData(
     message: EIP712Message,
     domain: EIP712Domain
 ): EIP712TypedData {
-    assert.isETHAddressHex('verifyingContract', domain.verifyingContract)
-    assert.isString('primaryType', primaryType)
-    assert.doesConformToSchema('domain', domain, schemas.eip712DomainSchema)
+    web3BaseAssert.isETHAddress({value: domain.verifyingContract, variableName: 'verifyingContract'})
+    web3BaseAssert.isString({value: primaryType, variableName: 'primaryType'})
+    assert.eip712DomainSchema(domain)
     const typedData = {
         types: {
             EIP712Domain: [
@@ -75,7 +81,7 @@ export function createEIP712TypedData(
         message,
         primaryType
     }
-    assert.doesConformToSchema('typedData', typedData, schemas.eip712TypedDataSchema)
+    assert.eip712TypedDataSchema(typedData)
     return typedData
 }
 
@@ -97,8 +103,23 @@ export function splitECSignature(signature: string): ECSignature {
 export function ecSignHash(hash: string, privateKey: string): ECSignature {
     if (!hexUtils.isHex(hash, 32)) throw new Error('Message not hex')
     if (!hexUtils.isHex(privateKey, 32)) throw new Error("Private key error")
-    const ecSign = new ethers.Wallet(privateKey)
-    const sign = ecSign._signingKey().signDigest(hash)
+    const curve = new EC("secp256k1");
+    const keyPair = curve.keyFromPrivate(arrayify(privateKey));
+    const digestBytes = arrayify(hash);
+    if (digestBytes.length !== 32) {
+        // logger.throwArgumentError("bad digest length", "digest", digest);
+    }
+    const signature = keyPair.sign(digestBytes, {canonical: true});
+    const sign = splitSignature({
+        recoveryParam: signature.recoveryParam,
+        r: hexZeroPad("0x" + signature.r.toString(16), 32),
+        s: hexZeroPad("0x" + signature.s.toString(16), 32),
+    })
+
+    // return joinSignature(vrs)
+
+    // const ecSign = new ethers.Wallet(privateKey)
+    // const sign = ecSign._signingKey().signDigest(hash)
     return {
         r: sign.r,
         s: sign.s,
@@ -130,8 +151,8 @@ export function signTypedData(typedData: EIP712TypedData, privateKey: string): E
     return ecSignHash(hash, privateKey)
 }
 
-// hash = 0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f
-export const EIP712_DOMAIN_TYPEHASH = hexUtils.hash("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
+// export const EIP712_DOMAIN_TYPEHASH = hexUtils.hash("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
+export const EIP712_DOMAIN_TYPEHASH = "0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f"
 
 /**
  * Get the hash of the EIP712 domain.
@@ -274,6 +295,17 @@ export function getEIP712StructHash(primaryType: string, eip712Types: EIP712Type
  * Compute a complete EIP712 hash given a struct hash.
  */
 export function getEIP712Hash(typeData: EIP712TypedData): string {
+    const types = objectClone(typeData.types)
+    if (types.EIP712Domain) {
+        delete types.EIP712Domain
+    }
+    return TypedDataEncoder.hash(typeData.domain, types, typeData.message)
+}
+
+/**
+ * Compute a complete EIP712 hash given a struct hash.
+ */
+function HashEIP712(typeData: EIP712TypedData): string {
     const domainHash = getEIP712DomainHash(typeData.domain)
     const structHash = getEIP712StructHash(typeData.primaryType, typeData.types, typeData.message)
     return hexUtils.hash(
@@ -283,8 +315,10 @@ export function getEIP712Hash(typeData: EIP712TypedData): string {
 
 export function privateKeyToAddress(privateKey: string) {
     privateKey = privateKey.substring(0, 2) == '0x' ? privateKey : '0x' + privateKey
-    assert.isHexString("privateKey", privateKey)
-    return new ethers.Wallet(privateKey).address
+    if (!utils.isHexString(privateKey)) throw new Error("Private key is not hex")
+    // return new ethers.Wallet(privateKey).address
+    const publicKey = computePublicKey(privateKey)
+    return hexDataSlice(keccak256(hexDataSlice(publicKey, 1)), 12)
 }
 
 export function privateKeysToAddress(privateKeys: string[]) {

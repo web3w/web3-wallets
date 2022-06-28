@@ -5,8 +5,9 @@ import {getChainInfo} from "./rpc";
 import {RPC_API_TIMEOUT} from "../constants";
 
 
-import {privateKeysToAddress} from "../signature/eip712TypeData";
+import {privateKeysToAddress} from "./eip712TypeData";
 import {JsonRpcSigner} from "@ethersproject/providers";
+import {SignerProvider} from "web3-signer-provider";
 
 export async function getWalletInfo(): Promise<WalletInfo> {
     const {metamask, walletconnect} = detectWallets()
@@ -25,7 +26,7 @@ export async function getWalletInfo(): Promise<WalletInfo> {
 }
 
 export function detectWallets() {
-    let metamask: Web3Wallets | undefined
+    let metamask: Web3Wallets<any> | undefined
     if (typeof window === 'undefined') {
         throw new Error("Only the browser environment is supported")
         // console.warn('not signer fo walletProvider')
@@ -45,8 +46,6 @@ export function detectWallets() {
 
 }
 
-// export function
-
 export function getProvider(walletInfo: WalletInfo) {
     const {chainId, address, privateKeys, rpcUrl} = walletInfo
     const url = {
@@ -63,9 +62,10 @@ export function getProvider(walletInfo: WalletInfo) {
     if (privateKeys && privateKeys.length > 0) {
         const accounts = privateKeysToAddress(privateKeys)
         if (!accounts[address.toLowerCase()]) throw new Error("Private keys does not contain" + address)
-
-        walletSigner = new ethers.Wallet(accounts[address.toLowerCase()], new providers.JsonRpcProvider(url, network))
-        walletProvider = walletSigner
+        const provider = new providers.JsonRpcProvider(url, network)
+        walletSigner = new ethers.Wallet(accounts[address.toLowerCase()], provider)
+        walletProvider = new providers.Web3Provider(new SignerProvider(walletInfo)).getSigner()
+        // walletSigner = walletProvider
     } else {
         // walletSigner = rpcProvider.getSigner(address)
         if (typeof window === 'undefined') {

@@ -1,11 +1,9 @@
-import {ethers, utils} from "ethers";
+import {ethers} from "ethers";
 import {Bytes, concat} from "@ethersproject/bytes";
 import {keccak256} from "@ethersproject/keccak256";
 import {NULL_BLOCK_HASH} from "../constants/index";
 
 export const messagePrefix = "\x19Ethereum Signed Message:\n";
-
-export const abiCoder = new utils.AbiCoder()
 
 const WORD_LENGTH = 32;
 export const hexUtils = {

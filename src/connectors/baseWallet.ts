@@ -15,7 +15,6 @@ export abstract class BaseWallet extends EventEmitter implements IEthereumProvid
         return this.provider.request(args)
     };
 
-    //ProviderAccounts
     async enable(): Promise<ProviderAccounts> {
         return this.provider.request({method: 'eth_requestAccounts'}) // enable ethereum
     }

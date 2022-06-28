@@ -8,10 +8,11 @@ import {
     RequestArguments, WalletInfo,
     WalletNames
 } from "./types";
-import {ethers} from "ethers";
+import {ethers, providers} from "ethers";
 import {JsonRpcSigner} from "@ethersproject/providers";
 import {BaseWallet} from "./connectors/baseWallet"
 import {CHAIN_CONFIG} from "./constants/chain";
+import {SignerProvider} from "web3-signer-provider";
 
 declare global {
     interface Window {
@@ -23,8 +24,8 @@ declare global {
 
 // https://eips.ethereum.org/EIPS/eip-1193#disconnect
 //A JavaScript Ethereum Provider API for consistency across clients and applications.
-export class Web3Wallets extends EventEmitter implements IEthereumProvider {
-    public walletProvider: BaseWallet | undefined
+export class Web3Wallets<T extends BaseWallet> extends EventEmitter implements IEthereumProvider {
+    public walletProvider: any
     public walletSigner: JsonRpcSigner | undefined
     public walletName: WalletNames | undefined
 
@@ -32,11 +33,10 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
         super()
         // bridge?: string, rpc?: { [chainId: number]: string }
         const {address, chainId, bridge, rpcUrl} = options || {}
+        const isBrowser = typeof window !== 'undefined'
 
-        this.walletName = name || 'wallet_connect'
-        if (typeof window === 'undefined') {
-            throw 'not support node evn'
-        } else {
+        if (isBrowser) {
+            this.walletName = name || 'wallet_connect'
             switch (name) {
                 case 'metamask':
                     this.walletProvider = new MetaMaskWallet();
@@ -68,10 +68,6 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
                 case 'coin98':
                     this.walletProvider = new MetaMaskWallet();
                     break;
-                case 'wallet_proxy':
-                    const walletInfo = {address: address || "", chainId: chainId || 1}
-                    // this.walletProvider = new ProxyWallet(walletInfo)
-                    break;
             }
             if (this.walletProvider) {
                 this.walletSigner = new ethers.providers.Web3Provider(this.walletProvider).getSigner()
@@ -80,6 +76,10 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
                     window.walletSigner = this.walletSigner
                 }
             }
+        } else {
+            this.walletName = name || 'wallet_signer'
+            this.walletProvider = new SignerProvider(options)
+            this.walletSigner = new ethers.providers.Web3Provider(this.walletProvider).getSigner()
         }
     }
 
@@ -87,7 +87,7 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
         if (!this.walletProvider) {
             throw new Error('Web3-wallet request error')
         }
-        return this.walletProvider?.request(args)
+        return this.walletProvider.request(args)
     };
 
     async enable(): Promise<ProviderAccounts> {

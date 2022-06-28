@@ -25,7 +25,7 @@ export type {
     EIP712MessageValue,
     ECSignature,
     Signature
-} from "./src/signature/eip712TypeData"
+} from "./src/utils/eip712TypeData"
 
 export {
     createEIP712TypedData,
@@ -40,9 +40,10 @@ export {
     splitECSignature,
     privateKeyToAddress,
     privateKeysToAddress,
-    EIP712_DOMAIN_TYPEHASH,
-    hexUtils, assert, schemas
-} from "./src/signature/eip712TypeData"
+    EIP712_DOMAIN_TYPEHASH
+} from "./src/utils/eip712TypeData"
+
+export { hexUtils} from "./src/utils/hexUtils"
 
 export {
     objectClone,

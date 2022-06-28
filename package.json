@@ -1,12 +1,12 @@
 {
   "name": "web3-wallets",
-  "version": "2.1.1",
-  "description": "Javascript SDK for Web3 wallets ",
+  "version": "2.1.2",
+  "description": "Javascript SDK for Web3 wallets",
   "main": "lib/index.js",
   "type": "lib/index.d.ts",
   "author": "Element Project Developers",
   "scripts": {
-    "release": "tsc && npm publish",
+    "release": "tsc && npm publish && git tag $npm_package_version && git push --tag",
     "dev:tsc": "tsc -w -p tsconfig.json",
     "eslint": "eslint --fix src --ext .ts --max-warnings=0",
     "build:node": "webpack -c config/webpack.node.config.js",
@@ -17,10 +17,7 @@
   },
   "dependencies": {
     "@coinbase/wallet-sdk": "^3.3.0",
-    "@walletconnect/client": "^1.7.8",
-    "@walletconnect/qrcode-modal": "^1.7.8",
-    "@walletconnect/safe-json": "^1.0.0",
-    "@walletconnect/types": "^1.7.8",
+    "@ethersproject/hash": "^5.6.1",
     "assert": "^2.0.0",
     "bignumber.js": "^9.0.1",
     "buffer": "^6.0.3",
@@ -28,10 +25,13 @@
     "ethers": "^5.6.9",
     "https-browserify": "^1.0.0",
     "https-proxy-agent": "^5.0.1",
-    "jsonschema": "^1.4.1",
+    "net": "^1.0.2",
     "os-browserify": "^0.3.0",
     "stream-http": "^3.2.0",
-    "url": "^0.11.0"
+    "tls": "^0.0.1",
+    "url": "^0.11.0",
+    "web3-assert": "^1.0.1",
+    "web3-signer-provider": "^1.0.3"
   },
   "devDependencies": {
     "@babel/preset-react": "^7.16.7",

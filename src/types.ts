@@ -21,7 +21,7 @@ export type WalletNames = 'metamask'
     | 'wallet_connect'
     | 'bitkeep'
     | 'coin98'
-    | 'wallet_proxy'
+    | 'wallet_signer'
 
 
 export interface RpcInfo {

@@ -4,8 +4,8 @@ import secrets from '../../../../secrets.json'
 import * as ethjs from 'ethereumjs-util';
 import {hashMessage} from "@ethersproject/hash";
 import {ecSignMessage, signMessage} from "../../index";
-import {hexUtils} from "../../src/signature/hexUtils";
-import {ecSignHash, joinECSignature} from "../../src/signature/eip712TypeData";
+import {hexUtils} from "../../src/utils/hexUtils";
+import {ecSignHash, joinECSignature} from "../../src/utils/eip712TypeData";
 
 export function ecSignHashWithKey(hash: string, key: string) {
     const {v, r, s} = ethjs.ecsign(ethjs.toBuffer(hash), ethjs.toBuffer(key));
@@ -38,17 +38,7 @@ export function ecSignHashWithKey(hash: string, key: string) {
     const ecSignMsg1 = ecSignHashWithKey(ethMsgHash1, signerPrivate)
     console.assert(signMsg1.r == ecSignMsg1.r, 'ecSignMessage1')
 
-    // try {
-    //      ecSignHash("0x11", signerPrivate)
-    // }catch (err:any){
-    //     console.log(err.message)
-    // }
-
-
 
 })()
 
-
-// const hashAddr = ethers.utils.keccak256(testAddr)
-// const binaryData = ethers.utils.arrayify(testAddr)
 

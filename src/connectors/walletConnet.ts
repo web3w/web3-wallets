@@ -1,7 +1,11 @@
-import WalletConnectClient from '@walletconnect/client'
-import {IConnector, IWalletConnectSession} from '@walletconnect/types'
-import QRCodeModal from '@walletconnect/qrcode-modal'
-import EthereumProvider from "./provider/ethereumProvider";
+
+import {
+    WalletConnectClient,
+    QRCodeModal,
+    IConnector,
+    IWalletConnectSession,
+    WalletConnectProvider
+} from "web3-signer-provider";
 import {WalletNames} from "../types";
 import {BaseWallet} from "./baseWallet";
 import {CHAIN_CONFIG, WALLET_CONNECT_BRIDGE} from "../constants";
@@ -40,7 +44,7 @@ export class ConnectWallet extends BaseWallet {
             this.walletName = "wallet_connect";
             this.peerMetaName = peerMeta?.name || ""
 
-            this.provider = new EthereumProvider({
+            this.provider = new WalletConnectProvider({
                 rpc: this.rpcList,
                 chainId,
                 connector
@@ -77,7 +81,7 @@ export class ConnectWallet extends BaseWallet {
 
             this.peerMetaName = peerMeta?.name || ""
 
-            this.provider = new EthereumProvider({
+            this.provider = new WalletConnectProvider({
                 rpc: this.rpcList,
                 chainId,
                 connector

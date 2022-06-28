@@ -77,7 +77,6 @@ export class MetaMaskWallet extends BaseWallet {
         })
     }
 
-
     async switchEthereumChain(chainId: string, rpcUrl?: string) {
         try {
             await this.provider.request({
@@ -100,7 +99,6 @@ export class MetaMaskWallet extends BaseWallet {
         }
     }
 
-
     async isMetamaskLock(): Promise<boolean> {
         return this.provider._metamask.isUnlocked()
     }
@@ -113,7 +111,6 @@ export class MetaMaskWallet extends BaseWallet {
         this.address = accounts[0]
         return accounts
     }
-
 
     async switchBSCTEST() {
         const rpcUrl = 'https://data-seed-prebsc-1-s1.binance.org:8545'

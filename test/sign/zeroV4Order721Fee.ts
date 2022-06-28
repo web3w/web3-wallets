@@ -1,13 +1,7 @@
-
 import {
-    getEIP712Hash, hexUtils,
-} from "../../src/signature/eip712TypeData";
+    getEIP712Hash
+} from "../../src/utils/eip712TypeData";
 
-// const fooo = hexUtils.split("0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470",32,true)
-// console.log(fooo)
-
-const foo = hexUtils.hash([])
-// console.log(foo)
 const typedData = {
     "types": {
         "EIP712Domain": [],
@@ -97,15 +91,24 @@ const typedData = {
         "nonce": "10",
         "erc20Token": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
         "erc20TokenAmount": "1",
-        "fees": [],
+        "fees": [
+            {
+                "recipient": "0x7538262Ae993ca117A0e481f908209137A46268e",
+                "amount": "1000000000000",
+                "feeData": "0x23"
+            }
+        ],
         "erc721Token": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
         "erc721TokenId": "2",
         "erc721TokenProperties": []
     }
 }
 
-
 const hash1 = getEIP712Hash(typedData)
-const orderHash = '0xfc61e1f209df8981854756c6377aae52cb7587f877f49fc6b5a9400c8af9e3fd'
-console.assert(hash1==orderHash,"error")
+const orderHash = '0xa4f5c10ad058390a875d9a723a21ba44a1b99a8a6395c2f1406f3af95e53e781'
+console.assert(hash1 == orderHash, "error")
 
+// EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)
+// 0x7a7569e89575b3031dc2d03d45853a2c84dd95c5ed4e3d82ab958bf156ec969f
+// ZeroEx
+// 1.0.0

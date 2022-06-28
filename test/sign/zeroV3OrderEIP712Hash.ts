@@ -1,6 +1,8 @@
 import {ethers, utils} from 'ethers'
-import {EIP712Domain, getEIP712DomainHash, getEIP712Hash, hexUtils} from "../../src/signature/eip712TypeData";
+import {EIP712Domain, getEIP712DomainHash, getEIP712Hash} from "../../src/utils/eip712TypeData";
 import BigNumber from "bignumber.js";
+import {hexUtils} from "../../src/utils/hexUtils";
+import {_TypedDataEncoder} from "ethers/lib/utils";
 
 const abiCoder = new utils.AbiCoder()
 const typedData = {
@@ -221,11 +223,19 @@ function signHash() {
 }
 
 const successHash = "0x81127ae2359f698f8b27e31172e73dd2ba88c5e1e056985251075ec94ed145f2"
-//0x20a92ab9a8c21bb464adf47af4d641be8efda957ce52981ae3deeec95446d509
-const hash = signHash() //0x20a92ab9a8c21bb464adf47af4d641be8efda957ce52981ae3deeec95446d509
+
+const hash = signHash()
+
 console.log("Sign Hash Right:", hash)
 const hash1 = getEIP712Hash(typedData)
 console.log("Sign Hash:", hash1)
+
+if (typedData.types.EIP712Domain) {
+
+    // delete typedData.types.EIP712Domain
+}
+const typeHash1 = _TypedDataEncoder.hash(typedData.domain, {Order:typedData.types.Order}, typedData.message)
+console.log(typeHash1)
 
 
 

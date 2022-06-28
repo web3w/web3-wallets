@@ -3,6 +3,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const {CleanWebpackPlugin} = require('clean-webpack-plugin')
 const webpack = require('webpack')
 //
+// devtool: 'inline-source-map',
 // plugins: [
 //   new HtmlWebpackPlugin({ template: path.join(__dirname, 'index.html') }),
 //   new webpack.HotModuleReplacementPlugin()
@@ -88,7 +89,6 @@ module.exports = {
         compress: true,
         port: 9002
     },
-    devtool: 'inline-source-map',
     resolve: {
         extensions: ['.ts', '.js', '.tsx', '.json'],
         fallback: {

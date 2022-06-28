@@ -1,5 +1,5 @@
 import {ethers, utils} from 'ethers'
-import {getEIP712Hash} from "../../src/signature/eip712TypeData";
+import {getEIP712Hash} from "../../src/utils/eip712TypeData";
 
 const typedData = {
     types: {

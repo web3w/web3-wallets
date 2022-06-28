@@ -1,41 +1,38 @@
-
 import {
-    getEIP712Hash, getEIP712StructHash, hexUtils,
-} from "../../src/signature/eip712TypeData";
+    getEIP712Hash, getEIP712StructHash,
+} from "../../src/utils/eip712TypeData";
 
-// const fooo = hexUtils.split("0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470",32,true)
-// console.log(fooo)
 
 export const SEAPORT_CONTRACT_NAME = "Seaport";
 export const SEAPORT_CONTRACT_VERSION = "1.1";
 export const EIP_712_ORDER_TYPE = {
     OrderComponents: [
-        { name: "offerer", type: "address" },
-        { name: "zone", type: "address" },
-        { name: "offer", type: "OfferItem[]" },
-        { name: "consideration", type: "ConsiderationItem[]" },
-        { name: "orderType", type: "uint8" },
-        { name: "startTime", type: "uint256" },
-        { name: "endTime", type: "uint256" },
-        { name: "zoneHash", type: "bytes32" },
-        { name: "salt", type: "uint256" },
-        { name: "conduitKey", type: "bytes32" },
-        { name: "counter", type: "uint256" },
+        {name: "offerer", type: "address"},
+        {name: "zone", type: "address"},
+        {name: "offer", type: "OfferItem[]"},
+        {name: "consideration", type: "ConsiderationItem[]"},
+        {name: "orderType", type: "uint8"},
+        {name: "startTime", type: "uint256"},
+        {name: "endTime", type: "uint256"},
+        {name: "zoneHash", type: "bytes32"},
+        {name: "salt", type: "uint256"},
+        {name: "conduitKey", type: "bytes32"},
+        {name: "counter", type: "uint256"},
     ],
     OfferItem: [
-        { name: "itemType", type: "uint8" },
-        { name: "token", type: "address" },
-        { name: "identifierOrCriteria", type: "uint256" },
-        { name: "startAmount", type: "uint256" },
-        { name: "endAmount", type: "uint256" },
+        {name: "itemType", type: "uint8"},
+        {name: "token", type: "address"},
+        {name: "identifierOrCriteria", type: "uint256"},
+        {name: "startAmount", type: "uint256"},
+        {name: "endAmount", type: "uint256"},
     ],
     ConsiderationItem: [
-        { name: "itemType", type: "uint8" },
-        { name: "token", type: "address" },
-        { name: "identifierOrCriteria", type: "uint256" },
-        { name: "startAmount", type: "uint256" },
-        { name: "endAmount", type: "uint256" },
-        { name: "recipient", type: "address" },
+        {name: "itemType", type: "uint8"},
+        {name: "token", type: "address"},
+        {name: "identifierOrCriteria", type: "uint256"},
+        {name: "startAmount", type: "uint256"},
+        {name: "endAmount", type: "uint256"},
+        {name: "recipient", type: "address"},
     ],
 };
 // console.log(foo)
@@ -84,7 +81,7 @@ const typedData = {
     }
 }
 
-const hash1 = getEIP712StructHash(typedData.primaryType,EIP_712_ORDER_TYPE,typedData.message)
+const hash1 = getEIP712StructHash(typedData.primaryType, EIP_712_ORDER_TYPE, typedData.message)
 const orderHash = '0xa1dc54ca93f82077855645df0a030fd8c242a13cd4e0c29682ab88a927524a1d'
-console.assert(hash1==orderHash,"error")
+console.assert(hash1 == orderHash, "error")
 

@@ -10,7 +10,6 @@ const DEFAULT_ETH_JSONRPC_URL = "https://mainnet-infura.wallet.coinbase.com"
 const DEFAULT_CHAIN_ID = 1;
 
 export class CoinbaseWallet extends BaseWallet {
-    // public ethereum: WalletLinkProvider
     public walletName: WalletNames = 'coinbase'
     public provider: any
     public address: string = ''

@@ -95,7 +95,7 @@ export function checkURL(URL: string) {
 export async function fetchJson(url: string, options?: RequestInit & {
     timeout?: number,
     proxyUrl?: string
-}) {
+}):Promise<Response> {
     const {timeout, proxyUrl} = options || {}
     if (!checkURL(url)) throw new Error("error url:" + url)
     if (proxyUrl && !checkURL(proxyUrl)) throw new Error("error proxyUrl:" + url)
