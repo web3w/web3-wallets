@@ -7,6 +7,25 @@ export function objectClone(obj: object) {
     return JSON.parse(JSON.stringify(obj))
 }
 
+export function toFixed(x): string | number {
+    if (Math.abs(Number(x)) < 1.0) {
+        let e = parseInt(x.toString().split('e-')[1]);
+        if (e) {
+            x *= Math.pow(10, e - 1);
+            x = '0.' + (new Array(e)).join('0') + x.toString().substring(2);
+        }
+    } else {
+        let e = parseInt(x.toString().split('+')[1]);
+        if (e > 20) {
+            e -= 20;
+            x /= Math.pow(10, e);
+            x += (new Array(e + 1)).join('0');
+        }
+    }
+    return x;
+}
+
+
 export function itemsIsEquality(items: string[]) {
     return items.every(el => el === items[0])
 }
@@ -95,7 +114,7 @@ export function checkURL(URL: string) {
 export async function fetchJson(url: string, options?: RequestInit & {
     timeout?: number,
     proxyUrl?: string
-}):Promise<Response> {
+}): Promise<Response> {
     const {timeout, proxyUrl} = options || {}
     if (!checkURL(url)) throw new Error("error url:" + url)
     if (proxyUrl && !checkURL(proxyUrl)) throw new Error("error proxyUrl:" + url)

@@ -1,8 +1,8 @@
 import {message} from 'antd';
 import {Button, notification, Space} from "antd";
 import React, {useContext} from "react";
-import {signMessage, signTypedData, RPC_PROVIDER} from '../js/index'
-import {ethers} from "../../../index";
+import {signMessage, signTypedData, RPC_PROVIDER} from '../js'
+import {ethers} from 'web3-wallets';
 import {AppContext} from '../AppContext'
 
 export function CommonFuncBtn() {

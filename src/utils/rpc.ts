@@ -5,7 +5,6 @@ import {ChainConfig, LimitedCallSpec, WalletInfo, TransactionRequest, Transactio
 import {getProvider} from "./provider";
 import {CHAIN_CONFIG, BigNumber} from '../constants'
 import {fetchJson, fetch} from "./hepler";
-import {Result} from "antd";
 
 
 export async function getFeeHistory(rpcUrl: string, blockRange: number, percentiles: number[]) {

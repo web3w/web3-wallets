@@ -1,9 +1,8 @@
-
 import {
     WalletConnectClient,
-    QRCodeModal,
     IConnector,
-    IWalletConnectSession,
+    IRPCMap,
+    // IWalletConnectSession,
     WalletConnectProvider
 } from "web3-signer-provider";
 import {WalletNames} from "../types";
@@ -12,6 +11,7 @@ import {CHAIN_CONFIG, WALLET_CONNECT_BRIDGE} from "../constants";
 
 // const signingMethods = ['eth_signTypedData', 'eth_signTypedData_v4', 'eth_sign', 'personal_sign', 'eth_sendTransaction']
 
+const bridge = "https://bridge.walletconnect.org"
 
 export class ConnectWallet extends BaseWallet {
     public walletName: WalletNames = 'wallet_connect'//
@@ -20,23 +20,23 @@ export class ConnectWallet extends BaseWallet {
     // public connector: IConnector
     // public account: string = ''
     public chainId: number = 0
-    public rpcList: { [chainId: number]: string }
+    public rpcList: IRPCMap
 
     // Create a connector
     constructor(config: { bridge?: string, rpc?: { [chainId: number]: string } }) {
         super()
-        const bridge = config.bridge || WALLET_CONNECT_BRIDGE.urls[0]
-
+        const bridge = config.bridge || WALLET_CONNECT_BRIDGE.urls[0] 
         let connector = new WalletConnectClient({
             bridge,// Required
-            qrcodeModal: QRCodeModal
+            // qrcodeModal: QRCodeModal
         })
 
         this.rpcList = config.rpc || {[this.chainId]: CHAIN_CONFIG[this.chainId].rpcs[0]}
 
         const walletStr = localStorage.getItem('walletconnect')
         if (walletStr) {
-            const walletSession: IWalletConnectSession = <IWalletConnectSession>JSON.parse(walletStr)
+            //IWalletConnectSession
+            const walletSession = JSON.parse(walletStr)
             connector = new WalletConnectClient({session: walletSession})
             const {chainId, accounts, peerMeta} = walletSession
             this.address = accounts[0]
@@ -45,7 +45,8 @@ export class ConnectWallet extends BaseWallet {
             this.peerMetaName = peerMeta?.name || ""
 
             this.provider = new WalletConnectProvider({
-                rpc: this.rpcList,
+                rpcMap: this.rpcList,
+                bridge,
                 chainId,
                 connector
             })
@@ -82,7 +83,8 @@ export class ConnectWallet extends BaseWallet {
             this.peerMetaName = peerMeta?.name || ""
 
             this.provider = new WalletConnectProvider({
-                rpc: this.rpcList,
+                bridge,
+                rpcMap: this.rpcList,
                 chainId,
                 connector
             })

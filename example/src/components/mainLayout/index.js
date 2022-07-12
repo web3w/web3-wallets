@@ -1,18 +1,16 @@
 import {message, Layout, Descriptions, Menu} from 'antd';
-import React, {useState} from "react";
-
-import {AppContext} from '../AppContext'
-import {FileOutlined} from '@ant-design/icons';
+import React, {useContext, useState} from "react";
+import "../css/index.css"
+import {Context} from '../AppContext'
 import {DetectWallets} from "./DetectWallets";
-import "./index.css"
-import * as walletSDK from '../../../index'
-import {WalletFunc} from "./WalletFunc";
+import * as walletSDK from 'web3-wallets'
+// import {WalletFunc} from "./WalletFunc";
 
 
 const {Header, Content, Footer, Sider} = Layout;
 
 export function MainLayout() {
-    const [wallet, setWallet] = useState({});
+    const {wallet, setWallet} = useContext(Context);
     const [collapsed, setCollapsed] = useState(false);
     const [walletList, setWalletList] = useState([]);
     const onCollapse = (value) => {
@@ -21,6 +19,7 @@ export function MainLayout() {
 
     const selectWallet = async (obj) => {
         setWalletList([]);
+        debugger
         if (obj.key == 'DetectWallets') {
             setWallet({})
             const wallets = walletSDK.detectWallets()
@@ -28,7 +27,7 @@ export function MainLayout() {
             setWalletList(walletList);
             return
         }
-        const wallet = new walletSDK.Web3Wallets(obj.key)
+        const wallet = new walletSDK.Web3Wallets({name: obj.key})
         if (obj.key == 'metamask') {
             const accounts = await wallet.walletProvider.enable() // enable ethereum
             setWallet(wallet)
@@ -62,15 +61,16 @@ export function MainLayout() {
     console.log('MainLayout', wallet)
     const SupportWallet = ["DetectWallets", 'metamask', 'wallet_connect', 'coinbase']
     return (
-        <AppContext.Provider value={[wallet, setWallet]}>
+        // <AppContext.Provider value={[wallet, setWallet]}>
             <Layout style={{minHeight: '100vh'}}>
                 <Sider collapsible collapsed={collapsed} onCollapse={onCollapse}>
-                    <div className="logo">Web3 Wallets</div>
-                    <Menu theme="dark" defaultSelectedKeys={['DetectWallets']} mode="inline"
+                    <div className="logo"></div>
+                    <Menu theme="dark"
+                          defaultSelectedKeys={['DetectWallets']}
                           onClick={selectWallet}>
                         {
                             SupportWallet.map(val => (
-                                <Menu.Item key={val} icon={<FileOutlined/>}>
+                                <Menu.Item key={val} >
                                     {val}
                                 </Menu.Item>
                             ))
@@ -91,12 +91,11 @@ export function MainLayout() {
                                 label="PeerMetaName">{wallet.walletProvider.peerMetaName}</Descriptions.Item>}
                         </Descriptions>}
                     </Header>
-                    {walletList.length > 0
-                        ? <DetectWallets walletList={walletList}/>
-                        : <WalletFunc wallet={wallet}/>}
+                   <DetectWallets />
+                    {/*{walletList.length > 0 && <WalletFunc wallet={wallet}/>}*/}
                 </Layout>
             </Layout>
-        </AppContext.Provider>
+        // </AppContext.Provider>
     )
 }
 

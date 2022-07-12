@@ -21,6 +21,7 @@ export type WalletNames = 'metamask'
     | 'wallet_connect'
     | 'bitkeep'
     | 'coin98'
+    | 'tron_link'
     | 'wallet_signer'
 
 
@@ -35,6 +36,7 @@ export interface RpcInfo {
 export interface WalletInfo {
     chainId: number
     address: string
+    name?: WalletNames
     privateKeys?: string[]
     rpcUrl?: RpcInfo
     port?: number
@@ -79,10 +81,6 @@ export interface ProviderConnectInfo {
 }
 
 export type  ProviderAccounts = string[];
-
-export interface EIP1102Request extends RequestArguments {
-    method: "eth_requestAccounts";
-}
 
 export interface SimpleEventEmitter {
     // add listener

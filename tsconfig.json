@@ -1,5 +1,6 @@
 {
   "include": [
+    "./page/**/*.tsx",
     "./src/**/*",
     "./index.ts"
   ],
@@ -12,15 +13,13 @@
   "compilerOptions": {
     "baseUrl": "./src",
     "paths": {},
-    // This must be specified if "paths" is.
+    "jsx": "react",
     "outDir": "./lib",
     "declaration": true,
     "target": "ES2017",
     /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', 'ES2018', 'ES2019', 'ES2020', or 'ESNEXT'. */
     "module": "commonjs",
-    /* 增加 type  类型的检查 */
     "isolatedModules": true,
-    // 支持导入json模块
     "strict": true,
     /* Enable all strict type-checking options. */
     "esModuleInterop": true,
@@ -30,7 +29,7 @@
     "forceConsistentCasingInFileNames": true,
     "downlevelIteration": true,
     "lib": [
-      "es5",
+      "es7",
       "dom",
       "es6",
       "es2015.promise"
