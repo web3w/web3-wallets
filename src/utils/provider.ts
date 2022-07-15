@@ -1,6 +1,6 @@
 import {ethers, providers, Signer} from "ethers";
 import {Web3Wallets} from "../index";
-import {WalletNames, WalletInfo, JsonRpcRequest} from "../types";
+import {WalletNames, WalletInfo} from "../types";
 import {getChainInfo} from "./rpc";
 import {RPC_API_TIMEOUT} from "../constants";
 
@@ -33,7 +33,7 @@ export async function getWalletInfo(): Promise<WalletInfo> {
     return {address, chainId}
 }
 
-export function getWalletName(): WalletNames {
+export function getWalletName(): string {
     if (typeof window === 'undefined') {
         return "wallet_signer"
     }

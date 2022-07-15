@@ -1,9 +1,7 @@
 import {
-    WalletConnectClient,
     IConnector,
     IRPCMap,
-    // IWalletConnectSession,
-    WalletConnectProvider
+    WalletProvider
 } from "web3-signer-provider";
 import {WalletNames} from "../types";
 import {BaseWallet} from "./baseWallet";
@@ -25,8 +23,8 @@ export class ConnectWallet extends BaseWallet {
     // Create a connector
     constructor(config: { bridge?: string, rpc?: { [chainId: number]: string } }) {
         super()
-        const bridge = config.bridge || WALLET_CONNECT_BRIDGE.urls[0] 
-        let connector = new WalletConnectClient({
+        const bridge = config.bridge || WALLET_CONNECT_BRIDGE.urls[0]
+        let provider = new WalletProvider({
             bridge,// Required
             // qrcodeModal: QRCodeModal
         })
@@ -37,28 +35,28 @@ export class ConnectWallet extends BaseWallet {
         if (walletStr) {
             //IWalletConnectSession
             const walletSession = JSON.parse(walletStr)
-            connector = new WalletConnectClient({session: walletSession})
+            provider = new WalletProvider({storageId: 'walletconnect'})
+
             const {chainId, accounts, peerMeta} = walletSession
             this.address = accounts[0]
             this.chainId = Number(chainId)
             this.walletName = "wallet_connect";
             this.peerMetaName = peerMeta?.name || ""
 
-            this.provider = new WalletConnectProvider({
-                rpcMap: this.rpcList,
+            this.provider = new WalletProvider({
                 bridge,
                 chainId,
-                connector
-            })
+                connector:provider.connector
+            },this.rpcList)
             this.provider.enable()
         }
         // console.log('connector', this.connector)
         // Check if connection is already established
-        if (!connector.connected) {
-            // create new session
-            // connector.createSession()
-            this.provider = connector
-        }
+        // if (!connector.connected) {
+        //     // create new session
+        //     // connector.createSession()
+        //     this.provider = connector
+        // }
 
     };
 
@@ -82,31 +80,16 @@ export class ConnectWallet extends BaseWallet {
 
             this.peerMetaName = peerMeta?.name || ""
 
-            this.provider = new WalletConnectProvider({
+            this.provider = new WalletProvider({
                 bridge,
-                rpcMap: this.rpcList,
-                chainId,
-                connector
-            })
+                chainId
+            },this.rpcList)
+
             this.provider.enable()
             this.emit('connect', error, payload)
         })
 
-        connector.on('session_update', (error, payload) => {
-            debugger
-            if (error) {
-                throw error
-            }
-            console.log('session_update', payload)
-            // Get updated accounts and chainId
-            const {accounts, chainId} = payload.params[0]
-            this.chainId = chainId
-            this.address = accounts[0]
-            this.emit('session_update', {error, payload})
-        })
-
         connector.on('disconnect', (error) => {
-            debugger
             if (error) {
                 throw error
             }
@@ -127,92 +110,6 @@ export class ConnectWallet extends BaseWallet {
     }
 
 }
-
-//
-//   async sendTransaction(tx) {
-//     this.connector.sendTransaction(tx)
-//       .then((result) => {
-//         // Returns transaction id (hash)
-//         console.log(result)
-//       })
-//       .catch((error) => {
-//         // Error returned when rejected
-//         console.error(error)
-//       })
-//   }
-//
-//   async signTransaction(tx) {
-//     this.connector.signTransaction(tx)
-//       .then((result) => {
-//         // Returns transaction id (hash)
-//         console.log(result)
-//       })
-//       .catch((error) => {
-//         // Error returned when rejected
-//         console.error(error)
-//       })
-//   }
-//
-//   async signMessage(message: string) {
-//     const msgParams = [
-//       this.address                          // Required
-//       // keccak256("\x19Ethereum Signed Message:\n" +  message.length + message))    // Required
-//     ]
-//     this.connector.signMessage(msgParams)
-//       .then((result) => {
-//         // Returns transaction id (hash)
-//         console.log(result)
-//       })
-//       .catch((error) => {
-//         // Error returned when rejected
-//         console.error(error)
-//       })
-//   }
-//
-//   async signTypedData(typedData: any) {
-//     const msgParams = [
-//       this.address,                            // Required
-//       typedData   // Required
-//     ]
-//     this.connector.signTypedData(msgParams)
-//       .then((result) => {
-//         // Returns transaction id (hash)
-//         console.log(result)
-//       })
-//       .catch((error) => {
-//         // Error returned when rejected
-//         console.error(error)
-//       })
-//   }
-//
-//   async customRequest(typedData: any) {
-//     const customRequest = {
-//       id: 1337,
-//       jsonrpc: '2.0',
-//       method: 'eth_signTransaction',
-//       params: [
-//         {
-//           from: this.address,
-//           to: '0x89D24A7b4cCB1b6fAA2625Fe562bDd9A23260359',
-//           data: '0x',
-//           gasPrice: '0x02540be400',
-//           gas: '0x9c40',
-//           value: '0x00',
-//           nonce: '0x0114'
-//         }
-//       ]
-//     }
-//     this.connector.sendCustomRequest(customRequest)
-//       .then((result) => {
-//         // Returns transaction id (hash)
-//         console.log(result)
-//       })
-//       .catch((error) => {
-//         // Error returned when rejected
-//         console.error(error)
-//       })
-//   }
-// }
 
 
 

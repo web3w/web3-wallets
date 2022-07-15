@@ -36,7 +36,7 @@ export interface RpcInfo {
 export interface WalletInfo {
     chainId: number
     address: string
-    name?: WalletNames
+    name?: string
     privateKeys?: string[]
     rpcUrl?: RpcInfo
     port?: number
@@ -135,13 +135,40 @@ export interface ChainConfig {
     rpcWorking?: boolean
 }
 
-export type JsonRpcId = string | number
-export type JsonRpcParams<T> = T[] | Record<string, T>
+// export type JsonRpcId = string | number
+// export type JsonRpcParams<T> = T[] | Record<string, T>
+//
+// export interface JsonRpcRequest<T> {
+//     jsonrpc: '2.0'
+//     id: JsonRpcId
+//     method: string
+//     params: JsonRpcParams<T>
+// }
 
-export interface JsonRpcRequest<T> {
-    jsonrpc: '2.0'
-    id: JsonRpcId
-    method: string
-    params: JsonRpcParams<T>
+export interface JsonRpcError {
+    id: number;
+    jsonrpc: string;
+    error: ErrorResponse;
+}
+
+export interface ErrorResponse {
+    code: number;
+    message: string;
+    data?: string;
+}
+
+export interface JsonRpcResult<T = any> {
+    id: number;
+    jsonrpc: string;
+    result: T;
+}
+
+export type JsonRpcResponse<T = any> = JsonRpcResult<T> | JsonRpcError;
+
+export interface JsonRpcPayload {
+    jsonrpc: string;
+    method: string;
+    params?: any[];
+    id?: string | number;
 }
 

@@ -1,9 +1,9 @@
 
 import {Web3Wallets} from "../src/index";
-import secrets from '../../../secrets.json'
+
 (async () => {
     const chainId = 4
-    const wallet = new Web3Wallets({chainId,privateKeys:secrets.privateKeys})
+    const wallet = new Web3Wallets({name:"wallet_connect",chainId})
 
     const blockNow = await wallet.getBlock()
     const blockNum = await wallet.getBlockNumber()

@@ -1,9 +1,9 @@
 import {MetaMaskWallet} from './connectors/metamaskWallet'
 import {CoinbaseWallet} from './connectors/coinbaseWallet'
-import {ConnectWallet} from './connectors/walletConnet'
+// import {ConnectWallet} from './connectors/walletConnet'
 import EventEmitter from 'events'
 import {
-    IEthereumProvider,
+    IEthereumProvider, JsonRpcPayload, JsonRpcResponse,
     ProviderAccounts,
     RequestArguments, WalletInfo,
     WalletNames
@@ -11,7 +11,7 @@ import {
 import {ethers, providers} from "ethers";
 import {ExternalProvider, JsonRpcSigner} from "@ethersproject/providers";
 import {BaseWallet} from "./connectors/baseWallet"
-import {SignerProvider} from "web3-signer-provider";
+import {SignerProvider, WalletProvider} from "web3-signer-provider";
 import {getWalletName} from "./utils/provider";
 import {Buffer} from "buffer";
 
@@ -30,16 +30,18 @@ declare global {
 export class Web3Wallets extends EventEmitter implements IEthereumProvider {
     public walletProvider: ExternalProvider | any
     public walletSigner: JsonRpcSigner
-    public walletName: WalletNames
+    public walletName: string
 
     constructor(wallet?: Partial<WalletInfo>) {
         super()
-        const {name, chainId, bridge, rpcUrl} = wallet || {}
+        // const {name, rpcUrl} = wallet || {}
+        const bridge = wallet?.bridge || "https://bridge.walletconnect.org"
+        const chainId = wallet?.chainId || 1
         const isBrowser = typeof window !== 'undefined'
 
         if (isBrowser) {
             window.Buffer = Buffer;
-            this.walletName = name || getWalletName()
+            this.walletName = wallet?.name || getWalletName()
             switch (this.walletName) {
                 case 'metamask':
                     this.walletProvider = new MetaMaskWallet();
@@ -48,10 +50,10 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
                     this.walletProvider = new CoinbaseWallet();
                     break;
                 case 'wallet_connect':
-                    const conf = {
-                        bridge
-                    }
-                    this.walletProvider = new ConnectWallet(conf);
+                    // const conf = {
+                    //     bridge
+                    // }
+                    this.walletProvider = new WalletProvider({bridge, chainId});
                     break;
                 case 'token_pocket':
                     this.walletProvider = new MetaMaskWallet();
@@ -75,8 +77,12 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
                 throw new Error("Wallet provider is undefind")
             }
         } else {
-            this.walletName = name || 'wallet_signer'
-            this.walletProvider = new SignerProvider({chainId: wallet?.chainId, privateKeys: wallet?.privateKeys})
+            this.walletName = wallet?.name || 'wallet_signer'
+            if (this.walletName == 'wallet_connect') {
+                this.walletProvider = new WalletProvider({bridge, chainId});
+            } else {
+                this.walletProvider = new SignerProvider({chainId: wallet?.chainId, privateKeys: wallet?.privateKeys})
+            }
             this.walletSigner = new ethers.providers.Web3Provider(this.walletProvider).getSigner()
         }
     }
@@ -87,6 +93,11 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
         }
         return this.walletProvider.request(args)
     };
+
+    public async sendAsync(payload: JsonRpcPayload, callback: (error: Error | null, result?: JsonRpcResponse) => void) {
+        const res = await this.request(payload) as JsonRpcResponse
+        callback(null, res)
+    }
 
     async enable(): Promise<ProviderAccounts> {
         if (!this.walletProvider) {

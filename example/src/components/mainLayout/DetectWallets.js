@@ -1,28 +1,27 @@
-import {Button, Col, Row, Divider, List, message, Radio, Space, Card} from "antd";
+import {Button, Col, Row} from "antd";
 import React, {useContext, useEffect, useState} from "react";
 import {Context} from '../AppContext'
 import {detectWallets, getWalletInfo} from 'web3-wallets';
 
-// import {
-//     WalletConnectClient,
-//     QRCodeModal,
-//     IConnector,
-//     IWalletConnectSession,
-//     WalletConnectProvider
-// } from "web3-signer-provider";
 
-// import {QRCodeModal} from "web3-signer-provider"
-
-
-export function DetectWallets(props) {
+export function DetectWallets() {
     const {setWallet} = useContext(Context);
     const [wallets, setWallets] = useState([])
-    
+
     const getWallet = async (action) => {
         const wallet = await getWalletInfo()
         alert(wallet.address)
     }
     useEffect(() => {
+
+        // if (obj.key == 'detectWallets') {
+        //     setWallet({})
+        //     const wallets = walletSDK.detectWallets()
+        //     const walletList = Object.values(wallets)
+        //     setWalletList(walletList);
+        //     return
+        // }
+
         // message.success("DetectWallets Init");
         const {metamask, coinbase, walletconnect} = detectWallets()
         setWallets([metamask, coinbase, walletconnect])
@@ -39,7 +38,8 @@ export function DetectWallets(props) {
                 <Col span={12} offset={6}>
                     {
                         wallets.map(item => (
-                            <Button style={{margin: 10}} onClick={() => setWallet(item)}>{item.walletName}</Button>))
+                            <Button key={item.walletName} style={{margin: 10}}
+                                    onClick={() => setWallet(item)}>{item.walletName}</Button>))
                     }
                 </Col>
             </Row>

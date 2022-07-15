@@ -25,7 +25,7 @@ export class MetaMaskWallet extends BaseWallet {
             this.chainId = Number(this.provider.networkVersion)
             this.address = this.provider.selectedAddress
         } else {
-            throw 'Please install wallet'
+            throw new Error('Please install wallet')
         }
 
         // 判断钱包
