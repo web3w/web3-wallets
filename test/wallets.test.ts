@@ -1,7 +1,11 @@
 
 import {Web3Wallets} from "../src/index";
 import secrets from '../../../secrets.json'
+import {web3BaseAssert} from "web3-assert";
 (async () => {
+
+    web3BaseAssert.isETHAddress({value: "0xf8becacec90bfc361c0a2c720839e08405a72f6d", variableName: 'verifyingContract'})
+
     const chainId = 4
     const wallet = new Web3Wallets({chainId,privateKeys:secrets.privateKeys})
 

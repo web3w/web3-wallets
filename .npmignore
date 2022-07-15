@@ -6,7 +6,7 @@
 /page/
 /proxy/
 /wallet/
-/config/
+/example/
 .eslintignore
 .eslintrc.json
 .gitignore

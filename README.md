@@ -2,6 +2,8 @@
 
 Adapt to web3 wallet, unified interface.
 
+eg.. https://web3w.github.io/web3-wallets
+
 ```
                                     wallets          blockchains
 
