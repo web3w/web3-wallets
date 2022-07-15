@@ -4,7 +4,7 @@ import {Context} from "../AppContext";
 import Avatar from "antd/es/avatar/avatar";
 import QRCodeModal from "web3-qrcode-modal";
 import {ethers, Web3Wallets} from 'web3-wallets';
-import {providerSignTypedData, RPC_PROVIDER, signMessage, signTypedData} from "../js";
+import {RPC_PROVIDER, signMessage, signTypedData} from "../js";
 
 
 export function WalletList() {
@@ -18,9 +18,8 @@ export function WalletList() {
         console.log(action, wallet)
         if (action == 'SignTypedData') {
 
-
             // const msg = await signTypedData(wallet.walletSigner)
-            const msg = await providerSignTypedData(wallet)
+            const msg = await signTypedData(wallet.walletSigner)
 
             notification["info"]({
                 message: 'SignMessage',
@@ -124,32 +123,27 @@ export function WalletList() {
     };
 
     const selectWallet = async (item, action) => {
-        const wallet = new Web3Wallets({name: item.key})
+        const wallet = new Web3Wallets({name: item.key, chainId: 4, qccodeModal: QRCodeModal})
         if (item.key == 'metamask') {
             const accounts = await wallet.walletProvider.enable() // enable ethereum
             setWallet(wallet)
         }
         if (item.key == "wallet_connect") {
-            const connector = wallet.walletProvider.connector
+            const provider = wallet.walletProvider
             // debugger
-            if (connector.connected) {
+            if (provider.connected) {
                 setWallet(wallet)
             } else {
-                // await wallet.walletProvider.open()
-                await connector.createSession()
-                debugger
-                QRCodeModal.open(connector.uri, () => {
-                    console.log("QRCodeModal, close")
-                })
+                await provider.open()
             }
-            debugger
-            connector.on('connect', async (error, payload) => {
+            provider.on('connect', async (error, payload) => {
+
                 if (error) {
                     throw error
                 }
                 setWallet(wallet)
             })
-            connector.on('disconnect', async (error) => {
+            provider.on('disconnect', async (error) => {
                 debugger
                 if (error) {
                     throw error
@@ -163,7 +157,7 @@ export function WalletList() {
             setWallet(wallet)
         }
 
-        if(wallet.walletProvider.chainId){
+        if (wallet.walletProvider.chainId) {
             sendWallet(action)
         }
 
@@ -185,7 +179,7 @@ export function WalletList() {
     return (
         <>
             <List
-                style={{padding: '60px 150px'}}
+                style={{padding: '60px 100px'}}
                 itemLayout="horizontal"
                 dataSource={items}
                 renderItem={item => (
@@ -200,7 +194,7 @@ export function WalletList() {
                         <List.Item.Meta
                             avatar={<Avatar src="../images/walletconnect-logo.svg"/>}
                             title={<a>{item.title}</a>}
-                            description="Wallet Info"
+                            description="wallet"
                         />
                     </List.Item>
                 )}

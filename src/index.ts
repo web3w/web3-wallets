@@ -50,10 +50,7 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
                     this.walletProvider = new CoinbaseWallet();
                     break;
                 case 'wallet_connect':
-                    // const conf = {
-                    //     bridge
-                    // }
-                    this.walletProvider = new WalletProvider({bridge, chainId});
+                    this.walletProvider = new WalletProvider({bridge, chainId, qrcodeModal: wallet?.qrcodeModal});
                     break;
                 case 'token_pocket':
                     this.walletProvider = new MetaMaskWallet();
@@ -94,14 +91,40 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
         return this.walletProvider.request(args)
     };
 
-    public async sendAsync(payload: JsonRpcPayload, callback: (error: Error | null, result?: JsonRpcResponse) => void) {
+    async sendAsync(payload: JsonRpcPayload, callback: (error: Error | null, result?: JsonRpcResponse) => void) {
         const res = await this.request(payload) as JsonRpcResponse
         callback(null, res)
     }
 
     async enable(): Promise<ProviderAccounts> {
+        debugger
         if (!this.walletProvider) {
             throw new Error('Web3-wallet enable error')
+        }
+
+        if (this.walletName == "wallet_connect") {
+            const provider = this.walletProvider
+            // debugger
+            if (provider.connected) {
+                const walletStr = localStorage.getItem('walletconnect')
+                if (walletStr) {
+                    const walletSession = JSON.parse(walletStr)
+                    const {chainId, accounts, peerMeta} = walletSession
+                    provider.peerMetaName = peerMeta?.name || ""
+                }
+
+            } else {
+                await provider.open()
+            }
+            provider.on('connect', async (error, payload) => {
+                const {accounts, chainId, peerMeta} = payload
+                provider.peerMetaName = peerMeta?.name || ""
+                this.walletProvider = provider
+            })
+            provider.on('disconnect', async (error) => {
+                console.log("web3-wallets disconnect")
+                // this.walletProvider = undefined
+            })
         }
         return this.walletProvider.enable()
     };

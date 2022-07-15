@@ -19,7 +19,7 @@
     "ethers": "^5.6.9",
     "https-proxy-agent": "^5.0.1",
     "web3-assert": "^1.0.1",
-    "web3-signer-provider": "^1.1.0"
+    "web3-signer-provider": "^1.1.5"
   },
   "devDependencies": {
     "@types/node": "^12.12.6",

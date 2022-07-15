@@ -1,6 +1,6 @@
 import {ethers, providers, Signer} from "ethers";
 import {Web3Wallets} from "../index";
-import {WalletNames, WalletInfo} from "../types";
+import {WalletNames, WalletInfo, IQRCodeModal} from "../types";
 import {getChainInfo} from "./rpc";
 import {RPC_API_TIMEOUT} from "../constants";
 
@@ -52,7 +52,7 @@ export function getWalletName(): string {
     return "wallet_connect"
 }
 
-export function detectWallets() {
+export function detectWallets(wallet?: WalletInfo) {
     let metamask: Web3Wallets | undefined
     if (typeof window === 'undefined') {
         throw new Error("Only the browser environment is supported")
@@ -64,12 +64,12 @@ export function detectWallets() {
         //     this.provider = walletProvider.provider.providers.find(val => val.isMetaMask)
         // }
         if (walletProvider.isMetaMask) {
-            metamask = new Web3Wallets({name: 'metamask'})
+            metamask = new Web3Wallets({...wallet, name: 'metamask'})
         }
     }
 
-    const coinbase = new Web3Wallets({name: 'coinbase'})
-    const walletconnect = new Web3Wallets({name: 'wallet_connect'})
+    const coinbase = new Web3Wallets({...wallet, name: 'coinbase'})
+    const walletconnect = new Web3Wallets({...wallet, name: 'wallet_connect'})
     return {metamask, coinbase, walletconnect}
 }
 

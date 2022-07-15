@@ -15,17 +15,10 @@ export function MainLayout() {
     const [collapsed, setCollapsed] = useState(false);
     const [page, setPage] = useState("wallets");
 
-    // const onCollapse = (value) => {
-    //     setCollapsed(value);
-    // };
-
-    // console.log('MainLayout', wallet)
-
 
     const items = [
         {label: 'Wallets', key: 'wallets'},
         {label: 'DetectWallets', key: 'detectWallets'}, // 菜单项务必填写 key
-
     ];
     return (
         // <AppContext.Provider value={[wallet, setWallet]}>
@@ -34,7 +27,7 @@ export function MainLayout() {
                 <div className="logo"></div>
                 <Menu theme="dark"
                       defaultSelectedKeys={[page]}
-                      onClick={setPage}
+                      onClick={(val) => setPage(val.key)}
                       items={items}
                 />
             </Sider>

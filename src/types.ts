@@ -33,6 +33,11 @@ export interface RpcInfo {
     timeout?: number
 }
 
+export interface IQRCodeModal {
+    open(uri: string, cb: any, opts?: any): void;
+    close(): void;
+}
+
 export interface WalletInfo {
     chainId: number
     address: string
@@ -44,6 +49,7 @@ export interface WalletInfo {
     bridge?: string
     offsetGasLimitRatio?: number
     isSetGasPrice?: boolean
+    qrcodeModal?: IQRCodeModal;
 }
 
 
