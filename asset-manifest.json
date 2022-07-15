@@ -1,0 +1,11 @@
+{
+  "files": {
+    "main.css": "/web3-wallets/static/css/main.03b033c6.css",
+    "main.js": "/web3-wallets/static/js/main.65bd54fd.js",
+    "index.html": "/web3-wallets/index.html"
+  },
+  "entrypoints": [
+    "static/css/main.03b033c6.css",
+    "static/js/main.65bd54fd.js"
+  ]
+}
