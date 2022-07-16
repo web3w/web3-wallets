@@ -2,7 +2,7 @@
 
 Adapt to web3 wallet, unified interface.
 
-eg.. https://web3w.github.io/web3-wallets
+Example: https://web3w.github.io/web3-wallets
 
 ```
                                     wallets          blockchains
@@ -20,9 +20,9 @@ eg.. https://web3w.github.io/web3-wallets
 
 ```
 
-## Used `WalletNames`'s
+## Used `WalletNames`
 
-type WalletNames = 'metamask' | 'coinbase' | 'imtoken' | 'math_wallet' | 'token_pocket' | 'wallet_connect' | '
+walletNames = 'metamask' | 'coinbase' | 'imtoken' | 'math_wallet' | 'token_pocket' | 'wallet_connect' | '
 bitkeep' | 'coin98'
 
 ```ts

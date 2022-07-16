@@ -1,3 +1,9 @@
+import walletConnectIcon from "../images/walletconnect.png";
+import metamaskIcon from "../images/metamask.png";
+import coinbaseIcon from "../images/coinbaseWallet.svg";
+
+export {walletConnectIcon, metamaskIcon, coinbaseIcon}
+
 export const RPC_PROVIDER = {
     4: 'https://api-test.element.market/api/v1/jsonrpc',
     1: 'https://api.element.market/api/v1/jsonrpc',

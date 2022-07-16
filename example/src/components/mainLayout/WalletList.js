@@ -1,138 +1,28 @@
 import React, {useContext, useState} from "react";
-import {Layout, List, message, notification} from "antd";
+import {Button, Divider, List, Space} from "antd";
 import {Context} from "../AppContext";
 import Avatar from "antd/es/avatar/avatar";
 import QRCodeModal from "web3-qrcode-modal";
-import {ethers, Web3Wallets} from 'web3-wallets';
-import {RPC_PROVIDER, signMessage, signTypedData} from "../js";
+import {Web3Wallets} from 'web3-wallets';
 
+import {metamaskIcon, coinbaseIcon, walletConnectIcon} from "../js/config"
+
+import {walletAction} from "../js/walletAction";
 
 export function WalletList() {
-    const {wallet, setWallet} = useContext(Context);
-
-    const sendWallet = async (action) => {
-        if (!wallet) {
-            message.error('Please select wallet');
-            return
-        }
-        console.log(action, wallet)
-        if (action == 'SignTypedData') {
-
-            // const msg = await signTypedData(wallet.walletSigner)
-            const msg = await signTypedData(wallet.walletSigner)
-
-            notification["info"]({
-                message: 'SignMessage',
-                description: msg
-            });
-        }
-
-        if (action == 'SignMessage') {
-            debugger
-            const msg = await signMessage(wallet.walletSigner)
-            notification["info"]({
-                message: 'SignMessage',
-                description: msg
-            });
-        }
-
-        if (action == 'Get1559Fee') {
-            const {walletSigner, walletProvider} = wallet
-            const {chainId} = walletProvider
-            console.log(await walletSigner.getBalance())
-            console.log(RPC_PROVIDER[chainId])
-            if (chainId.toString() == '56' || chainId.toString() == '97') {
-                return
-            }
-            // console.log(await walletSDK.get1559Fee())
-        }
-
-        if (action == 'GetBalance') {
-            const {walletSigner, walletProvider} = wallet
-            const balance = await walletSigner.getBalance()
-            const eth = ethers.utils.formatEther(balance)
-
-            const msg = `Address: ${walletProvider.address}  
-                       ChainId: ${walletProvider.chainId}  
-                       Balance: ${eth}ETH`
-            notification["info"]({
-                message: `GetBalance ${wallet.walletName}`,
-                description: msg
-            });
-
-
-        }
-
-        if (action == 'SendContract') {
-            const iface = new ethers.utils.Interface(['function migrate()']);
-            const callData = iface.encodeFunctionData('migrate', []);
-            console.log('callData: ', callData.toString());
-
-            const wethAbi = [{
-                "inputs": [],
-                "name": "deposit",
-                "outputs": [],
-                "stateMutability": "payable",
-                "type": "function"
-            },
-                {
-                    "inputs": [],
-                    "name": "name",
-                    "outputs": [
-                        {
-                            "internalType": "string",
-                            "name": "",
-                            "type": "string"
-                        }
-                    ],
-                    "stateMutability": "view",
-                    "type": "function"
-                }]
-
-            const {walletSigner, walletProvider} = wallet
-            const chainId = walletProvider.chainId
-            // WETH
-            let wethAddress;
-            if (chainId === 1) { // eth
-                wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
-            } else if (chainId === 4) { // rinkeby
-                wethAddress = '0xc778417E063141139Fce010982780140Aa0cD5Ab';
-            } else if (chainId === 56) { // bsc
-                wethAddress = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c';
-            } else if (chainId === 97) { // bsc_testnet
-                wethAddress = '0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd';
-            } else if (chainId === 137) { // polygon
-                wethAddress = '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270';
-            } else {
-                throw Error("Unknow chain=" + chainId);
-            }
-            console.log('weth : ' + wethAddress);
-            const weth = new ethers.Contract(wethAddress, wethAbi, walletSigner)
-            console.log(await weth.name())
-
-            if (walletProvider.walletName == 'wallet_connect') {
-                const {walletName, peerMetaName} = walletProvider
-                notification['info']({
-                    message: walletName,
-                    description: `Please open ${peerMetaName} App`,
-                });
-            }
-            await weth.deposit({value: 1e12.toString()})
-        }
-
-    };
+    const {setWallet} = useContext(Context);
 
     const selectWallet = async (item, action) => {
-        const wallet = new Web3Wallets({name: item.key, chainId: 4, qccodeModal: QRCodeModal})
+        const newWallet = new Web3Wallets({name: item.key, qccodeModal: QRCodeModal})
         if (item.key == 'metamask') {
-            const accounts = await wallet.walletProvider.enable() // enable ethereum
-            setWallet(wallet)
+            const accounts = await newWallet.walletProvider.enable() // enable ethereum
+            setWallet(newWallet)
         }
         if (item.key == "wallet_connect") {
-            const provider = wallet.walletProvider
+            const provider = newWallet.walletProvider
             // debugger
             if (provider.connected) {
-                setWallet(wallet)
+                setWallet(newWallet)
             } else {
                 await provider.open()
             }
@@ -141,7 +31,7 @@ export function WalletList() {
                 if (error) {
                     throw error
                 }
-                setWallet(wallet)
+                setWallet(newWallet)
             })
             provider.on('disconnect', async (error) => {
                 debugger
@@ -153,55 +43,87 @@ export function WalletList() {
         }
 
         if (item.key == 'coinbase') {
-            const accounts = await wallet.walletProvider.enable() // enable ethereum
-            setWallet(wallet)
+            const accounts = await newWallet.walletProvider.enable() // enable ethereum
+            setWallet(newWallet)
         }
 
-        if (wallet.walletProvider.chainId) {
-            sendWallet(action)
+        if (newWallet.chainId) {
+            await walletAction(newWallet, action)
         }
 
-
-        // if (action == 'GetBalance') {
-        //     const {walletSigner, walletProvider} = wallet
-        //     const balance = await walletSigner.getBalance()
-        //     const eth = ethers.utils.formatEther(balance)
-        // }
     };
 
 
-    const items = [
-        {title: 'MetaMask', key: 'metamask'},
-        {title: 'WalletConnect', key: 'wallet_connect'},
-        {title: 'CoinBase', key: 'coinbase'}
+    const walletItems = [
+        {title: 'MetaMask', key: 'metamask', icon: metamaskIcon, desc: "Popular wallet"},
+        {title: 'WalletConnect', key: 'wallet_connect', icon: walletConnectIcon, desc: "mobile only"},
+        {title: 'CoinBase', key: 'coinbase', icon: coinbaseIcon, desc: "coinbase wallet"}
     ];
+
+    const accountFun = [
+        {title: 'SignMessage', key: 'SignMessage', disabled: ['']},
+        {title: 'SignTypedData', key: 'SignTypedData', disabled: ['']},
+        {title: 'GetBalance', key: 'GetBalance', disabled: ['']}
+    ];
+
+    const contractFun = [
+        {title: 'DepositWETH', key: 'wethDeposit', disabled: ['']},
+        {title: 'WithdrawWETH', key: 'wethWithdraw', disabled: ['']},
+    ]
+
+    const walletFun = [
+        {title: 'Lock', key: 'SendContract', disabled: ['wallet_connect']},
+        {title: 'AddToken', key: 'SendContract', disabled: ['wallet_connect']},
+        {title: 'SwitchChain', key: 'SendContract', disabled: ['wallet_connect']},
+    ]
+
+    const accountActions = (item) => accountFun.map(val => {
+        return <Button disabled={val.disabled.some(key => key == item.key)} key={val.title}
+                       onClick={() => selectWallet(item, val.key)}>{val.title}</Button>
+    })
+
+    const contractActions = (item) => contractFun.map(val => {
+        return <Button disabled={val.disabled.some(key => key == item.key)} key={val.title}
+                       onClick={() => selectWallet(item, val.key)}>{val.title}</Button>
+    })
+
+    const walletActions = (item) => walletFun.map(val => {
+        return <Button disabled={val.disabled.some(key => key == item.key)} key={val.title}
+                       onClick={() => selectWallet(item, val.key)}>{val.title}</Button>
+    })
 
     return (
         <>
             <List
-                style={{padding: '60px 100px'}}
-                itemLayout="horizontal"
-                dataSource={items}
+                style={{padding: '20px 60px'}}
+                itemLayout="vertical"
+                size="large"
+                dataSource={walletItems}
                 renderItem={item => (
-                    <List.Item actions={[
-                        <a key="getBalance" onClick={() => selectWallet(item, "GetBalance")}>Balance</a>,
-                        <a key="SignMessage" onClick={() => selectWallet(item, "SignMessage")}>SignMessage</a>,
-                        <a key="SignTypedData" onClick={() => selectWallet(item, "SignTypedData")}>SignTypedData</a>,
-                        <a key="SendContract" onClick={() => selectWallet(item, "SendContract")}>SendContract</a>,
-                        <a key="switchChain" onClick={() => selectWallet(item, "SwitchChain")}>SwitchChain</a>,
-
-                    ]}>
+                    <List.Item>
                         <List.Item.Meta
-                            avatar={<Avatar src="../images/walletconnect-logo.svg"/>}
+                            avatar={<Avatar src={item.icon} shape={'square'} size={60}/>}
                             title={<a>{item.title}</a>}
-                            description="wallet"
+                            description={item.desc}
                         />
+                        {/*{"ddddd"}*/}
+                        <Space>
+                            Account Actions {accountActions(item)}
+                        </Space>
+                        <Divider style={{margin: 8}}/>
+                        <Space>
+                            Contract Actions {contractActions(item)}
+                        </Space>
+                        <Divider style={{margin: 8}}/>
+                        <Space>
+                            Wallet Actions {walletActions(item)}
+                        </Space>
+
+
+                        {/*{()=>actions(item)}*/}
                     </List.Item>
                 )}
             />
-
-
         </>
-
     )
 }

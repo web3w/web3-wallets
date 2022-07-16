@@ -1,9 +1,6 @@
 import React, {createContext, useEffect, useState} from "react";
 
-// export const AppContext = React.createContext();
-// import {Web3Wallets} from "../../../src";
-
-// const wallet = new Web3Wallets('metamask')
+//https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn/related
 export const Context = createContext();
 export const AppContext = ({children}) => {
     const [wallet, setWallet] = useState({});

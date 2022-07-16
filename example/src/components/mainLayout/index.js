@@ -3,8 +3,8 @@ import React, {useContext, useState} from "react";
 import "../css/index.css"
 import {Context} from '../AppContext'
 import {DetectWallets} from "./DetectWallets";
-import * as walletSDK from 'web3-wallets'
 import {WalletList} from "./WalletList";
+
 // import {WalletFunc} from "./WalletFunc";
 
 

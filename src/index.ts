@@ -1,27 +1,26 @@
 import {MetaMaskWallet} from './connectors/metamaskWallet'
 import {CoinbaseWallet} from './connectors/coinbaseWallet'
-// import {ConnectWallet} from './connectors/walletConnet'
 import EventEmitter from 'events'
 import {
-    IEthereumProvider, JsonRpcPayload, JsonRpcResponse,
+    IEthereumProvider, JsonRpcPayload, JsonRpcResponse, LimitedCallSpec,
     ProviderAccounts,
-    RequestArguments, WalletInfo,
-    WalletNames
+    RequestArguments, TransactionRequest, WalletInfo
 } from "./types";
-import {ethers, providers} from "ethers";
-import {ExternalProvider, JsonRpcSigner} from "@ethersproject/providers";
+import {ExternalProvider, JsonRpcSigner, Web3Provider} from "@ethersproject/providers";
 import {BaseWallet} from "./connectors/baseWallet"
 import {SignerProvider, WalletProvider} from "web3-signer-provider";
 import {getWalletName} from "./utils/provider";
-import {Buffer} from "buffer";
-
+import {EIP712TypedData} from "./utils/eip712TypeData";
+import {arrayify, Bytes, isHexString} from "@ethersproject/bytes";
+import {BigNumber} from "./constants/index";
+import {get1559Fee} from "./utils/fee";
 
 declare global {
     interface Window {
         walletProvider: BaseWallet | undefined // wallet provider
         walletSigner: JsonRpcSigner | undefined // ethers  wallet provider
         elementWeb3: JsonRpcSigner | any // ethers web3  provider
-        Buffer: any
+        // Buffer: any
     }
 }
 
@@ -30,19 +29,18 @@ declare global {
 export class Web3Wallets extends EventEmitter implements IEthereumProvider {
     public walletProvider: ExternalProvider | any
     public walletSigner: JsonRpcSigner
-    public walletName: string
+    public wallet
 
     constructor(wallet?: Partial<WalletInfo>) {
         super()
-        // const {name, rpcUrl} = wallet || {}
+        this.wallet = wallet
         const bridge = wallet?.bridge || "https://bridge.walletconnect.org"
         const chainId = wallet?.chainId || 1
         const isBrowser = typeof window !== 'undefined'
 
+        const walletName = wallet?.name || getWalletName()
         if (isBrowser) {
-            window.Buffer = Buffer;
-            this.walletName = wallet?.name || getWalletName()
-            switch (this.walletName) {
+            switch (walletName) {
                 case 'metamask':
                     this.walletProvider = new MetaMaskWallet();
                     break;
@@ -65,7 +63,7 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
                     throw new Error("Wallet not support")
             }
             if (this.walletProvider) {
-                this.walletSigner = new ethers.providers.Web3Provider(this.walletProvider).getSigner()
+                this.walletSigner = new Web3Provider(this.walletProvider).getSigner()
                 if (typeof window !== 'undefined') {
                     window.walletProvider = this.walletProvider
                     window.walletSigner = this.walletSigner
@@ -74,14 +72,25 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
                 throw new Error("Wallet provider is undefind")
             }
         } else {
-            this.walletName = wallet?.name || 'wallet_signer'
-            if (this.walletName == 'wallet_connect') {
+            if (walletName == 'wallet_connect') {
                 this.walletProvider = new WalletProvider({bridge, chainId});
             } else {
                 this.walletProvider = new SignerProvider({chainId: wallet?.chainId, privateKeys: wallet?.privateKeys})
             }
-            this.walletSigner = new ethers.providers.Web3Provider(this.walletProvider).getSigner()
+            this.walletSigner = new Web3Provider(this.walletProvider).getSigner()
         }
+    }
+
+    get walletName() {
+        return this.walletProvider.walletName
+    }
+
+    get address() {
+        return this.walletProvider.address
+    }
+
+    get chainId() {
+        return this.walletProvider.chainId
     }
 
     async request(args: RequestArguments): Promise<unknown> {
@@ -97,7 +106,6 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
     }
 
     async enable(): Promise<ProviderAccounts> {
-        debugger
         if (!this.walletProvider) {
             throw new Error('Web3-wallet enable error')
         }
@@ -128,6 +136,76 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
         }
         return this.walletProvider.enable()
     };
+
+    async signMessage(message: string | Bytes): Promise<string> {
+        if (isHexString(message)) {
+            message = arrayify(message)
+        }
+        return this.walletSigner.signMessage(message).catch((error: any) => {
+            throw error
+        })
+    }
+
+    async signTypedData(typedData: EIP712TypedData): Promise<string> {
+
+        const types = Object.assign({}, typedData.types)
+        if (types.EIP712Domain) {
+            delete types.EIP712Domain
+        }
+        const domain = typedData.domain
+        const value = typedData.message
+        return (<any>this.walletSigner)._signTypedData(domain, types, value).catch((error: any) => {
+            this.emit('SignTypedData', error)
+            throw error
+        })
+    }
+
+    async sendTransaction(callData: LimitedCallSpec) {
+        let value = "0"
+        if (callData.value) {
+            value = value.toString()
+        }
+        const transactionObject = {
+            from: this.wallet?.address,
+            to: callData.to,
+            data: callData.data,
+            value
+        } as TransactionRequest
+
+        const chainId = this.wallet?.chainId || 1
+        if (chainId == 97 || chainId == 56 || chainId == 43113 || chainId == 43114 || chainId == 137 || chainId == 80001) {
+            this.wallet.offsetGasLimitRatio = this.wallet.offsetGasLimitRatio || 1.5
+        }
+
+        if (this.wallet.offsetGasLimitRatio) {
+            if (this.wallet.offsetGasLimitRatio < 1) throw 'Offset must be greater than 1 '
+            const offsetRatio = this.wallet.offsetGasLimitRatio || 1
+            const gasLimit = await this.walletSigner.estimateGas(transactionObject)
+            const offsetGasLimit = new BigNumber(gasLimit.toString() || "0").times(offsetRatio).toFixed(0)
+            transactionObject.gasLimit = offsetGasLimit.toString()
+        }
+
+        if (this.wallet.isSetGasPrice) {
+            const tx: TransactionRequest = await this.walletSigner.populateTransaction(transactionObject).catch(async (error: any) => {
+                throw error
+            })
+            if (tx?.type == 2) {
+                const fee = await get1559Fee(this.wallet.rpcUrl?.url)
+                transactionObject.maxFeePerGas = fee.maxFeePerGas //?.mul(gasPriceOffset).div(100).toNumber()
+                transactionObject.maxPriorityFeePerGas = fee.maxPriorityFeePerGas//?.mul(gasPriceOffset).div(100).toNumber()
+            } else {
+                const fee = await this.walletSigner.getFeeData()
+                transactionObject.gasPrice = fee.gasPrice || "0"
+            }
+        }
+        try {
+            return this.walletSigner.sendTransaction(transactionObject).catch((e: any) => {
+                throw e
+            })
+        } catch (e: any) {
+            throw e
+        }
+    }
 
     async getBlock(): Promise<any> {
         const num = await this.getBlockNumber()
