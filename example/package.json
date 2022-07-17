@@ -1,6 +1,6 @@
 {
-  "name": "web3-wallets-example",
-  "version": "1.7.8",
+  "name": "web3-wallets",
+  "version": "2.1.10",
   "private": true,
   "homepage": "https://web3w.github.io/web3-wallets",
   "dependencies": {
@@ -9,14 +9,14 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
-    "web3-accounts": "^1.2.10",
+    "web3-accounts": "^1.2.11",
     "web3-qrcode-modal": "^1.0.6"
   },
   "scripts": {
     "start": "GENERATE_SOURCEMAP=false react-scripts   --openssl-legacy-provider start",
     "build": "GENERATE_SOURCEMAP=false react-scripts build",
     "link": "sudo npm link ..",
-    "deploy": "gh-pages -d build"
+    "deploy": "npm run build && gh-pages -d build"
   },
   "devDependencies": {
     "assert": "^2.0.0",

@@ -1,7 +1,8 @@
 .logo {
-  height: 32px;
+  height: 30px;
   margin: 16px;
-  background: rgba(255, 255, 255, 0.3);
+  font-size: 16px;
+  color: #f0f2f5;
 }
 
 .site-layout .site-layout-background {

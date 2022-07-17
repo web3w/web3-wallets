@@ -2,7 +2,6 @@ import {message, notification} from "antd";
 
 import {utils} from "web3-wallets";
 import {msg712sign} from "./config";
-// import {wethContract} from "./weth";
 
 import {Web3Accounts} from 'web3-accounts';
 
@@ -49,7 +48,7 @@ export const walletAction = async (wallet, action) => {
         // const iface = new ethers.utils.Interface(['function migrate()']);
         // const callData = iface.encodeFunctionData('migrate', []);
         // console.log('callData: ', callData.toString());
-
+debugger
         if (walletProvider.walletName == 'wallet_connect') {
             const {walletName, peerMetaName} = walletProvider
             notification['info']({
@@ -57,7 +56,14 @@ export const walletAction = async (wallet, action) => {
                 description: `Please open ${peerMetaName} App`,
             });
         }
-        await account.wethDeposit(1e12.toString(), true)
+        const ethBal = await account.getGasBalances()
+        if (ethBal == "0") {
+            message.error("WETH balance eq 0")
+            return
+        } else {
+            await account.wethDeposit(ethBal)
+        }
+
     }
 
     if (action == 'wethWithdraw') {
@@ -72,8 +78,31 @@ export const walletAction = async (wallet, action) => {
                 description: `Please open ${peerMetaName} App`,
             });
         }
-        const wethBal = await account.getTokenBalances({tokenAddr:account.GasWarpperContract.address})
-        await account.wethWithdraw(wethBal)
+        // const wethBal = await account.getTokenBalances({tokenAddr: account.GasWarpperContract.address})
+
+        const wethBal = await account.wethBalances()
+        if (wethBal == "0") {
+            message.error("WETH balance eq 0")
+            return
+        } else {
+            await account.wethWithdraw(wethBal)
+        }
+    }
+
+    if (action == 'wethBalances') {
+        // const iface = new ethers.utils.Interface(['function migrate()']);
+        // const callData = iface.encodeFunctionData('migrate', []);
+        // console.log('callData: ', callData.toString());
+
+        const tokenAddr = account.GasWarpperContract.address
+        const wethBal = await account.getTokenBalances({tokenAddr})
+
+        const msg = `WETH_Address: ${tokenAddr}    
+                     Balance: ${wethBal} WETH`
+        notification["info"]({
+            message: `GetBalance ${walletName}`,
+            description: msg
+        });
     }
 
 

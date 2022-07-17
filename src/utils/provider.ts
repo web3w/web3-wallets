@@ -1,4 +1,4 @@
-import {ethers, providers, Signer} from "ethers";
+// import {providers} from "ethers";
 import {Web3Wallets} from "../index";
 import {WalletNames, WalletInfo, IQRCodeModal} from "../types";
 import {getChainInfo} from "./rpc";
@@ -7,7 +7,8 @@ import {RPC_API_TIMEOUT} from "../constants";
 
 import {privateKeysToAddress} from "./eip712TypeData";
 import {SignerProvider} from "web3-signer-provider";
-import {ExternalProvider} from "@ethersproject/providers";
+import {ExternalProvider, Web3Provider, JsonRpcProvider,JsonRpcSigner} from "@ethersproject/providers";
+import {Wallet} from "@ethersproject/wallet";
 import {TronLinkWallet} from "../connectors/tronlinkWallet";
 
 
@@ -80,7 +81,7 @@ export function getProvider(walletInfo: WalletInfo) {
         url: rpcUrl?.url || getChainInfo(chainId).rpcs[0],
         timeout: rpcUrl?.timeout || RPC_API_TIMEOUT
     }
-    let walletSigner: Signer | undefined, walletProvider: ExternalProvider | any
+    let walletSigner: JsonRpcSigner | undefined, walletProvider: ExternalProvider | any
     const network = {
         name: walletInfo.address,
         chainId: walletInfo.chainId
@@ -89,17 +90,17 @@ export function getProvider(walletInfo: WalletInfo) {
     if (privateKeys && privateKeys.length > 0) {
         const accounts = privateKeysToAddress(privateKeys)
         if (!accounts[address.toLowerCase()]) throw new Error("Private keys does not contain" + address)
-        const provider = new providers.JsonRpcProvider(url, network)
-        walletSigner = new ethers.Wallet(accounts[address.toLowerCase()], provider)
+        const provider = new JsonRpcProvider(url, network)
+        walletSigner = new Wallet(accounts[address.toLowerCase()], provider) as any
         walletProvider = new SignerProvider(walletInfo)
-        // walletProvider = new providers.Web3Provider(signerProvider).getSigner()
+        // walletProvider = new  Web3Provider(signerProvider).getSigner()
         // walletSigner = walletProvider
     } else {
         // walletSigner = rpcProvider.getSigner(address)
         if (typeof window === 'undefined') {
             console.log('getProvider:There are no priKey')
             walletProvider = new SignerProvider(walletInfo)
-            walletSigner = new providers.JsonRpcProvider(url, network).getSigner(address)
+            walletSigner = new JsonRpcProvider(url, network).getSigner(address)
         } else {
             if (window.ethereum && !window.walletProvider || window.ethereum && !window.elementWeb3) {
                 console.log('getProvider:ethereum')
@@ -107,13 +108,13 @@ export function getProvider(walletInfo: WalletInfo) {
                 if (walletProvider.selectedAddress) {
                     walletProvider.enable()
                 }
-                walletSigner = new ethers.providers.Web3Provider(walletProvider).getSigner(address)
+                walletSigner = new Web3Provider(walletProvider).getSigner(address)
             }
             // // console.log('isMetaMask', window.elementWeb3.isMetaMask)
             // if (window.walletProvider) {
             //     console.log('getProvider:walletProvider')
             //     walletProvider = window.walletProvider
-            //     walletSigner = new ethers.providers.Web3Provider(walletProvider).getSigner(address)
+            //     walletSigner = new  Web3Provider(walletProvider).getSigner(address)
             // }
 
             if (window.elementWeb3) {
@@ -121,16 +122,16 @@ export function getProvider(walletInfo: WalletInfo) {
                 walletProvider = window.elementWeb3
                 if (walletProvider.isWalletConnect) {
                     //JsonRpcSigner wallet connect
-                    walletSigner = new ethers.providers.Web3Provider(walletProvider).getSigner(address)
+                    walletSigner = new Web3Provider(walletProvider).getSigner(address)
                 } else {
                     // new Web3()
                     //  this.web3.currentProvider
-                    walletSigner = new ethers.providers.Web3Provider(walletProvider.currentProvider).getSigner(address)
+                    walletSigner = new Web3Provider(walletProvider.currentProvider).getSigner(address)
                 }
             }
         }
     }
-    walletSigner = walletSigner || (new providers.JsonRpcProvider(url, network)).getSigner(address)
+    walletSigner = walletSigner || (new JsonRpcProvider(url, network)).getSigner(address)
     return {
         address,
         chainId,

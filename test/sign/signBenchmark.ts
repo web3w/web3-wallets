@@ -1,18 +1,34 @@
 // https://docs.ethers.io/v5/api/signer/
+
+// #!/usr/bin/env node
+// #!/usr/bin/env /usr/local/bin/node
+
 import {ethers} from 'ethers'
 import secrets from '../../../../secrets.json'
-import * as ethjs from 'ethereumjs-util';
+import {SigningKey} from '@ethersproject/signing-key';
+// import * as ec from '@ethersproject/signing-key/src.ts/elliptic';
 import {hashMessage} from "@ethersproject/hash";
 import {ecSignMessage, signMessage} from "../../index";
 import {hexUtils} from "../../src/utils/hexUtils";
 import {ecSignHash, joinECSignature} from "../../src/utils/eip712TypeData";
+import {Signature} from "@ethersproject/bytes";
+
+// export function ecSignHashWithKey(hash: string, key: string) {
+//     const {v, r, s} = ethjs.ecsign(ethjs.toBuffer(hash), ethjs.toBuffer(key));
+//     return {
+//         v,
+//         r: ethjs.bufferToHex(r),
+//         s: ethjs.bufferToHex(s),
+//     };
+// }
 
 export function ecSignHashWithKey(hash: string, key: string) {
-    const {v, r, s} = ethjs.ecsign(ethjs.toBuffer(hash), ethjs.toBuffer(key));
+    const signer = new SigningKey(key)
+    const signature = signer.signDigest(hash)
     return {
-        v,
-        r: ethjs.bufferToHex(r),
-        s: ethjs.bufferToHex(s),
+        v: signature.v,
+        r: signature.r,
+        s: signature.s
     };
 }
 

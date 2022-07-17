@@ -185,7 +185,7 @@ export async function getFeeData(signer: Signer): Promise<{ maxFeePerGas: string
     return {maxFeePerGas, maxPriorityFeePerGas, gasPrice}
 }
 
-// BaseGasPrice = PreviousBaseGasPrice × (1 + k × CongestionLevel)
+// BaseGasPrice = PreviousBaseGasPrice × (1 + k × CongestionLevel)
 export async function getGas1559PriceBak(rpcUrl: string): Promise<{ maxPriorityFeePerGas: string; maxFeePerGas: string | undefined }> {
     const chain = new providers.JsonRpcProvider(rpcUrl)
     // @ts-ignore

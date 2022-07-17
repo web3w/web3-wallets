@@ -4,7 +4,7 @@ import "../css/index.css"
 import {Context} from '../AppContext'
 import {DetectWallets} from "./DetectWallets";
 import {WalletList} from "./WalletList";
-
+import pkg from '../../../package.json'
 // import {WalletFunc} from "./WalletFunc";
 
 
@@ -24,7 +24,7 @@ export function MainLayout() {
         // <AppContext.Provider value={[wallet, setWallet]}>
         <Layout style={{minHeight: '100vh'}}>
             <Sider collapsible collapsed={collapsed} onCollapse={setCollapsed}>
-                <div className="logo"></div>
+                <div className="logo">{`${pkg.name}@${pkg.version}`}</div>
                 <Menu theme="dark"
                       defaultSelectedKeys={[page]}
                       onClick={(val) => setPage(val.key)}
