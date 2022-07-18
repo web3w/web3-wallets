@@ -8,8 +8,7 @@ import {Web3Accounts, MockContract} from 'web3-accounts';
 
 export const walletAction = async (wallet, action) => {
     const account = new Web3Accounts({address: wallet.address, chainId: wallet.chainId})
-    const ethBal = await account.getGasBalances()
-    debugger
+
     const mock = new MockContract(wallet)
     if (!wallet) {
         message.error('Please select wallet');
@@ -133,7 +132,10 @@ export const walletAction = async (wallet, action) => {
             message.error("WETH balance eq 0")
             return
         } else {
-            await account.wethWithdraw(wethBal)
+            debugger
+            await account.wethWithdraw("1")
+
+            debugger
         }
     }
 

@@ -7,7 +7,7 @@ import {RPC_API_TIMEOUT} from "../constants";
 
 import {privateKeysToAddress} from "./eip712TypeData";
 import {SignerProvider} from "web3-signer-provider";
-import {ExternalProvider, Web3Provider, JsonRpcProvider,JsonRpcSigner} from "@ethersproject/providers";
+import {ExternalProvider, Web3Provider, JsonRpcProvider, JsonRpcSigner} from "@ethersproject/providers";
 import {Wallet} from "@ethersproject/wallet";
 import {TronLinkWallet} from "../connectors/tronlinkWallet";
 
@@ -78,20 +78,21 @@ export function getProvider(walletInfo: WalletInfo) {
     const {chainId, address, privateKeys, rpcUrl} = walletInfo
     const url = {
         ...rpcUrl,
-        url: rpcUrl?.url || getChainInfo(chainId).rpcs[0],
+        url: rpcUrl?.url || getChainInfo(chainId || 1).rpcs[0],
         timeout: rpcUrl?.timeout || RPC_API_TIMEOUT
     }
     let walletSigner: JsonRpcSigner | undefined, walletProvider: ExternalProvider | any
     const network = {
-        name: walletInfo.address,
-        chainId: walletInfo.chainId
+        name: "Rpc Provider",
+        chainId: walletInfo.chainId || 1
     }
 
     if (privateKeys && privateKeys.length > 0) {
         const accounts = privateKeysToAddress(privateKeys)
-        if (!accounts[address.toLowerCase()]) throw new Error("Private keys does not contain" + address)
+        const accountPrikey = accounts[address?.toLowerCase() || ""]
+        if (!accountPrikey) throw new Error("Private keys does not contain" + address)
         const provider = new JsonRpcProvider(url, network)
-        walletSigner = new Wallet(accounts[address.toLowerCase()], provider) as any
+        walletSigner = new Wallet(accountPrikey, provider) as any
         walletProvider = new SignerProvider(walletInfo)
         // walletProvider = new  Web3Provider(signerProvider).getSigner()
         // walletSigner = walletProvider
@@ -113,7 +114,7 @@ export function getProvider(walletInfo: WalletInfo) {
             if (window.walletProvider) {
                 console.log('GetProvider:walletProvider')
                 walletProvider = window.walletProvider
-                walletSigner = new  Web3Provider(walletProvider).getSigner(address)
+                walletSigner = new Web3Provider(walletProvider).getSigner(address)
             }
 
             if (window.elementWeb3) {

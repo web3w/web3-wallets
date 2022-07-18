@@ -1,6 +1,5 @@
 export {MetaMaskWallet} from './src/connectors/metamaskWallet'
 export {CoinbaseWallet} from './src/connectors/coinbaseWallet'
-// export {ConnectWallet} from './src/connectors/walletConnet'
 export {Web3Wallets} from './src'
 
 export type {
@@ -11,10 +10,16 @@ export type {
     TokenSchemaNames,
     WalletNames,
     ContractInterface,
-    TransactionRequest, TransactionResponse
+    TransactionRequest,
+    TransactionResponse,
+    ExternalProvider
 } from './src/types'
 
-export {ethers, Signer, Contract, Wallet, providers, BaseContract, constants, utils} from './src/types'
+export {
+    ethers, Signer, Contract, Wallet, providers, BaseContract, constants, utils,
+    Web3Provider,
+    JsonRpcSigner,
+} from './src/types'
 
 export type {
     EIP712TypedData,
@@ -43,7 +48,7 @@ export {
     EIP712_DOMAIN_TYPEHASH
 } from "./src/utils/eip712TypeData"
 
-export { hexUtils} from "./src/utils/hexUtils"
+export {hexUtils} from "./src/utils/hexUtils"
 
 export {
     objectClone,

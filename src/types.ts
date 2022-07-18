@@ -1,4 +1,9 @@
+import {Web3Provider, JsonRpcSigner, ExternalProvider} from "@ethersproject/providers";
+
 export {ethers, Signer, Contract, Wallet, providers, BaseContract, constants, utils} from 'ethers'
+
+export type {ExternalProvider}
+export {Web3Provider, JsonRpcSigner}
 
 
 export type {TransactionRequest, TransactionResponse} from '@ethersproject/abstract-provider'
@@ -35,6 +40,7 @@ export interface RpcInfo {
 
 export interface IQRCodeModal {
     open(uri: string, cb: any, opts?: any): void;
+
     close(): void;
 }
 
@@ -49,6 +55,7 @@ export interface WalletInfo {
     bridge?: string
     offsetGasLimitRatio?: number
     isSetGasPrice?: boolean
+    provider?: ExternalProvider
     qrcodeModal?: IQRCodeModal;
 }
 

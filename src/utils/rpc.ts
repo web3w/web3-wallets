@@ -5,6 +5,7 @@ import {ChainConfig, LimitedCallSpec, WalletInfo, TransactionRequest, Transactio
 import {getProvider} from "./provider";
 import {CHAIN_CONFIG, BigNumber} from '../constants'
 import {fetchJson, fetch} from "./hepler";
+import {Web3Provider} from "@ethersproject/providers";
 
 
 export async function getFeeHistory(rpcUrl: string, blockRange: number, percentiles: number[]) {
@@ -70,6 +71,7 @@ export async function getEstimateGas(rpcUrl: string, callData: LimitedCallSpec) 
 
 export async function ethSend(wallet: WalletInfo, callData: LimitedCallSpec): Promise<TransactionResponse> {
     const {walletSigner, rpcUrl} = getProvider(wallet)
+    const signer = wallet.provider ? new Web3Provider(wallet.provider).getSigner() : walletSigner
 
     let value = ethers.BigNumber.from(0)
     if (callData.value) {
@@ -92,13 +94,13 @@ export async function ethSend(wallet: WalletInfo, callData: LimitedCallSpec): Pr
     if (wallet.offsetGasLimitRatio) {
         if (wallet.offsetGasLimitRatio < 1) throw 'Offset must be greater than 1 '
         const offsetRatio = wallet.offsetGasLimitRatio || 1
-        const gasLimit = await walletSigner.estimateGas(transactionObject)
+        const gasLimit = await signer.estimateGas(transactionObject)
         const offsetGasLimit = new BigNumber(gasLimit.toString() || "0").times(offsetRatio).toFixed(0)
         transactionObject.gasLimit = ethers.BigNumber.from(offsetGasLimit)
     }
 
     if (wallet.isSetGasPrice) {
-        const tx: TransactionRequest = await walletSigner.populateTransaction(transactionObject).catch(async (error: any) => {
+        const tx: TransactionRequest = await signer.populateTransaction(transactionObject).catch(async (error: any) => {
             throw error
         })
         if (tx?.type == 2) {
@@ -106,7 +108,7 @@ export async function ethSend(wallet: WalletInfo, callData: LimitedCallSpec): Pr
             transactionObject.maxFeePerGas = ethers.BigNumber.from(fee.maxFeePerGas) //?.mul(gasPriceOffset).div(100).toNumber()
             transactionObject.maxPriorityFeePerGas = ethers.BigNumber.from(fee.maxPriorityFeePerGas) //?.mul(gasPriceOffset).div(100).toNumber()
         } else {
-            const fee = await walletSigner.getFeeData()
+            const fee = await signer.getFeeData()
             const gasPrice = ethers.utils.formatUnits(fee.gasPrice || 5, 'gwei')
             // console.log("GasPrice", gasPrice)
             transactionObject.gasPrice = ethers.BigNumber.from(gasPrice)
@@ -114,7 +116,7 @@ export async function ethSend(wallet: WalletInfo, callData: LimitedCallSpec): Pr
     }
 
     try {
-        return walletSigner.sendTransaction(transactionObject).catch((e: any) => {
+        return signer.sendTransaction(transactionObject).catch((e: any) => {
             throw e
         })
     } catch (e: any) {

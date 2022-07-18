@@ -20,7 +20,6 @@ declare global {
         walletProvider: BaseWallet | undefined // wallet provider
         walletSigner: JsonRpcSigner | undefined // ethers  wallet provider
         elementWeb3: JsonRpcSigner | any // ethers web3  provider
-        // Buffer: any
     }
 }
 
@@ -65,10 +64,6 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
             }
             if (this.walletProvider) {
                 this.walletSigner = new Web3Provider(this.walletProvider).getSigner()
-                if (typeof window !== 'undefined') {
-                    window.walletProvider = this.walletProvider
-                    window.walletSigner = this.walletSigner
-                }
             } else {
                 throw new Error("Wallet provider is undefind")
             }
@@ -79,6 +74,16 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
                 this.walletProvider = new SignerProvider({ chainId: wallet?.chainId, privateKeys: wallet?.privateKeys })
             }
             this.walletSigner = new Web3Provider(this.walletProvider).getSigner()
+        }
+
+        if(wallet?.provider){
+            this.walletProvider = wallet.provider
+            this.walletSigner = new Web3Provider(this.walletProvider).getSigner()
+        }
+
+        if (typeof window !== 'undefined') {
+            window.walletProvider = this.walletProvider
+            window.walletSigner = this.walletSigner
         }
     }
 
@@ -114,7 +119,7 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
 
         if (this.walletName == "wallet_connect") {
             const provider = this.walletProvider
-            
+
             if (provider.connected) {
                 const walletStr = localStorage.getItem('walletconnect')
                 if (walletStr) {
