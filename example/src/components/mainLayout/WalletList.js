@@ -13,12 +13,21 @@ export function WalletList() {
     const {setWallet} = useContext(Context);
 
     const selectWallet = async (item, action) => {
-        console.log(QRCodeModal)
-        debugger
+
         const newWallet = new Web3Wallets({name: item.key, qrcodeModal: QRCodeModal})
         if (item.key == 'metamask') {
-            const accounts = await newWallet.walletProvider.enable() // enable ethereum
+            const provider = newWallet.walletProvider
+            const accounts = await provider.enable() // enable ethereum
             setWallet(newWallet)
+            provider.on('chainChanged', async (walletChainId) => {
+                console.log('Matemask chainChanged', walletChainId)
+            })
+
+            provider.on('accountsChanged', async (accounts) => {
+                console.log('Matemask accountsChanged', accounts)
+
+            })
+
         }
         if (item.key == "wallet_connect") {
             const provider = newWallet.walletProvider
@@ -26,12 +35,16 @@ export function WalletList() {
             if (provider.connected) {
                 setWallet(newWallet)
             } else {
-                await provider.open()
+                if(action != "DisConnect"){
+                    await provider.open()
+                }
             }
             provider.on('connect', async (error, payload) => {
                 if (error) {
                     throw error
                 }
+                debugger
+                const {} = payload
                 setWallet(newWallet)
             })
             provider.on('disconnect', async (error) => {
@@ -74,8 +87,9 @@ export function WalletList() {
 
     const walletFun = [
         {title: 'Connect', key: 'Connect', disabled: ['']},
+        {title: 'DisConnect', key: 'DisConnect', disabled: ['metamask']},
         {title: 'AddChain', key: 'AddChain', disabled: ['wallet_connect']},
-        {title: 'AddToken', key: 'AddToken', disabled: ['wallet_connect','coinbase']},
+        {title: 'AddToken', key: 'AddToken', disabled: ['wallet_connect', 'coinbase']},
         {title: 'SwitchChain', key: 'SwitchChain', disabled: ['wallet_connect']}
     ]
 

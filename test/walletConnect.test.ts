@@ -5,6 +5,7 @@ import {Web3Wallets} from "../src/index";
     const chainId = 4
     const wallet = new Web3Wallets({name:"wallet_connect",chainId})
 
+    const bal =await wallet.walletSigner.getBalance()
     const blockNow = await wallet.getBlock()
     const blockNum = await wallet.getBlockNumber()
     const block = await wallet.getBlockByNumber(blockNum)

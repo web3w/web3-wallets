@@ -98,24 +98,23 @@ export function getProvider(walletInfo: WalletInfo) {
     } else {
         // walletSigner = rpcProvider.getSigner(address)
         if (typeof window === 'undefined') {
-            console.log('getProvider:There are no priKey')
+            console.log('GetProvider:There are no priKey')
             walletProvider = new SignerProvider(walletInfo)
             walletSigner = new JsonRpcProvider(url, network).getSigner(address)
         } else {
             if (window.ethereum && !window.walletProvider || window.ethereum && !window.elementWeb3) {
-                console.log('getProvider:ethereum')
+                console.log('GetProvider:ethereum')
                 walletProvider = window.ethereum as ExternalProvider
                 if (walletProvider.selectedAddress) {
                     walletProvider.enable()
                 }
                 walletSigner = new Web3Provider(walletProvider).getSigner(address)
             }
-            // // console.log('isMetaMask', window.elementWeb3.isMetaMask)
-            // if (window.walletProvider) {
-            //     console.log('getProvider:walletProvider')
-            //     walletProvider = window.walletProvider
-            //     walletSigner = new  Web3Provider(walletProvider).getSigner(address)
-            // }
+            if (window.walletProvider) {
+                console.log('GetProvider:walletProvider')
+                walletProvider = window.walletProvider
+                walletSigner = new  Web3Provider(walletProvider).getSigner(address)
+            }
 
             if (window.elementWeb3) {
                 console.log('getProvider:elementWeb3')

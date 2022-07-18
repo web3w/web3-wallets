@@ -1,12 +1,11 @@
-import { addChainParameter } from '../constants/chain';
+import {addChainParameter} from '../constants/chain';
 import {
     WalletNames,
     ProviderConnectInfo,
     ProviderMessage,
     ProviderRpcError,
 } from '../types'
-import { BaseWallet } from "./baseWallet";
-
+import {BaseWallet} from "./baseWallet";
 
 
 // https://github.com/metamask/test-dapp
@@ -24,7 +23,6 @@ export class MetaMaskWallet extends BaseWallet {
             if (this.provider.overrideIsMetaMask) {
                 this.provider = this.provider.providers.find(val => val.isMetaMask)
             }
-            // this.chainId = Number(this.walletProvider.chainId)
             this.chainId = Number(this.provider.networkVersion)
             this.address = this.provider.selectedAddress
         } else {
@@ -45,47 +43,39 @@ export class MetaMaskWallet extends BaseWallet {
 
         // Events
         provider.on('connect', (connectInfo: ProviderConnectInfo) => {
-            console.log('Matemask connect', connectInfo)
+            // console.log('Matemask connect', connectInfo)
             this.emit('connect', connectInfo)
             this.chainId = 0
             this.address = ''
         })
 
-        // 断开链接
         provider.on('disconnect', (error: ProviderRpcError) => {
-            console.log('Matemask disconnect', error)
+            // console.log('Matemask disconnect', error)
             this.emit('disconnect', error)
             this.provider = undefined
             this.chainId = 0
             this.address = ''
         })
 
-        // 更改网络事件
         provider.on('chainChanged', async (walletChainId: string) => {
-            console.log('Matemask chainChanged', walletChainId)
+            // console.log('Matemask chainChanged', walletChainId)
             this.emit('disconnect', walletChainId)
             // window.location.reload()
         })
 
-        // 账户变动事件
         provider.on('accountsChanged', async (accounts: Array<string>) => {
-            console.log('Matemask accountsChanged', accounts)
+            // console.log('Matemask accountsChanged', accounts)
             this.emit('accountsChanged', accounts)
         })
 
         //eth_subscription
         provider.on('message', (payload: ProviderMessage) => {
-            console.log('Matemask RPC message', payload)
+            // console.log('Matemask RPC message', payload)
             this.emit('message', payload)
         })
     }
 
     private async addEthereumChain(params) {
-        // {
-        //     chainId: '0xf00',
-        //     chainName: '...',
-        //     rpcUrls: ['https://...'] /* ... */,
-        // },
         try {
             await this.provider.request({
                 method: 'wallet_addEthereumChain',
@@ -103,11 +93,12 @@ export class MetaMaskWallet extends BaseWallet {
         debugger
         this.addEthereumChain(params)
     }
+
     private async switchEthereumChain(chainId: string, rpcUrl?: string) {
         try {
             await this.provider.request({
                 method: 'wallet_switchEthereumChain',
-                params: [{ chainId }]
+                params: [{chainId}]
             })
         } catch (switchError: any) {
             // This error code indicates that the chain has not been added to MetaMask.
@@ -115,7 +106,7 @@ export class MetaMaskWallet extends BaseWallet {
                 try {
                     await this.provider.request({
                         method: 'wallet_addEthereumChain',
-                        params: [{ chainId, rpcUrl }]
+                        params: [{chainId, rpcUrl}]
                     })
                 } catch (addError) {
                     // handle "add" error
@@ -131,8 +122,8 @@ export class MetaMaskWallet extends BaseWallet {
 
     async onConnectMetaMask(): Promise<any> {
         // 请求会触发解锁窗口
-        const accounts = await this.provider.request({ method: 'eth_requestAccounts' })
-        const walletChainId = await this.provider.request({ method: 'eth_chainId' })
+        const accounts = await this.provider.request({method: 'eth_requestAccounts'})
+        const walletChainId = await this.provider.request({method: 'eth_chainId'})
         console.log('wallet isConnected', this.provider.isConnected())
         this.address = accounts[0]
         return accounts
@@ -176,7 +167,7 @@ export class MetaMaskWallet extends BaseWallet {
             .catch(console.error);
     }
 
-    // Mobile 
+    // Mobile
     async scanQRCode(params) {
         this.provider.request({
             method: 'wallet_scanQRCode',

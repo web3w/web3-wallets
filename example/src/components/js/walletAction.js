@@ -1,37 +1,56 @@
-import { message, notification } from "antd";
+import {message, notification} from "antd";
 
-import { utils } from "web3-wallets";
-import { msg712sign } from "./config";
+import {utils} from "web3-wallets";
+import {msg712sign} from "./config";
 
-import { Web3Accounts,MockContract } from 'web3-accounts';
+import {Web3Accounts, MockContract} from 'web3-accounts';
 
 
 export const walletAction = async (wallet, action) => {
-    const account = new Web3Accounts({ address: wallet.address, chainId: wallet.chainId })
+    const account = new Web3Accounts({address: wallet.address, chainId: wallet.chainId})
+    const ethBal = await account.getGasBalances()
+    debugger
     const mock = new MockContract(wallet)
     if (!wallet) {
         message.error('Please select wallet');
         return
     }
     const walletName = wallet.walletName
-    const { walletSigner, walletProvider } = wallet
+    const {walletSigner, walletProvider} = wallet
 
     if (action == 'Connect') {
         if (walletProvider.walletName == 'wallet_connect') {
-            const { walletName, peerMetaName } = walletProvider
+            const {walletName, wc} = walletProvider
+            const {clientMeta, peerId, peerMeta, uri, session} = wc
+            const {name, description} = peerMeta
+            // debugger
             notification['info']({
                 message: walletName,
-                description: `Please open ${peerMetaName} App`,
+                description: `Please open ${description} App`,
             });
-        }else{
+        } else {
             const addresses = await wallet.enable()
             notification["info"]({
                 message: `Connect ${walletName}`,
                 description: addresses
             });
         }
+    }
 
-       
+    if (action == "DisConnect") {
+        if (walletProvider.walletName == 'wallet_connect') {
+            const {walletName, wc} = walletProvider
+            debugger
+            const {clientMeta, peerId, peerMeta, uri, session} = wc
+            if (!peerMeta) return
+            const {name, description} = peerMeta
+
+            notification['info']({
+                message: walletName + "-" + action,
+                description: `DisConnect ${description} App`,
+            });
+            walletProvider.close()
+        }
     }
 
     if (action == 'SignMessage') {
@@ -70,13 +89,18 @@ export const walletAction = async (wallet, action) => {
         // console.log('callData: ', callData.toString());
 
         if (walletProvider.walletName == 'wallet_connect') {
-            const { walletName, peerMetaName } = walletProvider
+            const {walletName, wc} = walletProvider
+            const {clientMeta, peerId, peerMeta, uri, session} = wc
+            if (!peerMeta) return
+            const {name, description} = peerMeta
             notification['info']({
                 message: walletName,
-                description: `Please open ${peerMetaName} App`,
+                description: `Please open ${description} App accept WethDeposit`,
             });
         }
+        debugger
         const ethBal = await account.getGasBalances()
+        debugger
         if (ethBal == "0") {
             message.error("WETH balance eq 0")
             return
@@ -92,10 +116,14 @@ export const walletAction = async (wallet, action) => {
         // console.log('callData: ', callData.toString());
 
         if (walletProvider.walletName == 'wallet_connect') {
-            const { walletName, peerMetaName } = walletProvider
+            const {walletName, wc} = walletProvider
+
+            const {clientMeta, peerId, peerMeta, uri, session} = wc
+            if (!peerMeta) return
+            const {name, description} = peerMeta
             notification['info']({
                 message: walletName,
-                description: `Please open ${peerMetaName} App`,
+                description: `Please open ${description} App accept WethWithdraw`,
             });
         }
         // const wethBal = await account.getTokenBalances({tokenAddr: account.GasWarpperContract.address})
@@ -115,7 +143,7 @@ export const walletAction = async (wallet, action) => {
         // console.log('callData: ', callData.toString());
 
         const tokenAddr = account.GasWarpperContract.address
-        const wethBal = await account.getTokenBalances({ tokenAddr })
+        const wethBal = await account.getTokenBalances({tokenAddr})
 
         const msg = `WETH_Address: ${tokenAddr}    
                      Balance: ${wethBal} WETH`
