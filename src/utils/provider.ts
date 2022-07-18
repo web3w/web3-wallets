@@ -75,7 +75,7 @@ export function detectWallets(wallet?: WalletInfo) {
 }
 
 export function getProvider(walletInfo: WalletInfo) {
-    const {chainId, address, privateKeys, rpcUrl} = walletInfo
+    const {chainId, address, privateKeys, rpcUrl, provider} = walletInfo
     const url = {
         ...rpcUrl,
         url: rpcUrl?.url || getChainInfo(chainId || 1).rpcs[0],
@@ -131,7 +131,12 @@ export function getProvider(walletInfo: WalletInfo) {
             }
         }
     }
-    walletSigner = walletSigner || (new JsonRpcProvider(url, network)).getSigner(address)
+    if (provider) {
+        walletSigner = new Web3Provider(provider).getSigner(address)
+        walletProvider = provider
+    } else {
+        walletSigner = walletSigner || (new JsonRpcProvider(url, network)).getSigner(address)
+    }
     return {
         address,
         chainId,

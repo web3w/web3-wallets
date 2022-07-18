@@ -70,12 +70,13 @@ export async function getEstimateGas(rpcUrl: string, callData: LimitedCallSpec) 
 }
 
 export async function ethSend(wallet: WalletInfo, callData: LimitedCallSpec): Promise<TransactionResponse> {
-    const {walletSigner, rpcUrl} = getProvider(wallet)
-    const signer = wallet.provider ? new Web3Provider(wallet.provider).getSigner() : walletSigner
+    const {walletSigner, address, rpcUrl} = getProvider(wallet)
+    const signer = wallet.provider ? new Web3Provider(wallet.provider).getSigner(address) : walletSigner
 
-    let value = ethers.BigNumber.from(0)
+    // console.log("ethSend signer", signer)
+    let value = "0"// ethers.BigNumber.from(0)
     if (callData.value) {
-        value = ethers.BigNumber.from(callData.value)
+        value = ethers.BigNumber.from(callData.value).toString()
     }
     const transactionObject = {
         from: wallet.address,
