@@ -1,10 +1,10 @@
 import * as secrets from '../../../secrets.json'
-import {privateKeysToAddress} from "../src/utils/eip712TypeData";
-import {hexUtils} from "../src/utils/hexUtils";
-import {ethers} from "ethers";
-import {computePublicKey} from "@ethersproject/signing-key";
-import {hexDataSlice} from "@ethersproject/bytes";
-import {keccak256} from "@ethersproject/keccak256";
+import { privateKeysToAddress } from "../src/utils/eip712TypeData";
+import { hexUtils } from "../src/utils/hexUtils";
+import { ethers } from "ethers";
+import { computePublicKey } from "@ethersproject/signing-key";
+import { hexDataSlice } from "@ethersproject/bytes";
+import { keccak256 } from "@ethersproject/keccak256";
 
 function toBytes(str: string): string {
     let bytes = '0x';
@@ -13,8 +13,9 @@ function toBytes(str: string): string {
     }
     return bytes;
 }
-;(async () => {
+; (async () => {
     const str = "hello web3"
+    debugger
     console.assert(hexUtils.stringToBytes(str) == toBytes(str))
     // console.log(privateKeysToAddress(secrets.privateKeys))
     const privateKey = secrets.privateKeys[0]

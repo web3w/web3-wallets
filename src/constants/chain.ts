@@ -65,6 +65,17 @@ export const CHAIN_NAME = {
 };
 export const CHAIN_CONFIG = {
     "1": {
+        name: "Ethereum Mainnet",
+        short_name: "eth",
+        chain: "ETH",
+        network: "mainnet",
+        native_currency: {
+            symbol: "ETH",
+            name: "Ether",
+            decimals: "18",
+            contractAddress: "",
+            balance: "",
+        },
         "rpcs": [
             "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
             "https://api.mycryptoapi.com/eth",
@@ -81,6 +92,9 @@ export const CHAIN_CONFIG = {
             "https://main-light.eth.linkpool.io",
             "https://eth-mainnet.public.blastapi.io",
             "https://api.element.market/api/v1/jsonrpc"
+        ],
+        "scans": [
+            "https://ropsten.etherscan.io/"
         ]
     },
     "3": {
@@ -107,6 +121,19 @@ export const CHAIN_CONFIG = {
         ]
     },
     "56": {
+        name: "BSC Mainnet",
+        short_name: "bnb",
+        chain: "BNB",
+        network: "mainnet",
+        native_currency: {
+            symbol: "BNB",
+            name: "BNB",
+            decimals: 18,
+            balance: "",
+        },
+        "scans": [
+            "https://bscscan.com/"
+        ],
         "rpcs": [
             "https://bsc-dataseed.binance.org/",
             "https://bsc-dataseed1.defibit.io/",
@@ -130,6 +157,17 @@ export const CHAIN_CONFIG = {
         ]
     },
     "97": {
+        name: "BSC Testnet",
+        short_name: "bnb",
+        chain: "BNB",
+        network: "testnet",
+        native_currency: {
+            symbol: "BNB",
+            name: "BNB",
+            decimals: "18",
+            contractAddress: "",
+            balance: "",
+        },
         "rpcs": [
             "https://data-seed-prebsc-1-s1.binance.org:8545",
             "https://api-test.element.market/api/bsc/jsonrpc"
@@ -1358,4 +1396,40 @@ export const CHAIN_CONFIG = {
         ],
         "websiteDead": true
     }
+}
+
+interface AddEthereumChainParameter {
+    chainId: string; // A 0x-prefixed hexadecimal string
+    chainName: string;
+    nativeCurrency: {
+        name: string;
+        symbol: string; // 2-6 characters long
+        decimals: 18;
+    };
+    rpcUrls: string[];
+    blockExplorerUrls?: string[];
+    iconUrls?: string[]; // Currently ignored.
+}
+
+export function addChainParameter(chainId: number): AddEthereumChainParameter {
+    const rpcInfo = CHAIN_CONFIG[chainId]
+    const rpcMap: AddEthereumChainParameter = {
+        chainId: '0x' + chainId.toString(16),
+        chainName: CHAIN_NAME[chainId],
+        nativeCurrency: rpcInfo.native_currency,
+        rpcUrls: rpcInfo.rpcs,
+        blockExplorerUrls: rpcInfo.scans,
+    }
+    return rpcMap
+}
+
+export function chainRpcMap(): { [chainId: number]: string } {
+    const rpcMap: { [chainId: number]: string } = {}
+    for (const chainId in CHAIN_CONFIG) {
+        const rpcUrl = CHAIN_CONFIG[chainId].rpcs[0]
+        if (rpcUrl && rpcUrl != "rpcWorking:false") {
+            rpcMap[chainId] = CHAIN_CONFIG[chainId].rpcs[0]
+        }
+    }
+    return rpcMap
 }

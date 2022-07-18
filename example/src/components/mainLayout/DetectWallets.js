@@ -1,11 +1,11 @@
-import {Button, Col, Row} from "antd";
-import React, {useContext, useEffect, useState} from "react";
-import {Context} from '../AppContext'
-import {detectWallets, getWalletInfo} from 'web3-wallets';
+import { Button, Col, Row } from "antd";
+import React, { useContext, useEffect, useState } from "react";
+import { Context } from '../AppContext'
+import { detectWallets, getWalletInfo } from 'web3-wallets';
 import QRCodeModal from "web3-qrcode-modal";
 
 export function DetectWallets() {
-    const {setWallet} = useContext(Context);
+    const { setWallet } = useContext(Context);
     const [wallets, setWallets] = useState([])
 
     const linkWallet = async (item) => {
@@ -14,9 +14,8 @@ export function DetectWallets() {
         setWallet(item)
     }
     useEffect(() => {
-
-        const wallet = {qrcodeModal: QRCodeModal}
-        const {metamask, coinbase, walletconnect} = detectWallets(wallet)
+        const wallet = { qrcodeModal: QRCodeModal }
+        const { metamask, coinbase, walletconnect } = detectWallets(wallet)
 
         setWallets([metamask, coinbase, walletconnect])
     }, []);
@@ -27,8 +26,8 @@ export function DetectWallets() {
                 <Col span={12} offset={6}>
                     {
                         wallets.map(item => (
-                            <Button key={item.walletName} style={{margin: 10}}
-                                    onClick={() => linkWallet(item)}>{item.walletName}</Button>))
+                            <Button key={item.walletName} style={{ margin: 10 }}
+                                onClick={() => linkWallet(item)}>{item.walletName}</Button>))
                     }
                 </Col>
             </Row>

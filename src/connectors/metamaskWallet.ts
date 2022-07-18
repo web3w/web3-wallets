@@ -1,10 +1,13 @@
+import { addChainParameter } from '../constants/chain';
 import {
     WalletNames,
     ProviderConnectInfo,
     ProviderMessage,
     ProviderRpcError,
 } from '../types'
-import {BaseWallet} from "./baseWallet";
+import { BaseWallet } from "./baseWallet";
+
+
 
 // https://github.com/metamask/test-dapp
 // https://metamask.github.io/test-dapp/
@@ -77,11 +80,34 @@ export class MetaMaskWallet extends BaseWallet {
         })
     }
 
-    async switchEthereumChain(chainId: string, rpcUrl?: string) {
+    private async addEthereumChain(params) {
+        // {
+        //     chainId: '0xf00',
+        //     chainName: '...',
+        //     rpcUrls: ['https://...'] /* ... */,
+        // },
+        try {
+            await this.provider.request({
+                method: 'wallet_addEthereumChain',
+                params: [
+                    params
+                ],
+            });
+        } catch (addError) {
+            // handle "add" error
+        }
+    }
+
+    public async addChainId(chainId: number) {
+        const params = addChainParameter(chainId)
+        debugger
+        this.addEthereumChain(params)
+    }
+    private async switchEthereumChain(chainId: string, rpcUrl?: string) {
         try {
             await this.provider.request({
                 method: 'wallet_switchEthereumChain',
-                params: [{chainId}]
+                params: [{ chainId }]
             })
         } catch (switchError: any) {
             // This error code indicates that the chain has not been added to MetaMask.
@@ -89,7 +115,7 @@ export class MetaMaskWallet extends BaseWallet {
                 try {
                     await this.provider.request({
                         method: 'wallet_addEthereumChain',
-                        params: [{chainId, rpcUrl}]
+                        params: [{ chainId, rpcUrl }]
                     })
                 } catch (addError) {
                     // handle "add" error
@@ -105,8 +131,8 @@ export class MetaMaskWallet extends BaseWallet {
 
     async onConnectMetaMask(): Promise<any> {
         // 请求会触发解锁窗口
-        const accounts = await this.provider.request({method: 'eth_requestAccounts'})
-        const walletChainId = await this.provider.request({method: 'eth_chainId'})
+        const accounts = await this.provider.request({ method: 'eth_requestAccounts' })
+        const walletChainId = await this.provider.request({ method: 'eth_chainId' })
         console.log('wallet isConnected', this.provider.isConnected())
         this.address = accounts[0]
         return accounts
@@ -125,6 +151,42 @@ export class MetaMaskWallet extends BaseWallet {
     async switchRinkeby() {
         const rpcUrl = 'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'
         await this.switchEthereumChain('0x4', rpcUrl)
+    }
+
+    async addToken(params) {
+        this.provider.request({
+            method: 'wallet_watchAsset',
+            params: {
+                type: 'ERC20',
+                options: {
+                    address: '0xb60e8dd61c5d32be8058bb8eb970870f07233155',
+                    symbol: 'FOO',
+                    decimals: 18,
+                    image: 'https://foo.io/token-image.svg',
+                },
+            },
+        })
+            .then((success) => {
+                if (success) {
+                    console.log('FOO successfully added to wallet!');
+                } else {
+                    throw new Error('Something went wrong.');
+                }
+            })
+            .catch(console.error);
+    }
+
+    // Mobile 
+    async scanQRCode(params) {
+        this.provider.request({
+            method: 'wallet_scanQRCode',
+            // The regex string must be valid input to the RegExp constructor, if provided
+            params: ['\\D'],
+        }).then((result) => {
+            console.log(result);
+        }).catch((error) => {
+            console.log(error);
+        });
     }
 }
 

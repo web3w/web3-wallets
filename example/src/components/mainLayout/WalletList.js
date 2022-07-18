@@ -13,28 +13,28 @@ export function WalletList() {
     const {setWallet} = useContext(Context);
 
     const selectWallet = async (item, action) => {
-        const newWallet = new Web3Wallets({name: item.key, qccodeModal: QRCodeModal})
+        console.log(QRCodeModal)
+        debugger
+        const newWallet = new Web3Wallets({name: item.key, qrcodeModal: QRCodeModal})
         if (item.key == 'metamask') {
             const accounts = await newWallet.walletProvider.enable() // enable ethereum
             setWallet(newWallet)
         }
         if (item.key == "wallet_connect") {
             const provider = newWallet.walletProvider
-            // debugger
+
             if (provider.connected) {
                 setWallet(newWallet)
             } else {
                 await provider.open()
             }
             provider.on('connect', async (error, payload) => {
-
                 if (error) {
                     throw error
                 }
                 setWallet(newWallet)
             })
             provider.on('disconnect', async (error) => {
-                debugger
                 if (error) {
                     throw error
                 }
@@ -69,12 +69,14 @@ export function WalletList() {
     const contractFun = [
         {title: 'DepositWETH', key: 'wethDeposit', disabled: ['']},
         {title: 'WithdrawWETH', key: 'wethWithdraw', disabled: ['']},
+        // {title: 'Transfer', key: 'transfer', disabled: ['']},
     ]
 
     const walletFun = [
-        {title: 'Lock', key: 'SendContract', disabled: ['wallet_connect']},
-        {title: 'AddToken', key: 'SendContract', disabled: ['wallet_connect']},
-        {title: 'SwitchChain', key: 'SendContract', disabled: ['wallet_connect']},
+        {title: 'Connect', key: 'Connect', disabled: ['']},
+        {title: 'AddChain', key: 'AddChain', disabled: ['wallet_connect']},
+        {title: 'AddToken', key: 'AddToken', disabled: ['wallet_connect','coinbase']},
+        {title: 'SwitchChain', key: 'SwitchChain', disabled: ['wallet_connect']}
     ]
 
     const accountActions = (item) => accountFun.map(val => {

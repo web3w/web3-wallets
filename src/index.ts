@@ -1,19 +1,19 @@
-import {MetaMaskWallet} from './connectors/metamaskWallet'
-import {CoinbaseWallet} from './connectors/coinbaseWallet'
+import { MetaMaskWallet } from './connectors/metamaskWallet'
+import { CoinbaseWallet } from './connectors/coinbaseWallet'
 import EventEmitter from 'events'
 import {
     IEthereumProvider, JsonRpcPayload, JsonRpcResponse, LimitedCallSpec,
     ProviderAccounts,
     RequestArguments, TransactionRequest, WalletInfo
 } from "./types";
-import {ExternalProvider, JsonRpcSigner, Web3Provider} from "@ethersproject/providers";
-import {BaseWallet} from "./connectors/baseWallet"
-import {SignerProvider, WalletProvider} from "web3-signer-provider";
-import {getWalletName} from "./utils/provider";
-import {EIP712TypedData} from "./utils/eip712TypeData";
-import {arrayify, Bytes, isHexString} from "@ethersproject/bytes";
-import {BigNumber} from "./constants/index";
-import {get1559Fee} from "./utils/fee";
+import { ExternalProvider, JsonRpcSigner, Web3Provider } from "@ethersproject/providers";
+import { BaseWallet } from "./connectors/baseWallet"
+import { SignerProvider, WalletProvider } from "web3-signer-provider";
+import { getWalletName } from "./utils/provider";
+import { EIP712TypedData } from "./utils/eip712TypeData";
+import { arrayify, Bytes, isHexString } from "@ethersproject/bytes";
+import { BigNumber } from "./constants/index";
+import { get1559Fee } from "./utils/fee";
 
 declare global {
     interface Window {
@@ -48,7 +48,8 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
                     this.walletProvider = new CoinbaseWallet();
                     break;
                 case 'wallet_connect':
-                    this.walletProvider = new WalletProvider({bridge, chainId, qrcodeModal: wallet?.qrcodeModal});
+                    debugger
+                    this.walletProvider = new WalletProvider({ bridge, chainId, qrcodeModal: wallet?.qrcodeModal });
                     break;
                 case 'token_pocket':
                     this.walletProvider = new MetaMaskWallet();
@@ -73,9 +74,9 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
             }
         } else {
             if (walletName == 'wallet_connect') {
-                this.walletProvider = new WalletProvider({bridge, chainId});
+                this.walletProvider = new WalletProvider({ bridge, chainId });
             } else {
-                this.walletProvider = new SignerProvider({chainId: wallet?.chainId, privateKeys: wallet?.privateKeys})
+                this.walletProvider = new SignerProvider({ chainId: wallet?.chainId, privateKeys: wallet?.privateKeys })
             }
             this.walletSigner = new Web3Provider(this.walletProvider).getSigner()
         }
@@ -106,18 +107,19 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
     }
 
     async enable(): Promise<ProviderAccounts> {
+        debugger
         if (!this.walletProvider) {
             throw new Error('Web3-wallet enable error')
         }
 
         if (this.walletName == "wallet_connect") {
             const provider = this.walletProvider
-            // debugger
+            
             if (provider.connected) {
                 const walletStr = localStorage.getItem('walletconnect')
                 if (walletStr) {
                     const walletSession = JSON.parse(walletStr)
-                    const {chainId, accounts, peerMeta} = walletSession
+                    const { chainId, accounts, peerMeta } = walletSession
                     provider.peerMetaName = peerMeta?.name || ""
                 }
 
@@ -125,7 +127,7 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
                 await provider.open()
             }
             provider.on('connect', async (error, payload) => {
-                const {accounts, chainId, peerMeta} = payload
+                const { accounts, chainId, peerMeta } = payload
                 provider.peerMetaName = peerMeta?.name || ""
                 this.walletProvider = provider
             })

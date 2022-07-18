@@ -1,19 +1,39 @@
-import {message, notification} from "antd";
+import { message, notification } from "antd";
 
-import {utils} from "web3-wallets";
-import {msg712sign} from "./config";
+import { utils } from "web3-wallets";
+import { msg712sign } from "./config";
 
-import {Web3Accounts} from 'web3-accounts';
+import { Web3Accounts,MockContract } from 'web3-accounts';
 
 
 export const walletAction = async (wallet, action) => {
-    const account = new Web3Accounts({address: wallet.address, chainId: wallet.chainId})
+    const account = new Web3Accounts({ address: wallet.address, chainId: wallet.chainId })
+    const mock = new MockContract(wallet)
     if (!wallet) {
         message.error('Please select wallet');
         return
     }
     const walletName = wallet.walletName
-    const {walletSigner, walletProvider} = wallet
+    const { walletSigner, walletProvider } = wallet
+
+    if (action == 'Connect') {
+        if (walletProvider.walletName == 'wallet_connect') {
+            const { walletName, peerMetaName } = walletProvider
+            notification['info']({
+                message: walletName,
+                description: `Please open ${peerMetaName} App`,
+            });
+        }else{
+            const addresses = await wallet.enable()
+            notification["info"]({
+                message: `Connect ${walletName}`,
+                description: addresses
+            });
+        }
+
+       
+    }
+
     if (action == 'SignMessage') {
         const signInfo = prompt("Sign Info")
         const signature = await wallet.signMessage(signInfo)
@@ -48,9 +68,9 @@ export const walletAction = async (wallet, action) => {
         // const iface = new ethers.utils.Interface(['function migrate()']);
         // const callData = iface.encodeFunctionData('migrate', []);
         // console.log('callData: ', callData.toString());
-debugger
+
         if (walletProvider.walletName == 'wallet_connect') {
-            const {walletName, peerMetaName} = walletProvider
+            const { walletName, peerMetaName } = walletProvider
             notification['info']({
                 message: walletName,
                 description: `Please open ${peerMetaName} App`,
@@ -72,7 +92,7 @@ debugger
         // console.log('callData: ', callData.toString());
 
         if (walletProvider.walletName == 'wallet_connect') {
-            const {walletName, peerMetaName} = walletProvider
+            const { walletName, peerMetaName } = walletProvider
             notification['info']({
                 message: walletName,
                 description: `Please open ${peerMetaName} App`,
@@ -95,7 +115,7 @@ debugger
         // console.log('callData: ', callData.toString());
 
         const tokenAddr = account.GasWarpperContract.address
-        const wethBal = await account.getTokenBalances({tokenAddr})
+        const wethBal = await account.getTokenBalances({ tokenAddr })
 
         const msg = `WETH_Address: ${tokenAddr}    
                      Balance: ${wethBal} WETH`
@@ -105,6 +125,31 @@ debugger
         });
     }
 
+    if (action == 'mint') {
+        const mint721 = await mock.Mock721.mint()
+        const mint721Tx = await mint721.wait()
+        console.log("tokenId:", mint721Tx.events[0].args.tokenId.toString())
+    }
+
+    if (action == 'transfer') {
+
+    }
+
+    if (action == 'AddChain') {
+        walletProvider.addChainId(56)
+    }
+
+    if (action == 'AddToken') {
+        walletProvider.addToken()
+    }
+
+    if (action == "SwitchChain") {
+        walletProvider.switchBSCTEST()
+    }
+
+    // if(action =="scanQRCode"){
+    //     walletProvider.scanQRCode()
+    // }
 
 };
 
