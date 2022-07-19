@@ -83,7 +83,7 @@ async function _handleApiResponse(response: Response) {
             errorMessage = `Not found. Full message was '${JSON.stringify(result)}'`
             break
         case 500:
-            errorMessage = `Internal server error. OpenSea has been alerted, but if the problem persists please contact us via Discord: https://discord.gg/ga8EJbv - full message was ${JSON.stringify(
+            errorMessage = `Internal server error. Request has been alerted, but if the problem persists please contact us via Discord: https://discord.gg/ga8EJbv - full message was ${JSON.stringify(
                 result
             )}`
             break
