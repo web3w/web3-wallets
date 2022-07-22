@@ -3,7 +3,7 @@ import {
     WalletNames,
     ProviderConnectInfo,
     ProviderMessage,
-    ProviderRpcError,
+    ProviderRpcError, RequestArguments, ProviderAccounts,
 } from '../types'
 import {BaseWallet} from "./baseWallet";
 
@@ -73,6 +73,17 @@ export class MetaMaskWallet extends BaseWallet {
             // console.log('Matemask RPC message', payload)
             this.emit('message', payload)
         })
+    }
+
+    async request(args: RequestArguments): Promise<unknown> {
+        return new Promise<unknown>(async (resolve, reject) => {
+            const result = await this.provider.request(args)
+            resolve(result)
+        })
+    };
+
+    async enable(): Promise<ProviderAccounts> {
+        return this.provider.request({method: 'eth_requestAccounts'}) // enable ethereum
     }
 
     private async addEthereumChain(params) {
