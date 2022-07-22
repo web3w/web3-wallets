@@ -124,11 +124,11 @@ const TYPE_BUY_HASH = getEIP712TypeHash(STRUCT_BUY_NAME, STRUCT_BUY_ABI, {
     ['Property']: PROPERTY_ABI,
 });
 
-const TYPE_BUY_HASH1 = getEIP712TypeHash1(STRUCT_BUY_NAME, STRUCT_BUY_ABI, {
-    ['Fee']: FEE_ABI,
-    ['Property']: PROPERTY_ABI,
-});
-
-console.log("\n", TYPE_BUY_HASH1, "\n", TYPE_BUY_HASH)
+// const TYPE_BUY_HASH1 = getEIP712TypeHash1(STRUCT_BUY_NAME, STRUCT_BUY_ABI, {
+//     ['Fee']: FEE_ABI,
+//     ['Property']: PROPERTY_ABI,
+// });
+//
+// console.log("\n", TYPE_BUY_HASH1, "\n", TYPE_BUY_HASH)
 
 

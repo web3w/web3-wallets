@@ -189,6 +189,14 @@ export function getEIP712TypeHash(
     return id(typeName)
 }
 
+//   return getEIP712StructHash(EIP_712_PRIMARY_TYPE, EIP_712_ORDER_TYPE, orderParameters as any)
+export function getEIP712StructHash(
+    primaryType: string,
+    types: EIP712Types = {},
+    values: any) {
+    return TypedDataEncoder.from(types).hash(values)
+}
+
 /**
  * Compute a complete EIP712 hash given a struct hash.
  */
