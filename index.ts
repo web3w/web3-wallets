@@ -37,7 +37,6 @@ export {
     getEIP712Hash,
     getEIP712TypeHash,
     getEIP712DomainHash,
-    getEIP712StructHash,
     signMessage,
     ecSignMessage,
     ecSignHash,
