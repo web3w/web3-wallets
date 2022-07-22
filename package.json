@@ -1,6 +1,6 @@
 {
   "name": "web3-wallets",
-  "version": "2.1.21",
+  "version": "2.2.0",
   "description": "Javascript SDK for Web3 wallets",
   "main": "lib/index.js",
   "type": "lib/index.d.ts",
@@ -14,11 +14,12 @@
   },
   "dependencies": {
     "@coinbase/wallet-sdk": "^3.3.0",
+    "@metamask/onboarding": "^1.0.1",
     "bignumber.js": "^9.0.1",
     "ethers": "^5.6.9",
     "https-proxy-agent": "^5.0.1",
     "web3-assert": "^1.0.2",
-    "web3-signer-provider": "^1.1.12"
+    "web3-signer-provider": "^1.2.0"
   },
   "devDependencies": {
     "ts-node": "^10.9.1",

@@ -17,7 +17,7 @@ export function WalletList() {
         const newWallet = new Web3Wallets({name: item.key, qrcodeModal: QRCodeModal})
         if (item.key == 'metamask') {
             const provider = newWallet.walletProvider
-            const accounts = await provider.enable() // enable ethereum
+            const accounts = await provider.connect() // enable ethereum
             setWallet(newWallet)
             provider.on('chainChanged', async (walletChainId) => {
                 console.log('Matemask chainChanged', walletChainId)
@@ -56,7 +56,7 @@ export function WalletList() {
         }
 
         if (item.key == 'coinbase') {
-            const accounts = await newWallet.walletProvider.enable() // enable ethereum
+            const accounts = await newWallet.walletProvider.connect() // enable ethereum
             setWallet(newWallet)
         }
 

@@ -28,7 +28,7 @@ export const walletAction = async (wallet, action) => {
                 description: `Please open ${description} App`,
             });
         } else {
-            const addresses = await wallet.enable()
+            const addresses = await wallet.connect()
             notification["info"]({
                 message: `Connect ${walletName}`,
                 description: addresses

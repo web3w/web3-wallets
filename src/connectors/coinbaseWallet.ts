@@ -1,7 +1,7 @@
 // TypeScript
 import CoinbaseWalletSDK from "@coinbase/wallet-sdk";
-import {ProviderAccounts, WalletNames, IEthereumProvider, RequestArguments} from '../types'
-import {BaseWallet} from "./baseWallet";
+import {ProviderAccounts, WalletNames, RequestArguments} from '../types'
+import {BaseProvider} from "./baseProvider";
 
 
 const APP_NAME = 'Coinbase'
@@ -9,7 +9,7 @@ const APP_LOGO_URL = 'https://images.ctfassets.net/q5ulk4bp65r7/3TBS4oVkD1ghowTq
 const DEFAULT_ETH_JSONRPC_URL = "https://mainnet-infura.wallet.coinbase.com"
 const DEFAULT_CHAIN_ID = 1;
 
-export class CoinbaseWallet extends BaseWallet {
+export class CoinbaseWallet extends BaseProvider {
     public walletName: WalletNames = 'coinbase'
     public provider: any
     public address: string = ''
@@ -34,14 +34,14 @@ export class CoinbaseWallet extends BaseWallet {
         // get isMetaMask(): boolean;
     }
 
-    async request(args: RequestArguments): Promise<unknown> {
-        return new Promise<unknown>(async (resolve, reject) => {
-            const result = await this.provider.request(args)
-            resolve(result)
-        })
-    };
-
-    async enable(): Promise<ProviderAccounts> {
-        return this.provider.request({method: 'eth_requestAccounts'}) // enable ethereum
-    }
+    // async request(args: RequestArguments): Promise<unknown> {
+    //     return new Promise<unknown>(async (resolve, reject) => {
+    //         const result = await this.provider.request(args)
+    //         resolve(result)
+    //     })
+    // };
+    //
+    // async connect(): Promise<ProviderAccounts> {
+    //     return this.provider.request({method: 'eth_requestAccounts'}) // enable ethereum
+    // }
 }

@@ -24,7 +24,7 @@ export function MainLayout() {
         // <AppContext.Provider value={[wallet, setWallet]}>
         <Layout style={{minHeight: '100vh'}}>
             <Sider collapsible collapsed={collapsed} onCollapse={setCollapsed}>
-                <div className="logo">{`${pkg.name}@${pkg.version}`}</div>
+                <div className="logo">{`${pkg.name}@${wallet.version}`}</div>
                 <Menu theme="dark"
                       defaultSelectedKeys={[page]}
                       onClick={(val) => setPage(val.key)}

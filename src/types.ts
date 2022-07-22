@@ -131,11 +131,11 @@ export interface EIP1193Provider extends SimpleEventEmitter {
     // make an Ethereum RPC method call.
     request(args: RequestArguments): Promise<unknown>;
 }
-
-export interface IEthereumProvider extends EIP1193Provider {
-    // legacy alias for EIP-1102
-    enable(): Promise<ProviderAccounts>;
-}
+//
+// export interface IEthereumProvider extends EIP1193Provider {
+//     // legacy alias for EIP-1102
+//     enable(): Promise<ProviderAccounts>;
+// }
 
 
 export interface ChainConfig {
@@ -148,15 +148,6 @@ export interface ChainConfig {
     rpcWorking?: boolean
 }
 
-// export type JsonRpcId = string | number
-// export type JsonRpcParams<T> = T[] | Record<string, T>
-//
-// export interface JsonRpcRequest<T> {
-//     jsonrpc: '2.0'
-//     id: JsonRpcId
-//     method: string
-//     params: JsonRpcParams<T>
-// }
 
 export interface JsonRpcError {
     id: number;

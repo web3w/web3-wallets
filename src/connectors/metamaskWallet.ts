@@ -1,16 +1,18 @@
+import MetaMaskOnboarding from '@metamask/onboarding';
 import {addChainParameter} from '../constants/chain';
+
 import {
     WalletNames,
     ProviderConnectInfo,
     ProviderMessage,
-    ProviderRpcError, RequestArguments, ProviderAccounts,
+    ProviderRpcError, RequestArguments, ProviderAccounts
 } from '../types'
-import {BaseWallet} from "./baseWallet";
+import {BaseProvider} from "./baseProvider";
 
 
 // https://github.com/metamask/test-dapp
 // https://metamask.github.io/test-dapp/
-export class MetaMaskWallet extends BaseWallet {
+export class MetaMaskWallet  extends BaseProvider {
     public walletName: WalletNames = 'metamask'
     public provider: any
     public chainId: number
@@ -20,13 +22,22 @@ export class MetaMaskWallet extends BaseWallet {
         super()
         this.provider = window.ethereum
         if (this.provider) {
+            // adapter coinbase wallet
             if (this.provider.overrideIsMetaMask) {
                 this.provider = this.provider.providers.find(val => val.isMetaMask)
             }
+            // if (!this.isUnlocked()) {
+            //     this.enable()
+            // }
+            debugger
             this.chainId = Number(this.provider.networkVersion)
             this.address = this.provider.selectedAddress
+
         } else {
-            throw new Error('Please install wallet')
+            // throw new Error('Please install MetaMask wallet')
+            const onboarding = new MetaMaskOnboarding();
+            onboarding.startOnboarding();
+            throw new Error('Install MetaMask wallet')
         }
 
         // 判断钱包
@@ -82,7 +93,7 @@ export class MetaMaskWallet extends BaseWallet {
         })
     };
 
-    async enable(): Promise<ProviderAccounts> {
+    async connect(): Promise<ProviderAccounts> {
         return this.provider.request({method: 'eth_requestAccounts'}) // enable ethereum
     }
 
@@ -126,7 +137,7 @@ export class MetaMaskWallet extends BaseWallet {
         }
     }
 
-    async isMetamaskLock(): Promise<boolean> {
+    isUnlocked() {
         return this.provider._metamask.isUnlocked()
     }
 

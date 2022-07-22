@@ -1,6 +1,6 @@
 // TypeScript
-import {ProviderAccounts, WalletNames, IEthereumProvider, RequestArguments} from '../types'
-import {BaseWallet} from "./baseWallet";
+import {ProviderAccounts, WalletNames, RequestArguments} from '../types'
+import {BaseProvider} from "./baseProvider";
 
 declare global {
     interface Window {
@@ -24,7 +24,7 @@ const tronWalletEvent = (account) => {
     });
 }
 
-export class TronLinkWallet extends BaseWallet {
+export class TronLinkWallet  extends BaseProvider {
     public walletName: WalletNames = 'tron_link'
     public provider: any
     public address: string = ''
@@ -46,7 +46,7 @@ export class TronLinkWallet extends BaseWallet {
         })
     };
 
-    async enable(): Promise<ProviderAccounts> {
+    async connect(): Promise<ProviderAccounts> {
         tronWalletEvent(this.address)
         return this.provider.request({method: 'tron_requestAccounts'}) // enable ethereum
 
