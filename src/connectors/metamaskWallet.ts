@@ -90,7 +90,6 @@ export class MetaMaskWallet extends BaseWallet {
 
     public async addChainId(chainId: number) {
         const params = addChainParameter(chainId)
-        debugger
         this.addEthereumChain(params)
     }
 

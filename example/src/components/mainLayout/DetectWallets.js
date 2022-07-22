@@ -9,7 +9,7 @@ export function DetectWallets() {
     const [wallets, setWallets] = useState([])
 
     const linkWallet = async (item) => {
-        debugger
+
         await item.enable()
         setWallet(item)
     }

@@ -47,7 +47,6 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
                     this.walletProvider = new CoinbaseWallet();
                     break;
                 case 'wallet_connect':
-                    debugger
                     this.walletProvider = new WalletProvider({ bridge, chainId, qrcodeModal: wallet?.qrcodeModal });
                     break;
                 case 'token_pocket':
@@ -112,7 +111,6 @@ export class Web3Wallets extends EventEmitter implements IEthereumProvider {
     }
 
     async enable(): Promise<ProviderAccounts> {
-        debugger
         if (!this.walletProvider) {
             throw new Error('Web3-wallet enable error')
         }
