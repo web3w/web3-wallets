@@ -1,6 +1,6 @@
-import walletConnectIcon from "../images/walletconnect.png";
-import metamaskIcon from "../images/metamask.png";
-import coinbaseIcon from "../images/coinbaseWallet.svg";
+import walletConnectIcon from "../assets/images/walletconnect.png";
+import metamaskIcon from "../assets/images/metamask.png";
+import coinbaseIcon from "../assets/images/coinbaseWallet.svg";
 
 export {walletConnectIcon, metamaskIcon, coinbaseIcon}
 

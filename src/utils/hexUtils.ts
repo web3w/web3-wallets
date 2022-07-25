@@ -1,7 +1,11 @@
-import {ethers} from "ethers";
-import {Bytes, concat} from "@ethersproject/bytes";
+// import {ethers} from "ethers";
+import {Bytes, concat, hexValue, isHexString, hexConcat, hexZeroPad, hexDataSlice} from "@ethersproject/bytes";
+import {isAddress} from "@ethersproject/address";
 import {keccak256} from "@ethersproject/keccak256";
+import {toUtf8Bytes} from "@ethersproject/strings";
+import {BigNumber} from "@ethersproject/bignumber";
 import {NULL_BLOCK_HASH} from "../constants/index";
+import {Buffer} from "buffer"
 
 export const messagePrefix = "\x19Ethereum Signed Message:\n";
 
@@ -10,16 +14,16 @@ export const hexUtils = {
     concat(args: Array<string>): string {
         const hex = args.find(val => !hexUtils.isHex(val) || val.length < 4)
         if (hex) throw  new Error(hex + " is not hex string")
-        return ethers.utils.hexConcat(args);
+        return hexConcat(args);
     },
     isHex(s: string, length?: number): boolean {
-        return ethers.utils.isHexString(s, length);
+        return isHexString(s, length);
     },
     isAddress(address: string) {
-        return ethers.utils.isAddress(address)
+        return isAddress(address)
     },
     toShortHex(message: string | number | Buffer, isPrefix = true): string {
-        const hex = ethers.utils.hexValue(message)
+        const hex = hexValue(message)
         if (hex.length === 3) {
             const num = hex.split('x')
             return isPrefix ? num[0] + 'x0' + num[1] : num[0] + num[1]
@@ -29,38 +33,47 @@ export const hexUtils = {
         }
     },
     toHex(message: string | number | Buffer, isPrefix = true): string {
-        const hex = ethers.utils.hexValue(message)
+        const hex = hexValue(message)
         return isPrefix ? hex : hex.substring(2)
     },
     hashMessage(message: Bytes | string): string {
         // assert.isHexString("hash", hash)
         if (typeof (message) === "string") {
-            message = Buffer.from(message);
+            message = toUtf8Bytes(message);
         }
         return keccak256(concat([
-            Buffer.from(messagePrefix),
-            Buffer.from(String(message.length)),
+            toUtf8Bytes(messagePrefix),
+            toUtf8Bytes(String(message.length)),
             message
         ]));
         // return hexUtils.hash(hexUtils.concat(['\x19Ethereum Signed Message:\n32', hash]))
         // return hexUtils.hash(Buffer.from(['\x19Ethereum Signed Message:\n32', hash].join("")))
     },
+
+    // export function hashMessage(message: Bytes | string): string {
+    //     if (typeof(message) === "string") { message = toUtf8Bytes(message); }
+    //     return keccak256(concat([
+    //         toUtf8Bytes(messagePrefix),
+    //         toUtf8Bytes(String(message.length)),
+    //         message
+    //     ]));
+    // }
     hash(message: Bytes | string, isPrefix = true): string {
         if (message == "0x") {
             return isPrefix ? NULL_BLOCK_HASH : NULL_BLOCK_HASH.substring(2);
         }
 
         // if (typeof (message) === "string" ) {
-        if (!ethers.utils.isHexString(message)) {
+        if (!isHexString(message)) {
             // console.log(typeof (message) === "object" && message.length > 0 ? hexUtils.toHex(message as Buffer) : message)
             message = Buffer.from(message as string);
         }
 
-        const hex = ethers.utils.keccak256(message)
+        const hex = keccak256(message)
         return isPrefix ? hex : hex.substring(2);
     },
     leftPad(n: string | number, _size: number = WORD_LENGTH): string {
-        if (ethers.utils.isHexString(n)) {
+        if (isHexString(n)) {
 
             n = hexUtils.toHex(n)
         } else if (typeof (n) === "string") {
@@ -77,10 +90,10 @@ export const hexUtils = {
             n = hexUtils.toHex(n)
         }
 
-        return ethers.utils.hexZeroPad(n, _size)
+        return hexZeroPad(n, _size)
     },
     rightPad(n: string | number, _size: number = WORD_LENGTH): string {
-        return ethers.BigNumber.from(n).shl(_size * 8).toHexString().substring(0, _size * 2) + "00"
+        return BigNumber.from(n).shl(_size * 8).toHexString().substring(0, _size * 2) + "00"
     },
     slice(n: string | number, start: number, end?: number): string {
         let hex = ""
@@ -90,7 +103,7 @@ export const hexUtils = {
         if (typeof (n) == "number") {
             hex = hexUtils.toHex(n)
         }
-        return ethers.utils.hexDataSlice(hex, start, end)
+        return hexDataSlice(hex, start, end)
     },
     split(hex: string, _size: number = WORD_LENGTH, isPrefix?: boolean): string[] {
         const str = hex.substring(0, 2) == '0x' ? hex.substring(2) : hex;
@@ -105,13 +118,13 @@ export const hexUtils = {
         return arr
     },
     stringToByte32(str: string) {
-        return ethers.utils.keccak256(
-            ethers.utils.toUtf8Bytes(str)
+        return keccak256(
+            toUtf8Bytes(str)
         );
     },
     stringToBytes(str: string) {
-        return ethers.utils.hexValue(
-            ethers.utils.toUtf8Bytes(str)
+        return hexValue(
+            toUtf8Bytes(str)
         )
     }
 }

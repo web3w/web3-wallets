@@ -1,16 +1,14 @@
 import {message, Layout, Descriptions, Menu} from 'antd';
 import React, {useContext, useState} from "react";
-import "../css/index.css"
+import "../assets/css/index.css"
 import {Context} from '../AppContext'
 import {DetectWallets} from "./DetectWallets";
 import {WalletList} from "./WalletList";
-import pkg from '../../../package.json'
-// import {WalletFunc} from "./WalletFunc";
-
+import pkg from '../../package.json'
 
 const {Header, Content, Footer, Sider} = Layout;
 
-export function MainLayout() {
+export function App() {
     const {wallet} = useContext(Context);
     const [collapsed, setCollapsed] = useState(false);
     const [page, setPage] = useState("wallets");

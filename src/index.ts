@@ -30,8 +30,9 @@ declare global {
 export class Web3Wallets extends EventEmitter implements EIP1193Provider {
     public walletProvider: ExternalProvider | any
     public walletSigner: JsonRpcSigner
-    public wallet
     public version = pkg.version
+    public wallet
+
 
     constructor(wallet?: Partial<WalletInfo>) {
         super()

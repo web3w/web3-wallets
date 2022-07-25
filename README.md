@@ -21,13 +21,19 @@ Example: https://web3w.github.io/web3-wallets
 ```
 
 ## Used `WalletNames`
-
-walletNames = 'metamask' | 'coinbase' | 'imtoken' | 'math_wallet' | 'token_pocket' | 'wallet_connect' | '
-bitkeep' | 'coin98'
+###An adapted wallet
+'metamask','wallet_connect','coinbase','imtoken','math_wallet','token_pocket'  
+//TODO  
+'bitkeep' | 'coin98'
 
 ```ts
-const wallet = new Web3Wallets('metamask')
-const accounts = await wallet.enable()
+const wallet = new Web3Wallets({name:'metamask'})
+const web3 = new Web3(wallet)
+```
+    
+    
+```ts
+const accounts = await wallet.connect() // same enable()
 const res = await wallet.request({"method": "eth_blockNumber", "params": []})
 ```
 
