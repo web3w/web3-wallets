@@ -1,11 +1,19 @@
 // import {ethers} from "ethers";
-import {Bytes, concat, hexValue, isHexString, hexConcat, hexZeroPad, hexDataSlice} from "@ethersproject/bytes";
+import {
+    Bytes,
+    concat,
+    hexValue,
+    isHexString,
+    hexConcat,
+    hexZeroPad,
+    hexDataSlice,
+} from "@ethersproject/bytes";
 import {isAddress} from "@ethersproject/address";
 import {keccak256} from "@ethersproject/keccak256";
 import {toUtf8Bytes} from "@ethersproject/strings";
 import {BigNumber} from "@ethersproject/bignumber";
 import {NULL_BLOCK_HASH} from "../constants/index";
-import {Buffer} from "buffer"
+// import {Buffer} from "buffer"
 
 export const messagePrefix = "\x19Ethereum Signed Message:\n";
 
@@ -22,7 +30,7 @@ export const hexUtils = {
     isAddress(address: string) {
         return isAddress(address)
     },
-    toShortHex(message: string | number | Buffer, isPrefix = true): string {
+    toShortHex(message: string | number , isPrefix = true): string {
         const hex = hexValue(message)
         if (hex.length === 3) {
             const num = hex.split('x')
@@ -32,7 +40,7 @@ export const hexUtils = {
             return isPrefix ? hex : hex.substring(2)
         }
     },
-    toHex(message: string | number | Buffer, isPrefix = true): string {
+    toHex(message: string | number, isPrefix = true): string {
         const hex = hexValue(message)
         return isPrefix ? hex : hex.substring(2)
     },
@@ -66,7 +74,7 @@ export const hexUtils = {
         // if (typeof (message) === "string" ) {
         if (!isHexString(message)) {
             // console.log(typeof (message) === "object" && message.length > 0 ? hexUtils.toHex(message as Buffer) : message)
-            message = Buffer.from(message as string);
+            message = toUtf8Bytes(message as string);
         }
 
         const hex = keccak256(message)
@@ -78,7 +86,7 @@ export const hexUtils = {
             n = hexUtils.toHex(n)
         } else if (typeof (n) === "string") {
             if (n.match(/^-?[0-9]+$/)) {
-                n = hexUtils.toHex(Buffer.from(n))
+                n = hexUtils.stringToBytes(n)
                 // if (n.toString().length > _size) throw new Error("n length > size")
                 if (n.toString().length > _size) {
                     n = hexUtils.hash(n)

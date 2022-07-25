@@ -5,6 +5,7 @@ import {detectWallets, getWalletInfo} from 'web3-wallets';
 import QRCodeModal from "web3-qrcode-modal";
 import Web3 from "web3";
 
+
 export function DetectWallets() {
     const {setWallet} = useContext(Context);
     const [wallets, setWallets] = useState([])
@@ -15,8 +16,14 @@ export function DetectWallets() {
     }
 
     const web3JsWallet = async (item) => {
-        const web3 = new Web3(wallets)
-        message.info(web3.version)
+        const wallet = wallets[0]
+        const web3 = new Web3(wallet)
+        const version = web3.version
+        const hex = web3.utils.keccak256(web3.utils.utf8ToHex(version))
+        // debugger
+        // const sign = await web3.eth.sign(hex, wallet.address)
+        const sign = await web3.eth.personal.sign(version, wallet.address)
+        message.info(sign)
     }
     useEffect(() => {
         const wallet = {qrcodeModal: QRCodeModal}
