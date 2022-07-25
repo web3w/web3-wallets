@@ -4,7 +4,6 @@ import secrets from '../../../secrets.json'
 import {web3BaseAssert} from "web3-assert";
 (async () => {
 
-    debugger
 
     web3BaseAssert.isETHAddress({value: "0xf8becacec90bfc361c0a2c720839e08405a72f6d", variableName: 'verifyingContract'})
 

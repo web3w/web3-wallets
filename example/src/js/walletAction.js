@@ -39,7 +39,7 @@ export const walletAction = async (wallet, action) => {
     if (action == "DisConnect") {
         if (walletProvider.walletName == 'wallet_connect') {
             const {walletName, wc} = walletProvider
-            debugger
+            // debugger
             const {clientMeta, peerId, peerMeta, uri, session} = wc
             if (!peerMeta) return
             const {name, description} = peerMeta
@@ -97,9 +97,8 @@ export const walletAction = async (wallet, action) => {
                 description: `Please open ${description} App accept WethDeposit`,
             });
         }
-        debugger
         const ethBal = await account.getGasBalances()
-        debugger
+
         if (ethBal == "0") {
             message.error("WETH balance eq 0")
             return
@@ -132,10 +131,8 @@ export const walletAction = async (wallet, action) => {
             message.error("WETH balance eq 0")
             return
         } else {
-            debugger
             await account.wethWithdraw("1")
 
-            debugger
         }
     }
 

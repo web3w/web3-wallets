@@ -12,7 +12,7 @@ import {BaseProvider} from "./baseProvider";
 
 // https://github.com/metamask/test-dapp
 // https://metamask.github.io/test-dapp/
-export class MetaMaskWallet  extends BaseProvider {
+export class MetaMaskWallet extends BaseProvider {
     public walletName: WalletNames = 'metamask'
     public provider: any
     public chainId: number
@@ -29,7 +29,6 @@ export class MetaMaskWallet  extends BaseProvider {
             // if (!this.isUnlocked()) {
             //     this.enable()
             // }
-            debugger
             this.chainId = Number(this.provider.networkVersion)
             this.address = this.provider.selectedAddress
 

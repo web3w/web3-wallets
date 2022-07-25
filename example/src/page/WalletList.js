@@ -43,7 +43,6 @@ export function WalletList() {
                 if (error) {
                     throw error
                 }
-                debugger
                 const {} = payload
                 setWallet(newWallet)
             })

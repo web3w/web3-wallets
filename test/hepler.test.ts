@@ -25,7 +25,6 @@ function toBytes(str: string): string {
     const str = "hello web3"
     console.assert(hexUtils.hash("hello web3") == "0x6c171485a0138b7b0a49d72b570e1d9c589d42a79ae57329d90671d1ac702d74")
     //
-    debugger
     console.assert(hexUtils.stringToBytes(str) == toBytes(str))
     // console.log(privateKeysToAddress(secrets.privateKeys))
     const privateKey = secrets.privateKeys[0]
