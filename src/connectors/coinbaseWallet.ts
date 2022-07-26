@@ -34,6 +34,13 @@ export class CoinbaseWallet extends BaseProvider {
         // get isMetaMask(): boolean;
     }
 
+    async connect(): Promise<ProviderAccounts> {
+        const accounts = await this.provider.request({method: 'eth_requestAccounts'})
+        this.chainId = Number(this.provider.networkVersion)
+        this.address = this.provider.selectedAddress
+        return accounts// enable ethereum
+    }
+
     // async request(args: RequestArguments): Promise<unknown> {
     //     return new Promise<unknown>(async (resolve, reject) => {
     //         const result = await this.provider.request(args)

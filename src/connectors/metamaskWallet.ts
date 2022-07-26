@@ -93,7 +93,10 @@ export class MetaMaskWallet extends BaseProvider {
     };
 
     async connect(): Promise<ProviderAccounts> {
-        return this.provider.request({method: 'eth_requestAccounts'}) // enable ethereum
+        const accounts =await this.provider.request({method: 'eth_requestAccounts'})
+        this.chainId = Number(this.provider.networkVersion)
+        this.address = this.provider.selectedAddress
+        return accounts // enable ethereum
     }
 
     private async addEthereumChain(params) {
