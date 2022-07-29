@@ -55,4 +55,51 @@ export const msg712sign = {
 };
 
 
+export const nftOrder = {
+    types: {
+        "NFTBuyOrder": [{"type": "address", "name": "maker"}, {
+            "type": "address",
+            "name": "taker"
+        }, {"type": "uint256", "name": "expiry"},
+            {"type": "uint256", "name": "nonce"}, {
+                "type": "address",
+                "name": "erc20Token"
+            }, {"type": "uint256", "name": "erc20TokenAmount"}, {"type": "Fee[]", "name": "fees"}, {
+                "type": "address",
+                "name": "nft"
+            }, {"type": "uint256", "name": "nftId"},{
+                "type": "uint256",
+                "name": "hashNonce"
+            }],
+        "Fee": [{"type": "address", "name": "recipient"}, {"type": "uint256", "name": "amount"}, {
+            "type": "bytes",
+            "name": "feeData"
+        }],
+        "EIP712Domain": [{"name": "name", "type": "string"}, {"name": "version", "type": "string"}, {
+            "name": "chainId",
+            "type": "uint256"
+        }, {"name": "verifyingContract", "type": "address"}]
+    },
+    domain: {
+        "name": "ElementEx",
+        "version": "1.0.0",
+        "chainId": "4",
+        "verifyingContract": "0x8d6022b8a421b08e9e4cef45e46f1c83c85d402f"
+    },
+    primaryType: "NFTBuyOrder",
+    message: {
+        "maker": "0x32f4b63a46c1d12ad82cabc778d75abf9889821a",
+        "taker": "0x0000000000000000000000000000000000000000",
+        "expiry": "7124974317609481036",
+        "nonce": "10",
+        "erc20Token": "0xc778417e063141139fce010982780140aa0cd5ab",
+        "erc20TokenAmount": "950000000000000",
+        "fees": [],
+        "nft": "0x3b06635c6429d0ffcbe3798b860d065118269cb7",
+        "nftId": "73",
+        "hashNonce": "0"
+    }
+}
+
+
 

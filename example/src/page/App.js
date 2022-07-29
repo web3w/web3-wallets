@@ -5,17 +5,19 @@ import {Context} from '../AppContext'
 import {DetectWallets} from "./DetectWallets";
 import {WalletList} from "./WalletList";
 import pkg from '../../package.json'
+import {ChainList} from "./ChainList";
 
 const {Header, Content, Footer, Sider} = Layout;
 
 export function App() {
     const {wallet} = useContext(Context);
     const [collapsed, setCollapsed] = useState(false);
-    const [page, setPage] = useState("wallets");
+    const [page, setPage] = useState("walletList");
 
 
     const items = [
-        {label: 'Wallets', key: 'wallets'},
+        {label: 'WalletList', key: 'walletList'},
+        {label: 'ChainList', key: 'chainList'},
         {label: 'DetectWallets', key: 'detectWallets'}, // 菜单项务必填写 key
     ];
     return (
@@ -42,7 +44,8 @@ export function App() {
                             label="PeerMetaName">{wallet.walletProvider.peerMetaName}</Descriptions.Item>}
                     </Descriptions>}
                 </Header>
-                {page == "wallets" && <WalletList/>}
+                {page == "walletList" && <WalletList/>}
+                {page == "chainList" && <ChainList/>}
                 {page == "detectWallets" && <DetectWallets/>}
             </Layout>
         </Layout>

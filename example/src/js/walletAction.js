@@ -1,7 +1,7 @@
 import {message, notification} from "antd";
 
 import {utils} from "web3-wallets";
-import {msg712sign} from "./config";
+import {msg712sign, nftOrder} from "./config";
 
 import {Web3Accounts, MockContract} from 'web3-accounts';
 
@@ -49,7 +49,11 @@ export const walletAction = async (wallet, action) => {
                 description: `DisConnect ${description} App`,
             });
             walletProvider.close()
+        }else {
+            debugger
+            walletProvider.disconnect()
         }
+
     }
 
     if (action == 'SignMessage') {
@@ -63,6 +67,14 @@ export const walletAction = async (wallet, action) => {
 
     if (action == 'SignTypedData') {
         const signature = await wallet.signTypedData(msg712sign)
+        notification["info"]({
+            message: `SignTypedData ${walletName}`,
+            description: signature
+        });
+    }
+
+    if (action == 'SignTypedDataList') {
+        const signature = await wallet.signTypedData(nftOrder)
         notification["info"]({
             message: `SignTypedData ${walletName}`,
             description: signature
@@ -163,15 +175,26 @@ export const walletAction = async (wallet, action) => {
     }
 
     if (action == 'AddChain') {
-        walletProvider.addChainId(56)
-    }
-
-    if (action == 'AddToken') {
-        walletProvider.addToken()
+        const chainId = prompt("New Chain ID")
+        walletProvider.addChainId(chainId)
     }
 
     if (action == "SwitchChain") {
-        walletProvider.switchBSCTEST()
+        const chainId = prompt("Chain ID")
+        walletProvider.switchEthereumChain(chainId)
+    }
+
+    if (action == 'AddToken') {
+        const token = {
+                type: "ERC20",
+                options: {
+                    address: "0xcf664087a5bb0237a0bad6742852ec6c8d69a27a",
+                    symbol: "WONE",
+                    decimals: 18,
+                    image: "https://s2.coinmarketcap.com/static/img/coins/64x64/11696.png",
+                },
+            }
+        walletProvider.addToken(token)
     }
 
     // if(action =="scanQRCode"){

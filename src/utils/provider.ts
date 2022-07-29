@@ -122,6 +122,7 @@ export function getProvider(walletInfo: WalletInfo) {
                 walletProvider = window.elementWeb3
                 if (walletProvider.isWalletConnect) {
                     //JsonRpcSigner wallet connect
+                    console.log('GetProvider:window.elementWeb3  isWalletConnect')
                     walletSigner = new Web3Provider(walletProvider).getSigner(address)
                 } else {
                     // new Web3()

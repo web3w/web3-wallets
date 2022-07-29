@@ -1,5 +1,8 @@
 # Getting Started with Create React App
 
+
+GENERATE_SOURCEMAP=false react-scripts   --openssl-legacy-provider start
+
 ### For web3.js config
 
 Dependency package Installation  
@@ -25,7 +28,7 @@ Modify the webpack config
             new webpack.ProvidePlugin({
                 process: "process/browser",
                 Buffer: ["buffer", "Buffer"],
-            })
+            }),
   ]
 
 ``

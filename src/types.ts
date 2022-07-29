@@ -24,6 +24,8 @@ export type WalletNames = 'metamask'
     | 'math_wallet'
     | 'token_pocket'
     | 'wallet_connect'
+    | 'one_key'
+    | 'rainbow'
     | 'bitkeep'
     | 'coin98'
     | 'tron_link'
@@ -131,6 +133,7 @@ export interface EIP1193Provider extends SimpleEventEmitter {
     // make an Ethereum RPC method call.
     request(args: RequestArguments): Promise<unknown>;
 }
+
 //
 // export interface IEthereumProvider extends EIP1193Provider {
 //     // legacy alias for EIP-1102
@@ -174,5 +177,15 @@ export interface JsonRpcPayload {
     method: string;
     params?: any[];
     id?: string | number;
+}
+
+export interface NewAsset {
+    type: string,
+    options: {
+        address: string
+        symbol: string
+        decimals: number
+        image?: string
+    }
 }
 

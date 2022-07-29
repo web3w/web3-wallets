@@ -6,8 +6,8 @@ export const AppContext = ({children}) => {
     const [wallet, setWallet] = useState({});
     useEffect(() => {
         // setLoading(true);
-        const wallet = new Web3Wallets('metamask')
-        console.log("AppContext: wallet change", wallet.address, wallet.chainId)
+        // const wallet = new Web3Wallets('metamask')
+        // console.log("AppContext: wallet change", wallet.address, wallet.chainId)
     }, [])
     return (<Context.Provider value={{wallet, setWallet}}>
         {children}

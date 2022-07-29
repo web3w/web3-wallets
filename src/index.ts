@@ -16,6 +16,7 @@ import {BigNumber} from "./constants/index";
 import {get1559Fee} from "./utils/fee";
 import pkg from "../package.json"
 import {BaseProvider} from "./connectors/baseProvider";
+import {IRPCMap} from "web3-signer-provider";
 
 declare global {
     interface Window {
@@ -34,7 +35,7 @@ export class Web3Wallets extends EventEmitter implements EIP1193Provider {
     public wallet
 
 
-    constructor(wallet?: Partial<WalletInfo>) {
+    constructor(wallet?: Partial<WalletInfo>, rpcMap?: IRPCMap) {
         super()
         this.wallet = wallet
         const bridge = wallet?.bridge || "https://bridge.walletconnect.org"
@@ -51,9 +52,19 @@ export class Web3Wallets extends EventEmitter implements EIP1193Provider {
                     this.walletProvider = new CoinbaseWallet();
                     break;
                 case 'wallet_connect':
-                    this.walletProvider = new WalletProvider({bridge, chainId, qrcodeModal: wallet?.qrcodeModal});
+                    this.walletProvider = new WalletProvider({
+                        bridge,
+                        chainId,
+                        qrcodeModal: wallet?.qrcodeModal
+                    }, rpcMap);
                     break;
                 case 'token_pocket':
+                    this.walletProvider = new MetaMaskWallet();
+                    break;
+                case 'math_wallet':
+                    this.walletProvider = new MetaMaskWallet();
+                    break;
+                case 'imtoken':
                     this.walletProvider = new MetaMaskWallet();
                     break;
                 case 'bitkeep':
@@ -61,6 +72,9 @@ export class Web3Wallets extends EventEmitter implements EIP1193Provider {
                     break;
                 case 'coin98':
                     this.walletProvider = new MetaMaskWallet();
+                    break;
+                case 'one_key':
+                    this.walletProvider = new MetaMaskWallet(walletName);
                     break;
                 default:
                     throw new Error("Wallet not support")

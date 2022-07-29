@@ -2,29 +2,63 @@ import React, {useContext, useState} from "react";
 import {Button, Divider, List, Space} from "antd";
 import {Context} from "../AppContext";
 import Avatar from "antd/es/avatar/avatar";
-import QRCodeModal from "web3-qrcode-modal";
+// import QRCodeModal from "web3-qrcode-modal";
+import QRCodeModal from '@walletconnect/qrcode-modal'
 import {Web3Wallets} from 'web3-wallets';
 
 import {metamaskIcon, coinbaseIcon, walletConnectIcon} from "../js/config"
 
 import {walletAction} from "../js/walletAction";
 
+const RPC_URLS = {
+    1: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
+    4: 'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161', //
+    137: 'https://rpc-mainnet.maticvigil.com', //
+    80001: 'https://rpc-mumbai.matic.today'
+}
+
 export function WalletList() {
-    const {setWallet} = useContext(Context);
+    const {wallet, setWallet} = useContext(Context);
 
     const selectWallet = async (item, action) => {
+        // debugger
+        if (wallet && wallet.walletName == item.key) {
+            setWallet(wallet)
+            await walletAction(wallet, action)
+            return
+        }
+        const newWallet = new Web3Wallets({name: item.key, qrcodeModal: QRCodeModal}, RPC_URLS)
 
-        const newWallet = new Web3Wallets({name: item.key, qrcodeModal: QRCodeModal})
+        if (item.key == 'one_key') {
+            const provider = newWallet.walletProvider
+
+            const accounts = await provider.connect() // enable ethereum
+            setWallet(newWallet)
+            provider.on('chainChanged', async (walletChainId) => {
+                setWallet(wallet)
+                console.log('one_key chainChanged Page', walletChainId)
+            })
+
+            provider.on('accountsChanged', async (accounts) => {
+                setWallet(wallet)
+                console.log('one_key accountsChanged Page', accounts)
+
+            })
+
+        }
+
         if (item.key == 'metamask') {
             const provider = newWallet.walletProvider
             const accounts = await provider.connect() // enable ethereum
             setWallet(newWallet)
             provider.on('chainChanged', async (walletChainId) => {
-                console.log('Matemask chainChanged', walletChainId)
+                setWallet(newWallet)
+                console.log('Matemask chainChanged Page', walletChainId)
             })
 
             provider.on('accountsChanged', async (accounts) => {
-                console.log('Matemask accountsChanged', accounts)
+                setWallet(newWallet)
+                console.log('Matemask accountsChanged Page', accounts)
 
             })
 
@@ -35,7 +69,7 @@ export function WalletList() {
             if (provider.connected) {
                 setWallet(newWallet)
             } else {
-                if(action != "DisConnect"){
+                if (action != "DisConnect") {
                     await provider.open()
                 }
             }
@@ -55,8 +89,19 @@ export function WalletList() {
         }
 
         if (item.key == 'coinbase') {
-            const accounts = await newWallet.walletProvider.connect() // enable ethereum
+            const provider = newWallet.walletProvider
+            const accounts = await provider.connect() // enable ethereum
             setWallet(newWallet)
+            provider.on('chainChanged', async (walletChainId) => {
+                setWallet(newWallet)
+                console.log('Coinbase chainChanged Page', walletChainId)
+            })
+
+            provider.on('accountsChanged', async (accounts) => {
+                setWallet(newWallet)
+                console.log('Coinbase accountsChanged Page', accounts)
+
+            })
         }
 
         if (newWallet.chainId) {
@@ -69,12 +114,14 @@ export function WalletList() {
     const walletItems = [
         {title: 'MetaMask', key: 'metamask', icon: metamaskIcon, desc: "Popular wallet"},
         {title: 'WalletConnect', key: 'wallet_connect', icon: walletConnectIcon, desc: "mobile only"},
-        {title: 'CoinBase', key: 'coinbase', icon: coinbaseIcon, desc: "coinbase wallet"}
+        {title: 'CoinBase', key: 'coinbase', icon: coinbaseIcon, desc: "coinbase wallet"},
+        {title: 'OneKey', key: 'one_key', icon: metamaskIcon, desc: "One Key wallet"}
     ];
 
     const accountFun = [
         {title: 'SignMessage', key: 'SignMessage', disabled: ['']},
         {title: 'SignTypedData', key: 'SignTypedData', disabled: ['']},
+        {title: 'SignTypedDataList', key: 'SignTypedDataList', disabled: ['']},
         {title: 'GetBalance', key: 'GetBalance', disabled: ['']}
     ];
 

@@ -28,10 +28,6 @@ export function getChainInfo(chinaId: number): ChainConfig {
     }
 }
 
-// export async function detectRpcUrl(chinaId: number, rpcUrl?: string[]) {
-//
-// }
-
 export async function getChainRpcUrl(chinaId: number, best?: true): Promise<string> {
     const chainNodes = getChainInfo(chinaId)
     const rpcs = chainNodes.rpcs

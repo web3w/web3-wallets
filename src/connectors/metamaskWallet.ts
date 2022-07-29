@@ -1,5 +1,4 @@
 import MetaMaskOnboarding from '@metamask/onboarding';
-import {addChainParameter} from '../constants/chain';
 
 import {
     WalletNames,
@@ -18,13 +17,21 @@ export class MetaMaskWallet extends BaseProvider {
     public chainId: number
     public address: string
 
-    constructor() {
+    constructor(name?: string) {
         super()
         this.provider = window.ethereum
+        debugger
+
         if (this.provider) {
             // adapter coinbase wallet
             if (this.provider.overrideIsMetaMask) {
-                this.provider = this.provider.providers.find(val => val.isMetaMask)
+                const provider = this.provider.providerMap.get("MetaMask")
+                if (!provider) {
+                    const onboarding = new MetaMaskOnboarding();
+                    onboarding.startOnboarding();
+                    throw new Error('Install MetaMask wallet')
+                }
+                this.provider = provider
             }
             // if (!this.isUnlocked()) {
             //     this.enable()
@@ -50,16 +57,22 @@ export class MetaMaskWallet extends BaseProvider {
         if (provider && provider.isTokenPocket) {
             this.walletName = 'token_pocket'
         }
+        // @ts-ignore
+        if (name == "one_key" && window.$onekey) {
+            // @ts-ignore
+            this.provider = window.$onekey.ethereum
+            this.walletName = 'one_key'
+        }
 
         // Events
-        provider.on('connect', (connectInfo: ProviderConnectInfo) => {
-            // console.log('Matemask connect', connectInfo)
+        this.provider.on('connect', (connectInfo: ProviderConnectInfo) => {
+            console.log('Matemask connect SDK', connectInfo)
             this.emit('connect', connectInfo)
             this.chainId = 0
             this.address = ''
         })
 
-        provider.on('disconnect', (error: ProviderRpcError) => {
+        this.provider.on('disconnect', (error: ProviderRpcError) => {
             // console.log('Matemask disconnect', error)
             this.emit('disconnect', error)
             this.provider = undefined
@@ -67,19 +80,21 @@ export class MetaMaskWallet extends BaseProvider {
             this.address = ''
         })
 
-        provider.on('chainChanged', async (walletChainId: string) => {
-            // console.log('Matemask chainChanged', walletChainId)
-            this.emit('disconnect', walletChainId)
+        this.provider.on('chainChanged', async (chainId: string) => {
+            console.log('Matemask chainChanged SDK', chainId)
+            this.chainId = Number(chainId)
+            this.emit('chainChanged', chainId)
             // window.location.reload()
         })
 
-        provider.on('accountsChanged', async (accounts: Array<string>) => {
-            // console.log('Matemask accountsChanged', accounts)
+        this.provider.on('accountsChanged', async (accounts: Array<string>) => {
+            console.log('Matemask accountsChanged SDK', accounts)
+            this.address = accounts[0]
             this.emit('accountsChanged', accounts)
         })
 
         //eth_subscription
-        provider.on('message', (payload: ProviderMessage) => {
+        this.provider.on('message', (payload: ProviderMessage) => {
             // console.log('Matemask RPC message', payload)
             this.emit('message', payload)
         })
@@ -93,102 +108,16 @@ export class MetaMaskWallet extends BaseProvider {
     };
 
     async connect(): Promise<ProviderAccounts> {
-        const accounts =await this.provider.request({method: 'eth_requestAccounts'})
+        const accounts = await this.provider.request({method: 'eth_requestAccounts'})
         this.chainId = Number(this.provider.networkVersion)
         this.address = this.provider.selectedAddress
         return accounts // enable ethereum
-    }
-
-    private async addEthereumChain(params) {
-        try {
-            await this.provider.request({
-                method: 'wallet_addEthereumChain',
-                params: [
-                    params
-                ],
-            });
-        } catch (addError) {
-            // handle "add" error
-        }
-    }
-
-    public async addChainId(chainId: number) {
-        const params = addChainParameter(chainId)
-        this.addEthereumChain(params)
-    }
-
-    private async switchEthereumChain(chainId: string, rpcUrl?: string) {
-        try {
-            await this.provider.request({
-                method: 'wallet_switchEthereumChain',
-                params: [{chainId}]
-            })
-        } catch (switchError: any) {
-            // This error code indicates that the chain has not been added to MetaMask.
-            if (switchError.code === 4902) {
-                try {
-                    await this.provider.request({
-                        method: 'wallet_addEthereumChain',
-                        params: [{chainId, rpcUrl}]
-                    })
-                } catch (addError) {
-                    // handle "add" error
-                }
-            }
-            // handle other "switch" errors
-        }
     }
 
     isUnlocked() {
         return this.provider._metamask.isUnlocked()
     }
 
-    async onConnectMetaMask(): Promise<any> {
-        // 请求会触发解锁窗口
-        const accounts = await this.provider.request({method: 'eth_requestAccounts'})
-        const walletChainId = await this.provider.request({method: 'eth_chainId'})
-        console.log('wallet isConnected', this.provider.isConnected())
-        this.address = accounts[0]
-        return accounts
-    }
-
-    async switchBSCTEST() {
-        const rpcUrl = 'https://data-seed-prebsc-1-s1.binance.org:8545'
-        await this.switchEthereumChain('0x61')
-    }
-
-    async switchBSC() {
-        const rpcUrl = 'https://bsc-dataseed1.defibit.io/'
-        await this.switchEthereumChain('0x38')
-    }
-
-    async switchRinkeby() {
-        const rpcUrl = 'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'
-        await this.switchEthereumChain('0x4', rpcUrl)
-    }
-
-    async addToken(params) {
-        this.provider.request({
-            method: 'wallet_watchAsset',
-            params: {
-                type: 'ERC20',
-                options: {
-                    address: '0xb60e8dd61c5d32be8058bb8eb970870f07233155',
-                    symbol: 'FOO',
-                    decimals: 18,
-                    image: 'https://foo.io/token-image.svg',
-                },
-            },
-        })
-            .then((success) => {
-                if (success) {
-                    console.log('FOO successfully added to wallet!');
-                } else {
-                    throw new Error('Something went wrong.');
-                }
-            })
-            .catch(console.error);
-    }
 
     // Mobile
     async scanQRCode(params) {
@@ -204,4 +133,27 @@ export class MetaMaskWallet extends BaseProvider {
     }
 }
 
+// async onConnectMetaMask(): Promise<any> {
+//     //
+//     const accounts = await this.provider.request({method: 'eth_requestAccounts'})
+//     const walletChainId = await this.provider.request({method: 'eth_chainId'})
+//     console.log('wallet isConnected', this.provider.isConnected())
+//     this.address = accounts[0]
+//     return accounts
+// }
+
+// async switchBSCTEST() {
+//     const rpcUrl = 'https://data-seed-prebsc-1-s1.binance.org:8545'
+//     await this.switchEthereumChain('0x61')
+// }
+//
+// async switchBSC() {
+//     const rpcUrl = 'https://bsc-dataseed1.defibit.io/'
+//     await this.switchEthereumChain('0x38')
+// }
+//
+// async switchRinkeby() {
+//     const rpcUrl = 'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'
+//     await this.switchEthereumChain('0x4', rpcUrl)
+// }
 
