@@ -42,6 +42,7 @@ export const CHAIN_CONFIG = {
         ]
     },
     "3": {
+        name: "Ethereum Ropsten",
         native_currency: {
             symbol: "ETH",
             name: "Ether",

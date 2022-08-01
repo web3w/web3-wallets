@@ -20,8 +20,6 @@ export class MetaMaskWallet extends BaseProvider {
     constructor(name?: string) {
         super()
         this.provider = window.ethereum
-        debugger
-
         if (this.provider) {
             // adapter coinbase wallet
             if (this.provider.overrideIsMetaMask) {
@@ -74,7 +72,7 @@ export class MetaMaskWallet extends BaseProvider {
 
         this.provider.on('disconnect', (error: ProviderRpcError) => {
             // console.log('Matemask disconnect', error)
-            this.emit('disconnect', error)
+            this.emit('Matemask disconnect', error)
             this.provider = undefined
             this.chainId = 0
             this.address = ''
