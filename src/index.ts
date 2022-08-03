@@ -4,7 +4,7 @@ import EventEmitter from 'events'
 import {
     EIP1193Provider,
     JsonRpcPayload, JsonRpcResponse, LimitedCallSpec,
-    ProviderAccounts,
+    ProviderAccounts, ProviderChainId, ProviderInfo, ProviderMessage, ProviderRpcError,
     RequestArguments, TransactionRequest, WalletInfo
 } from "./types";
 import {ExternalProvider, JsonRpcSigner, Web3Provider} from "@ethersproject/providers";
@@ -34,9 +34,9 @@ export class Web3Wallets extends EventEmitter implements EIP1193Provider {
     public version = pkg.version
     public wallet
 
-
     constructor(wallet?: Partial<WalletInfo>, rpcMap?: IRPCMap) {
         super()
+
         this.wallet = wallet
         const bridge = wallet?.bridge || "https://bridge.walletconnect.org"
         const chainId = wallet?.chainId || 1
@@ -93,7 +93,7 @@ export class Web3Wallets extends EventEmitter implements EIP1193Provider {
             this.walletSigner = new Web3Provider(this.walletProvider).getSigner()
         }
 
-        // wallet config
+        //form wallet config provider
         if (wallet?.provider) {
             this.walletProvider = wallet.provider
             this.walletSigner = new Web3Provider(this.walletProvider).getSigner()
@@ -131,35 +131,17 @@ export class Web3Wallets extends EventEmitter implements EIP1193Provider {
 
     async connect(): Promise<ProviderAccounts> {
         if (!this.walletProvider) {
-            throw new Error('Web3-wallet enable error')
-        }
-
-        if (this.walletName == "wallet_connect") {
-            const provider = this.walletProvider
-
-            if (provider.connected) {
-                const walletStr = localStorage.getItem('walletconnect')
-                if (walletStr) {
-                    const walletSession = JSON.parse(walletStr)
-                    const {chainId, accounts, peerMeta} = walletSession
-                    provider.peerMetaName = peerMeta?.name || ""
-                }
-
-            } else {
-                await provider.open()
-            }
-            provider.on('connect', async (error, payload) => {
-                const {accounts, chainId, peerMeta} = payload
-                provider.peerMetaName = peerMeta?.name || ""
-                this.walletProvider = provider
-            })
-            provider.on('disconnect', async (error) => {
-                console.log("web3-wallets disconnect")
-                // this.walletProvider = undefined
-            })
+            throw new Error('Web3-wallets connect error')
         }
         return this.walletProvider.connect()
     };
+
+    async disconnect(): Promise<ProviderAccounts> {
+        if (!this.walletProvider) {
+            throw new Error('Web3-wallets disconnect error')
+        }
+        return this.walletProvider.disconnect()
+    }
 
     async signMessage(message: string | Bytes): Promise<string> {
         if (isHexString(message)) {
@@ -171,7 +153,6 @@ export class Web3Wallets extends EventEmitter implements EIP1193Provider {
     }
 
     async signTypedData(typedData: EIP712TypedData): Promise<string> {
-
         const types = Object.assign({}, typedData.types)
         if (types.EIP712Domain) {
             delete types.EIP712Domain
@@ -231,8 +212,8 @@ export class Web3Wallets extends EventEmitter implements EIP1193Provider {
         }
     }
 
-    async getBlock(): Promise<any> {
-        const num = await this.getBlockNumber()
+    async getBlock(blockNum?: number): Promise<any> {
+        const num = blockNum ? blockNum : await this.getBlockNumber()
         return this.getBlockByNumber(num)
     }
 

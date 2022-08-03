@@ -4,7 +4,7 @@ import {
     ProviderAccounts,
     WalletNames,
     ProviderConnectInfo,
-    ProviderMessage
+    ProviderMessage, ProviderRpcError
 } from '../types'
 import {BaseProvider} from "./baseProvider";
 
@@ -36,48 +36,46 @@ export class CoinbaseWallet extends BaseProvider {
                     this.provider = coinbaseWallet.makeWeb3Provider(DEFAULT_ETH_JSONRPC_URL, DEFAULT_CHAIN_ID)
                 }
                 this.provider = provider
-
             }
         }
         this.address = this.provider.selectedAddress
-
         this.chainId = Number(this.provider.chainId)
+        this.registerProviderEvents(this.provider)
+    }
 
+    private registerProviderEvents(provider) {
         // Events
-        this.provider.on('connect', (connectInfo: ProviderConnectInfo) => {
+        provider.on('connect', (connectInfo: ProviderConnectInfo) => {
             console.log('CoinbaseWallet connect SDK', connectInfo)
             this.emit('connect', connectInfo)
         })
 
-        this.provider.on('chainChanged', async (chainId: string) => {
+        provider.on('disconnect', (error: ProviderRpcError) => {
+            // console.log('Matemask disconnect', error)
+            this.emit('CoinbaseWallet disconnect', error)
+            this.provider = undefined
+            this.chainId = 0
+            this.address = ''
+        })
+
+        provider.on('chainChanged', async (chainId: string) => {
             console.log('CoinbaseWallet chainChanged SDK', chainId)
             this.chainId = Number(chainId)
             this.emit('chainChanged', chainId)
         })
 
-        this.provider.on('accountsChanged', async (accounts: Array<string>) => {
+        provider.on('accountsChanged', async (accounts: Array<string>) => {
             console.log('CoinbaseWallet accountsChanged SDK', accounts)
             this.address = accounts[0]
             this.emit('accountsChanged', accounts)
         })
 
         //eth_subscription
-        this.provider.on('message', (payload: ProviderMessage) => {
+        provider.on('message', (payload: ProviderMessage) => {
             console.log('CoinbaseWallet message SDK', payload)
             this.emit('message', payload)
         })
-
     }
 
-    async connect(): Promise<ProviderAccounts> {
-        const accounts = await this.provider.request({method: 'eth_requestAccounts'})
-        this.chainId = Number(this.provider.chainId)
-        this.address = accounts[0]
-        return accounts// enable ethereum
-    }
-
-    async disconnect() {
-        this.provider.disconnect()
-    }
 
 }

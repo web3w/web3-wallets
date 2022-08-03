@@ -5,8 +5,8 @@ import { ethers } from "ethers";
 import { computePublicKey } from "@ethersproject/signing-key";
 import {hexDataSlice, hexValue} from "@ethersproject/bytes";
 import { keccak256 } from "@ethersproject/keccak256";
-import {Buffer} from "buffer";
-import {toUtf8Bytes} from "@ethersproject/strings";
+// import {Buffer} from "buffer";
+// import {toUtf8Bytes} from "@ethersproject/strings";
 
 function toBytes(str: string): string {
     let bytes = '0x';

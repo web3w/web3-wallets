@@ -1,4 +1,4 @@
-// TypeScript
+
 import {ProviderAccounts, WalletNames, RequestArguments} from '../types'
 import {BaseProvider} from "./baseProvider";
 

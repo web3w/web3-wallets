@@ -1,6 +1,6 @@
 {
   "name": "web3-wallets-example",
-  "version": "2.1.11",
+  "version": "2.1.12",
   "private": true,
   "homepage": "https://web3w.github.io/web3-wallets",
   "dependencies": {

@@ -6,7 +6,7 @@ import Avatar from "antd/es/avatar/avatar";
 import QRCodeModal from '@walletconnect/qrcode-modal'
 import {Web3Wallets} from 'web3-wallets';
 
-import {metamaskIcon, coinbaseIcon, walletConnectIcon} from "../js/config"
+import {metamaskIcon, coinbaseIcon, walletConnectIcon, oneKeyIcon} from "../js/config"
 
 import {walletAction} from "../js/walletAction";
 
@@ -31,6 +31,7 @@ export function WalletList() {
 
         if (item.key == 'one_key') {
             const provider = newWallet.walletProvider
+
 
             const accounts = await provider.connect() // enable ethereum
             setWallet(newWallet)
@@ -59,32 +60,50 @@ export function WalletList() {
             provider.on('accountsChanged', async (accounts) => {
                 setWallet(newWallet)
                 console.log('Matemask accountsChanged Page', accounts)
-
             })
 
         }
+
         if (item.key == "wallet_connect") {
+
             const provider = newWallet.walletProvider
 
             if (provider.connected) {
                 setWallet(newWallet)
-            } else {
-                if (action != "DisConnect") {
-                    await provider.open()
-                }
             }
             provider.on('connect', async (error, payload) => {
                 if (error) {
                     throw error
                 }
                 const {} = payload
+
+                console.log('wallet_connect connect', payload)
                 setWallet(newWallet)
             })
             provider.on('disconnect', async (error) => {
                 if (error) {
                     throw error
                 }
+                console.log('wallet_connect disconnect')
                 setWallet({})
+            })
+
+            provider.on('chainChanged', async (error, payload) => {
+                // setWallet(wallet)
+                // const newWallet = new Web3Wallets({name: item.key, qrcodeModal: QRCodeModal}, RPC_URLS)
+                console.log('wallet_connect chainChanged Page', payload)
+                debugger
+                console.log("provider",provider.chainId)
+                newWallet.walletProvider = provider
+                setWallet(newWallet)
+            })
+
+            provider.on('accountsChanged', async (error, payload) => {
+                // setWallet(wallet)
+                console.log('wallet_connect accountsChanged Page', payload)
+
+                newWallet.walletProvider = provider
+                setWallet(newWallet)
             })
         }
 
@@ -100,7 +119,6 @@ export function WalletList() {
             provider.on('accountsChanged', async (accounts) => {
                 setWallet(newWallet)
                 console.log('Coinbase accountsChanged Page', accounts)
-
             })
         }
 
@@ -115,7 +133,7 @@ export function WalletList() {
         {title: 'MetaMask', key: 'metamask', icon: metamaskIcon, desc: "Popular wallet"},
         {title: 'WalletConnect', key: 'wallet_connect', icon: walletConnectIcon, desc: "mobile only"},
         {title: 'CoinBase', key: 'coinbase', icon: coinbaseIcon, desc: "coinbase wallet"},
-        {title: 'OneKey', key: 'one_key', icon: metamaskIcon, desc: "One Key wallet"}
+        {title: 'OneKey', key: 'one_key', icon: oneKeyIcon, desc: "One Key wallet"}
     ];
 
     const accountFun = [
@@ -133,7 +151,7 @@ export function WalletList() {
 
     const walletFun = [
         {title: 'Connect', key: 'Connect', disabled: ['']},
-        {title: 'DisConnect', key: 'DisConnect', disabled: ['metamask']},
+        {title: 'DisConnect', key: 'DisConnect', disabled: ['metamask', "one_key"]},
         {title: 'AddChain', key: 'AddChain', disabled: ['wallet_connect']},
         {title: 'AddToken', key: 'AddToken', disabled: ['wallet_connect', 'coinbase']},
         {title: 'SwitchChain', key: 'SwitchChain', disabled: ['wallet_connect']}

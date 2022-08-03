@@ -17,12 +17,27 @@ export abstract class BaseProvider extends EventEmitter implements EIP1193Provid
         return this.provider.request(args)
     };
 
+    // async connect(): Promise<ProviderAccounts> {
+    //     return this.provider.request({method: 'eth_requestAccounts'}) // enable ethereum
+    // }
+
     async connect(): Promise<ProviderAccounts> {
-        return this.provider.request({method: 'eth_requestAccounts'}) // enable ethereum
+        const accounts = await this.provider.request({method: 'eth_requestAccounts'})
+        this.chainId = Number(this.provider.networkVersion)
+        this.address = this.provider.selectedAddress
+        return accounts // enable ethereum
+    }
+
+    connected() {
+        if (this.provider.isConnected) {
+            return this.provider.isConnected()
+        }
     }
 
     async disconnect() {
-        this.provider.close()
+        if (this.provider.close) {
+            return this.provider.close()
+        }
     }
 
     async addChainId(chainId: number) {
@@ -38,7 +53,7 @@ export abstract class BaseProvider extends EventEmitter implements EIP1193Provid
 
     async switchEthereumChain(chainId: number) {
         try {
-            console.log("switchEthereumChain",'0x' + Number(chainId).toString(16))
+            console.log("switchEthereumChain", '0x' + Number(chainId).toString(16))
             await this.provider.request({
                 method: 'wallet_switchEthereumChain',
                 params: [{chainId: '0x' + Number(chainId).toString(16)}]

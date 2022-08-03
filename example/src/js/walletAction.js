@@ -18,6 +18,7 @@ export const walletAction = async (wallet, action) => {
     const {walletSigner, walletProvider} = wallet
 
     if (action == 'Connect') {
+        const addresses = await wallet.connect()
         if (walletProvider.walletName == 'wallet_connect') {
             const {walletName, wc} = walletProvider
             const {clientMeta, peerId, peerMeta, uri, session} = wc
@@ -28,7 +29,7 @@ export const walletAction = async (wallet, action) => {
                 description: `Please open ${description} App`,
             });
         } else {
-            const addresses = await wallet.connect()
+
             notification["info"]({
                 message: `Connect ${walletName}`,
                 description: addresses
@@ -48,12 +49,9 @@ export const walletAction = async (wallet, action) => {
                 message: walletName + "-" + action,
                 description: `DisConnect ${description} App`,
             });
-            walletProvider.close()
-        }else {
-            debugger
-            walletProvider.disconnect()
-        }
 
+        }
+        wallet.disconnect()
     }
 
     if (action == 'SignMessage') {
@@ -82,6 +80,7 @@ export const walletAction = async (wallet, action) => {
     }
 
     if (action == 'GetBalance') {
+        debugger
         const balance = await walletSigner.getBalance()
         const eth = utils.formatEther(balance)
 
