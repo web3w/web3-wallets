@@ -28,15 +28,14 @@ declare global {
 
 // https://eips.ethereum.org/EIPS/eip-1193#disconnect
 //A JavaScript Ethereum Provider API for consistency across clients and applications.
-export class Web3Wallets extends EventEmitter implements EIP1193Provider {
+export class Web3Wallets implements EIP1193Provider {
     public walletProvider: ExternalProvider | any
     public walletSigner: JsonRpcSigner
     public version = pkg.version
     public wallet
+    private events: any = new EventEmitter()
 
     constructor(wallet?: Partial<WalletInfo>, rpcMap?: IRPCMap) {
-        super()
-
         this.wallet = wallet
         const bridge = wallet?.bridge || "https://bridge.walletconnect.org"
         const chainId = wallet?.chainId || 1
@@ -117,6 +116,29 @@ export class Web3Wallets extends EventEmitter implements EIP1193Provider {
         return this.walletProvider.chainId
     }
 
+    get accounts() {
+        return this.walletProvider.accounts
+    }
+
+    on(event: string, listener: any): void {
+        this.events.on(event, listener)
+        this.walletProvider.on(event, (data) => {
+            this.events.emit(event, data)
+        })
+    }
+
+    once(event: string, listener: any) {
+        this.events.once(event, listener)
+    }
+
+    off(event: string, listener: any) {
+        this.events.off(event, listener)
+    }
+
+    removeListener(event: string, listener: any) {
+        this.events.removeListener(event, listener)
+    }
+
     async request(args: RequestArguments): Promise<unknown> {
         if (!this.walletProvider) {
             throw new Error('Web3-wallet request error')
@@ -167,7 +189,7 @@ export class Web3Wallets extends EventEmitter implements EIP1193Provider {
         const domain = typedData.domain
         const value = typedData.message
         return (<any>this.walletSigner)._signTypedData(domain, types, value).catch((error: any) => {
-            this.emit('SignTypedData', error)
+            this.events.emit('signTypedData', error)
             throw error
         })
     }

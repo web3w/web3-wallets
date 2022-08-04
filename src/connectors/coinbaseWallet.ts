@@ -53,7 +53,7 @@ export class CoinbaseWallet extends BaseProvider {
     private registerProviderEvents(provider) {
         // Events
         provider.on('connect', (connectInfo: ProviderConnectInfo) => {
-            console.log('CoinbaseWallet connect SDK', connectInfo)
+            // console.log('CoinbaseWallet connect SDK', connectInfo)
             this.emit('connect', connectInfo)
         })
 
@@ -68,21 +68,21 @@ export class CoinbaseWallet extends BaseProvider {
         })
 
         provider.on('chainChanged', async (chainId: string) => {
-            console.log('CoinbaseWallet chainChanged SDK', chainId)
+            // console.log('CoinbaseWallet chainChanged SDK', chainId)
             this.chainId = Number(chainId)
-            this.emit('chainChanged', {accounts: this.accounts, chainId})
+            this.emit('chainChanged', chainId)
         })
 
         provider.on('accountsChanged', async (accounts: Array<string>) => {
-            console.log('CoinbaseWallet accountsChanged SDK', accounts)
+            // console.log('CoinbaseWallet accountsChanged SDK', accounts)
             this.address = accounts[0]
             this.accounts = accounts
-            this.emit('accountsChanged', {accounts, chainId: this.chainId})
+            this.emit('accountsChanged', accounts)
         })
 
         //eth_subscription
         provider.on('message', (payload: ProviderMessage) => {
-            console.log('CoinbaseWallet message SDK', payload)
+            // console.log('CoinbaseWallet message SDK', payload)
             this.emit('message', payload)
         })
     }

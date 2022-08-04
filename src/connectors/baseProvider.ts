@@ -27,8 +27,6 @@ export abstract class BaseProvider extends EventEmitter implements EIP1193Provid
     }
 
     connected() {
-        debugger
-        console.log(this.provider)
         if (this.provider.isConnected) {
             return this.provider.isConnected()
         }

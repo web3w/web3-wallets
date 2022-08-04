@@ -1,5 +1,5 @@
 import {message, Layout, Descriptions, Menu} from 'antd';
-import React, {useContext, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import "../assets/css/index.css"
 import {Context} from '../AppContext'
 import {DetectWallets} from "./DetectWallets";
@@ -14,7 +14,9 @@ export function App() {
     const [collapsed, setCollapsed] = useState(false);
     const [page, setPage] = useState("walletList");
 
-
+    // useEffect(() => {
+    //     console.log(wallet.chainId)
+    // },[wallet])
     const items = [
         {label: 'WalletList', key: 'walletList'},
         {label: 'ChainList', key: 'chainList'},
@@ -36,9 +38,9 @@ export function App() {
                     {wallet.walletName && <Descriptions size="small" column={2}>
                         <Descriptions.Item label="Name">{wallet.walletName}</Descriptions.Item>
                         <Descriptions.Item label="ChainId">
-                            <a>{wallet.walletProvider.chainId}</a>
+                            <a>{wallet.chainId}</a>
                         </Descriptions.Item>
-                        <Descriptions.Item label="Address">{wallet.walletProvider.address}</Descriptions.Item>
+                        <Descriptions.Item label="Address">{wallet.address}</Descriptions.Item>
                         {wallet.walletProvider.peerMetaName &&
                         <Descriptions.Item
                             label="PeerMetaName">{wallet.walletProvider.peerMetaName}</Descriptions.Item>}

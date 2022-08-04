@@ -18,7 +18,7 @@ const RPC_URLS = {
 }
 
 export function WalletList() {
-    const {wallet, setWallet} = useContext(Context);
+    const {wallet, setWallet, setAccounts, setChainId} = useContext(Context);
 
     const selectWallet = async (item, action) => {
         // debugger
@@ -65,10 +65,7 @@ export function WalletList() {
         }
 
         if (item.key == "wallet_connect") {
-
-            const provider = newWallet.walletProvider
-
-            provider.on('connect', async (error, payload) => {
+            newWallet.on('connect', async (error, payload) => {
                 if (error) {
                     throw error
                 }
@@ -77,53 +74,46 @@ export function WalletList() {
                 console.log('wallet_connect connect', payload)
                 setWallet(newWallet)
             })
-            provider.on('disconnect', async (error) => {
+            newWallet.on('disconnect', async (error) => {
                 if (error) {
                     throw error
                 }
                 console.log('wallet_connect disconnect')
                 setWallet({})
             })
-
-            provider.on('chainChanged', async (error, payload) => {
-                // setWallet(wallet)
-                // const newWallet = new Web3Wallets({name: item.key, qrcodeModal: QRCodeModal}, RPC_URLS)
-                console.log('wallet_connect chainChanged Page', payload)
-                debugger
-                console.log("provider", provider.chainId)
-                newWallet.walletProvider = provider
+            newWallet.on('chainChanged', async (chainId) => {
+                console.log('wallet_connect chainChanged Page', chainId)
+                setChainId(chainId)
+                console.log("provider", newWallet.chainId, newWallet.chainId)
                 setWallet(newWallet)
             })
-
-            provider.on('accountsChanged', async (error, payload) => {
+            newWallet.on('accountsChanged', async (accounts) => {
                 // setWallet(wallet)
-                console.log('wallet_connect accountsChanged Page', payload)
-
-                newWallet.walletProvider = provider
+                console.log('wallet_connect accountsChanged Page', accounts)
+                setAccounts(accounts)
                 setWallet(newWallet)
             })
-
-            if (provider.connected) {
+            if (newWallet.connected) {
                 setWallet(newWallet)
             } else {
-                await provider.connect()
+                await newWallet.connect()
             }
         }
 
         if (item.key == 'coinbase') {
-            const provider = newWallet.walletProvider
-            provider.on('chainChanged', async (walletChainId) => {
+            newWallet.on('chainChanged', async (chainId) => {
                 setWallet(newWallet)
-                console.log('Coinbase chainChanged Page', walletChainId)
+                console.log('Coinbase chainChanged Page', chainId)
             })
 
-            provider.on('accountsChanged', async (accounts) => {
+            newWallet.on('accountsChanged', async (accounts) => {
                 setWallet(newWallet)
                 console.log('Coinbase accountsChanged Page', accounts)
             })
+            const provider = newWallet.walletProvider
             console.log("coinbase", provider.isCoinbaseBrowser, provider.isCoinbaseWallet, provider.isWalletLink, provider.connected())
-            // debugger
-            await provider.connect()
+
+            await newWallet.connect()
             setWallet(newWallet)
         }
 
