@@ -13,12 +13,21 @@ const APP_LOGO_URL = 'https://images.ctfassets.net/q5ulk4bp65r7/3TBS4oVkD1ghowTq
 const DEFAULT_ETH_JSONRPC_URL = "https://mainnet-infura.wallet.coinbase.com"
 const DEFAULT_CHAIN_ID = 1;
 
+function makeWeb3Provider() {
+    const coinbaseWallet = new CoinbaseWalletSDK({
+        appName: APP_NAME,
+        appLogoUrl: APP_LOGO_URL,
+        darkMode: false
+    });
+    return coinbaseWallet.makeWeb3Provider(DEFAULT_ETH_JSONRPC_URL, DEFAULT_CHAIN_ID)
+}
+
 export class CoinbaseWallet extends BaseProvider {
     public walletName: WalletNames = 'coinbase'
     public provider: any
     public address: string = ''
+    public accounts: string[] = []
     public chainId: number = 0
-
 
     constructor() {
         super()
@@ -28,17 +37,15 @@ export class CoinbaseWallet extends BaseProvider {
             if (this.provider.overrideIsMetaMask) {
                 const provider = this.provider.providerMap.get("CoinbaseWallet")
                 if (!provider) {
-                    const coinbaseWallet = new CoinbaseWalletSDK({
-                        appName: APP_NAME,
-                        appLogoUrl: APP_LOGO_URL,
-                        darkMode: false
-                    });
-                    this.provider = coinbaseWallet.makeWeb3Provider(DEFAULT_ETH_JSONRPC_URL, DEFAULT_CHAIN_ID)
+                    this.provider = makeWeb3Provider()
                 }
                 this.provider = provider
             }
+        } else {
+            this.provider = makeWeb3Provider()
         }
         this.address = this.provider.selectedAddress
+        this.accounts = [this.address]
         this.chainId = Number(this.provider.chainId)
         this.registerProviderEvents(this.provider)
     }
@@ -56,18 +63,21 @@ export class CoinbaseWallet extends BaseProvider {
             this.provider = undefined
             this.chainId = 0
             this.address = ''
+            this.accounts = []
+            this.emit('disconnect', error)
         })
 
         provider.on('chainChanged', async (chainId: string) => {
             console.log('CoinbaseWallet chainChanged SDK', chainId)
             this.chainId = Number(chainId)
-            this.emit('chainChanged', chainId)
+            this.emit('chainChanged', {accounts: this.accounts, chainId})
         })
 
         provider.on('accountsChanged', async (accounts: Array<string>) => {
             console.log('CoinbaseWallet accountsChanged SDK', accounts)
             this.address = accounts[0]
-            this.emit('accountsChanged', accounts)
+            this.accounts = accounts
+            this.emit('accountsChanged', {accounts, chainId: this.chainId})
         })
 
         //eth_subscription

@@ -33,7 +33,7 @@ export function WalletList() {
             const provider = newWallet.walletProvider
 
 
-            const accounts = await provider.connect() // enable ethereum
+            await provider.connect() // enable ethereum
             setWallet(newWallet)
             provider.on('chainChanged', async (walletChainId) => {
                 setWallet(wallet)
@@ -68,9 +68,6 @@ export function WalletList() {
 
             const provider = newWallet.walletProvider
 
-            if (provider.connected) {
-                setWallet(newWallet)
-            }
             provider.on('connect', async (error, payload) => {
                 if (error) {
                     throw error
@@ -93,7 +90,7 @@ export function WalletList() {
                 // const newWallet = new Web3Wallets({name: item.key, qrcodeModal: QRCodeModal}, RPC_URLS)
                 console.log('wallet_connect chainChanged Page', payload)
                 debugger
-                console.log("provider",provider.chainId)
+                console.log("provider", provider.chainId)
                 newWallet.walletProvider = provider
                 setWallet(newWallet)
             })
@@ -105,12 +102,16 @@ export function WalletList() {
                 newWallet.walletProvider = provider
                 setWallet(newWallet)
             })
+
+            if (provider.connected) {
+                setWallet(newWallet)
+            } else {
+                await provider.connect()
+            }
         }
 
         if (item.key == 'coinbase') {
             const provider = newWallet.walletProvider
-            const accounts = await provider.connect() // enable ethereum
-            setWallet(newWallet)
             provider.on('chainChanged', async (walletChainId) => {
                 setWallet(newWallet)
                 console.log('Coinbase chainChanged Page', walletChainId)
@@ -120,6 +121,10 @@ export function WalletList() {
                 setWallet(newWallet)
                 console.log('Coinbase accountsChanged Page', accounts)
             })
+            console.log("coinbase", provider.isCoinbaseBrowser, provider.isCoinbaseWallet, provider.isWalletLink, provider.connected())
+            // debugger
+            await provider.connect()
+            setWallet(newWallet)
         }
 
         if (newWallet.chainId) {

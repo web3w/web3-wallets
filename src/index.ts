@@ -136,6 +136,13 @@ export class Web3Wallets extends EventEmitter implements EIP1193Provider {
         return this.walletProvider.connect()
     };
 
+    connected(): Promise<ProviderAccounts> {
+        if (!this.walletProvider) {
+            throw new Error('Web3-wallets connect error')
+        }
+        return this.walletProvider.connected()
+    };
+
     async disconnect(): Promise<ProviderAccounts> {
         if (!this.walletProvider) {
             throw new Error('Web3-wallets disconnect error')

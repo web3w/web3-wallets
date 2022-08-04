@@ -10,6 +10,7 @@ import {addChainParameter} from "../constants/chain";
 
 export abstract class BaseProvider extends EventEmitter implements EIP1193Provider {
     public address
+    public accounts: string[] = []
     public chainId = 0
     public provider: any
 
@@ -17,26 +18,35 @@ export abstract class BaseProvider extends EventEmitter implements EIP1193Provid
         return this.provider.request(args)
     };
 
-    // async connect(): Promise<ProviderAccounts> {
-    //     return this.provider.request({method: 'eth_requestAccounts'}) // enable ethereum
-    // }
-
     async connect(): Promise<ProviderAccounts> {
         const accounts = await this.provider.request({method: 'eth_requestAccounts'})
         this.chainId = Number(this.provider.networkVersion)
         this.address = this.provider.selectedAddress
+        this.accounts = accounts
         return accounts // enable ethereum
     }
 
     connected() {
+        debugger
+        console.log(this.provider)
         if (this.provider.isConnected) {
             return this.provider.isConnected()
+        }
+
+        if (this.provider.connected) {
+            return this.provider.connected
         }
     }
 
     async disconnect() {
+        this.chainId = 0
+        this.accounts = []
+        this.address = undefined
         if (this.provider.close) {
             return this.provider.close()
+        }
+        if (this.provider.disconnect) {
+            return this.provider.disconnect()
         }
     }
 

@@ -4,7 +4,7 @@ import {
     WalletNames,
     ProviderConnectInfo,
     ProviderMessage,
-    ProviderRpcError, RequestArguments, ProviderAccounts
+    ProviderRpcError
 } from '../types'
 import {BaseProvider} from "./baseProvider";
 
@@ -16,6 +16,7 @@ export class MetaMaskWallet extends BaseProvider {
     public provider: any
     public chainId: number
     public address: string
+    public accounts: string[] = []
 
     constructor(name?: string) {
         super()
@@ -33,6 +34,7 @@ export class MetaMaskWallet extends BaseProvider {
             }
             this.chainId = Number(this.provider.networkVersion)
             this.address = this.provider.selectedAddress
+            this.accounts =[this.address]
 
         } else {
             const onboarding = new MetaMaskOnboarding();
@@ -74,6 +76,7 @@ export class MetaMaskWallet extends BaseProvider {
             this.provider = undefined
             this.chainId = 0
             this.address = ''
+            this.accounts =[]
         })
 
         provider.on('chainChanged', async (chainId: string) => {
@@ -86,6 +89,7 @@ export class MetaMaskWallet extends BaseProvider {
         provider.on('accountsChanged', async (accounts: Array<string>) => {
             console.log('Matemask accountsChanged SDK', accounts)
             this.address = accounts[0]
+            this.accounts =accounts
             this.emit('accountsChanged', accounts)
         })
 
@@ -107,18 +111,6 @@ export class MetaMaskWallet extends BaseProvider {
         return this.provider._metamask.isUnlocked()
     }
 
-    // Mobile
-    async scanQRCode(params) {
-        this.provider.request({
-            method: 'wallet_scanQRCode',
-            // The regex string must be valid input to the RegExp constructor, if provided
-            params: ['\\D'],
-        }).then((result) => {
-            console.log(result);
-        }).catch((error) => {
-            console.log(error);
-        });
-    }
 }
 
 

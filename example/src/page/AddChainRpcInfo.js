@@ -1,8 +1,6 @@
 import {Button, Col, Form, Input, Row, Table, Select, DatePicker, Tag, Space, List} from 'antd';
 import React, {useContext, useEffect, useState} from "react";
-import {Context} from '../AppContext'
-import Avatar from "antd/es/avatar/avatar";
-import Modal from "antd/es/modal/Modal";
+
 
 export function AddChainRpcInfo(props) {
     const {chainInfo} = props
