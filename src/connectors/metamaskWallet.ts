@@ -1,5 +1,3 @@
-import MetaMaskOnboarding from '@metamask/onboarding';
-
 import {
     WalletNames,
     ProviderConnectInfo,
@@ -8,6 +6,14 @@ import {
 } from '../types'
 import {BaseProvider} from "./baseProvider";
 
+
+function metaMaskOnboarding() {
+    const provider = window && window.ethereum;
+    if (!provider) {
+        return window.open('https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn');
+    }
+    return provider;
+}
 
 // https://github.com/metamask/test-dapp
 // https://metamask.github.io/test-dapp/
@@ -26,8 +32,7 @@ export class MetaMaskWallet extends BaseProvider {
             if (this.provider.overrideIsMetaMask) {
                 const provider = this.provider.providerMap.get("MetaMask")
                 if (!provider) {
-                    const onboarding = new MetaMaskOnboarding();
-                    onboarding.startOnboarding();
+                    metaMaskOnboarding()
                     throw new Error('Install MetaMask wallet')
                 }
                 this.provider = provider
@@ -35,10 +40,8 @@ export class MetaMaskWallet extends BaseProvider {
             this.chainId = Number(this.provider.networkVersion)
             this.address = this.provider.selectedAddress
             this.accounts = [this.address]
-
         } else {
-            const onboarding = new MetaMaskOnboarding();
-            onboarding.startOnboarding();
+            metaMaskOnboarding()
             throw new Error('Install MetaMask wallet')
         }
 

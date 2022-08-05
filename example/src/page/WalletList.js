@@ -6,7 +6,7 @@ import Avatar from "antd/es/avatar/avatar";
 import QRCodeModal from '@walletconnect/qrcode-modal'
 import {Web3Wallets} from 'web3-wallets';
 
-import {metamaskIcon, coinbaseIcon, walletConnectIcon, oneKeyIcon} from "../js/config"
+import {metamaskIcon, coinbaseIcon, walletConnectIcon, oneKeyIcon, bitKeepIcon} from "../js/config"
 
 import {walletAction} from "../js/walletAction";
 
@@ -23,101 +23,46 @@ export function WalletList() {
     const selectWallet = async (item, action) => {
         // debugger
         if (wallet && wallet.walletName == item.key) {
-            setWallet(wallet)
+            // setWallet(wallet)
             await walletAction(wallet, action)
             return
         }
         const newWallet = new Web3Wallets({name: item.key, qrcodeModal: QRCodeModal}, RPC_URLS)
 
-        if (item.key == 'one_key') {
-            const provider = newWallet.walletProvider
-            await provider.connect() // enable ethereum
-
-            setWallet(newWallet)
-            provider.on('chainChanged', async (walletChainId) => {
-                setWallet(wallet)
-                console.log('one_key chainChanged Page', walletChainId)
-            })
-
-            provider.on('accountsChanged', async (accounts) => {
-                setWallet(wallet)
-                console.log('one_key accountsChanged Page', accounts)
-
-            })
-
-        }
-
-        if (item.key == 'metamask') {
-            // const provider = newWallet.walletProvider
-            newWallet.on('chainChanged', async (chainId) => {
-                setWallet(newWallet)
-                console.log('Matemask chainChanged Page', chainId)
-            })
-
-            newWallet.on('accountsChanged', async (accounts) => {
-                setWallet(newWallet)
-                console.log('Matemask accountsChanged Page', accounts)
-            })
-
-            await newWallet.connect().catch(e=>{
-                throw e
-            })
-            setWallet(newWallet)
-            debugger
-
-        }
-
-        if (item.key == "wallet_connect") {
-            newWallet.on('connect', async (error, payload) => {
-                if (error) {
-                    throw error
-                }
-                const {} = payload
-
-                console.log('wallet_connect connect', payload)
-                setWallet(newWallet)
-            })
-            newWallet.on('disconnect', async (error) => {
-                if (error) {
-                    throw error
-                }
-                console.log('wallet_connect disconnect')
-                setWallet({})
-            })
-            newWallet.on('chainChanged', async (chainId) => {
-                console.log('wallet_connect chainChanged Page', chainId)
-                setChainId(chainId)
-                console.log("provider", newWallet.chainId, newWallet.chainId)
-                setWallet(newWallet)
-            })
-            newWallet.on('accountsChanged', async (accounts) => {
-                // setWallet(wallet)
-                console.log('wallet_connect accountsChanged Page', accounts)
-                setAccounts(accounts)
-                setWallet(newWallet)
-            })
-            if (newWallet.connected) {
-                setWallet(newWallet)
-            } else {
-                await newWallet.connect()
+        newWallet.on('connect', async (error, payload) => {
+            if (error) {
+                throw error
             }
-        }
-
-        if (item.key == 'coinbase') {
-            newWallet.on('chainChanged', async (chainId) => {
-                setWallet(newWallet)
-                console.log('Coinbase chainChanged Page', chainId)
-            })
-
-            newWallet.on('accountsChanged', async (accounts) => {
-                setWallet(newWallet)
-                console.log('Coinbase accountsChanged Page', accounts)
-            })
-            const provider = newWallet.walletProvider
-            console.log("coinbase", provider.isCoinbaseBrowser, provider.isCoinbaseWallet, provider.isWalletLink, provider.connected())
-
-            await newWallet.connect()
+            const {} = payload
+            console.log('wallet_connect connect', payload)
             setWallet(newWallet)
+        })
+        newWallet.on('disconnect', async (error) => {
+            if (error) {
+                throw error
+            }
+            console.log(newWallet.walletName,'disconnect')
+            setWallet({})
+        })
+        newWallet.on('chainChanged', async (chainId) => {
+            console.log(newWallet.walletName, 'chainChanged Page', chainId)
+            setChainId(chainId)
+            console.log(newWallet.walletName, "provider", newWallet.chainId, newWallet.chainId)
+            setWallet(newWallet)
+        })
+        newWallet.on('accountsChanged', async (accounts) => {
+            // setWallet(wallet)
+            console.log(newWallet.walletName,'accountsChanged Page', accounts)
+            setAccounts(accounts)
+            setWallet(newWallet)
+        })
+
+        const isConnect = newWallet.connected()
+        if (isConnect) {
+            debugger
+            setWallet(newWallet)
+        } else {
+            await newWallet.connect()
         }
 
         if (newWallet.chainId) {
@@ -131,6 +76,7 @@ export function WalletList() {
         {title: 'MetaMask', key: 'metamask', icon: metamaskIcon, desc: "Popular wallet"},
         {title: 'WalletConnect', key: 'wallet_connect', icon: walletConnectIcon, desc: "mobile only"},
         {title: 'CoinBase', key: 'coinbase', icon: coinbaseIcon, desc: "coinbase wallet"},
+        {title: 'BitKeep', key: 'bitkeep', icon: bitKeepIcon, desc: "BitKeep wallet"},
         {title: 'OneKey', key: 'one_key', icon: oneKeyIcon, desc: "One Key wallet"}
     ];
 
@@ -205,3 +151,113 @@ export function WalletList() {
         </>
     )
 }
+
+
+// if (item.key == 'bitkeep') {
+//     const provider = newWallet.walletProvider
+//     await provider.connect() // enable ethereum
+//
+//     setWallet(newWallet)
+//     provider.on('chainChanged', async (walletChainId) => {
+//         setWallet(wallet)
+//         console.log('one_key chainChanged Page', walletChainId)
+//     })
+//
+//     provider.on('accountsChanged', async (accounts) => {
+//         setWallet(wallet)
+//         console.log('one_key accountsChanged Page', accounts)
+//
+//     })
+//
+// }
+//
+// if (item.key == 'one_key') {
+//     const provider = newWallet.walletProvider
+//     await provider.connect() // enable ethereum
+//
+//     setWallet(newWallet)
+//     provider.on('chainChanged', async (walletChainId) => {
+//         setWallet(wallet)
+//         console.log('one_key chainChanged Page', walletChainId)
+//     })
+//
+//     provider.on('accountsChanged', async (accounts) => {
+//         setWallet(wallet)
+//         console.log('one_key accountsChanged Page', accounts)
+//
+//     })
+//
+// }
+//
+// if (item.key == 'metamask') {
+//     // const provider = newWallet.walletProvider
+//     newWallet.on('chainChanged', async (chainId) => {
+//         setWallet(newWallet)
+//         console.log('Matemask chainChanged Page', chainId)
+//     })
+//
+//     newWallet.on('accountsChanged', async (accounts) => {
+//         setWallet(newWallet)
+//         console.log('Matemask accountsChanged Page', accounts)
+//     })
+//
+//     await newWallet.connect().catch(e => {
+//         throw e
+//     })
+//     setWallet(newWallet)
+//     debugger
+//
+// }
+//
+// if (item.key == "wallet_connect") {
+//     newWallet.on('connect', async (error, payload) => {
+//         if (error) {
+//             throw error
+//         }
+//         const {} = payload
+//
+//         console.log('wallet_connect connect', payload)
+//         setWallet(newWallet)
+//     })
+//     newWallet.on('disconnect', async (error) => {
+//         if (error) {
+//             throw error
+//         }
+//         console.log('wallet_connect disconnect')
+//         setWallet({})
+//     })
+//     newWallet.on('chainChanged', async (chainId) => {
+//         console.log('wallet_connect chainChanged Page', chainId)
+//         setChainId(chainId)
+//         console.log("provider", newWallet.chainId, newWallet.chainId)
+//         setWallet(newWallet)
+//     })
+//     newWallet.on('accountsChanged', async (accounts) => {
+//         // setWallet(wallet)
+//         console.log('wallet_connect accountsChanged Page', accounts)
+//         setAccounts(accounts)
+//         setWallet(newWallet)
+//     })
+//     if (newWallet.connected) {
+//         setWallet(newWallet)
+//     } else {
+//         await newWallet.connect()
+//     }
+// }
+//
+// if (item.key == 'coinbase') {
+//     newWallet.on('chainChanged', async (chainId) => {
+//         setWallet(newWallet)
+//         console.log('Coinbase chainChanged Page', chainId)
+//     })
+//
+//     newWallet.on('accountsChanged', async (accounts) => {
+//         setWallet(newWallet)
+//         console.log('Coinbase accountsChanged Page', accounts)
+//     })
+//     const provider = newWallet.walletProvider
+//     console.log("coinbase", provider.isCoinbaseBrowser, provider.isCoinbaseWallet, provider.isWalletLink, provider.connected())
+//
+//     await newWallet.connect()
+//     setWallet(newWallet)
+// }

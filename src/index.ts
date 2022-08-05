@@ -17,6 +17,7 @@ import {get1559Fee} from "./utils/fee";
 import pkg from "../package.json"
 import {BaseProvider} from "./connectors/baseProvider";
 import {IRPCMap} from "web3-signer-provider";
+import {BitKeepWallet} from "./connectors/bitkeepWallet";
 
 declare global {
     interface Window {
@@ -42,6 +43,7 @@ export class Web3Wallets implements EIP1193Provider {
         const isBrowser = typeof window !== 'undefined'
 
         const walletName = wallet?.name || getWalletName()
+
         if (isBrowser) {
             switch (walletName) {
                 case 'metamask':
@@ -67,7 +69,7 @@ export class Web3Wallets implements EIP1193Provider {
                     this.walletProvider = new MetaMaskWallet();
                     break;
                 case 'bitkeep':
-                    this.walletProvider = new MetaMaskWallet();
+                    this.walletProvider = new BitKeepWallet();
                     break;
                 case 'coin98':
                     this.walletProvider = new MetaMaskWallet();
