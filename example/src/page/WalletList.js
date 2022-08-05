@@ -31,9 +31,8 @@ export function WalletList() {
 
         if (item.key == 'one_key') {
             const provider = newWallet.walletProvider
-
-
             await provider.connect() // enable ethereum
+
             setWallet(newWallet)
             provider.on('chainChanged', async (walletChainId) => {
                 setWallet(wallet)
@@ -49,18 +48,22 @@ export function WalletList() {
         }
 
         if (item.key == 'metamask') {
-            const provider = newWallet.walletProvider
-            const accounts = await provider.connect() // enable ethereum
-            setWallet(newWallet)
-            provider.on('chainChanged', async (walletChainId) => {
+            // const provider = newWallet.walletProvider
+            newWallet.on('chainChanged', async (chainId) => {
                 setWallet(newWallet)
-                console.log('Matemask chainChanged Page', walletChainId)
+                console.log('Matemask chainChanged Page', chainId)
             })
 
-            provider.on('accountsChanged', async (accounts) => {
+            newWallet.on('accountsChanged', async (accounts) => {
                 setWallet(newWallet)
                 console.log('Matemask accountsChanged Page', accounts)
             })
+
+            await newWallet.connect().catch(e=>{
+                throw e
+            })
+            setWallet(newWallet)
+            debugger
 
         }
 

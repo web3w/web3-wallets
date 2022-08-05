@@ -67,13 +67,13 @@ export class CoinbaseWallet extends BaseProvider {
             this.emit('disconnect', error)
         })
 
-        provider.on('chainChanged', async (chainId: string) => {
+        provider.on('chainChanged', async (chainId: number) => {
             // console.log('CoinbaseWallet chainChanged SDK', chainId)
-            this.chainId = Number(chainId)
-            this.emit('chainChanged', chainId)
+            this.chainId = chainId
+            this.emit('chainChanged', `0x${chainId.toString(16)}`)
         })
 
-        provider.on('accountsChanged', async (accounts: Array<string>) => {
+        provider.on('accountsChanged', async (accounts: ProviderAccounts) => {
             // console.log('CoinbaseWallet accountsChanged SDK', accounts)
             this.address = accounts[0]
             this.accounts = accounts

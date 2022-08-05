@@ -1,6 +1,6 @@
 {
   "name": "web3-wallets",
-  "version": "2.2.27",
+  "version": "2.2.28",
   "description": "Javascript SDK for Web3 wallets",
   "main": "lib/index.js",
   "type": "lib/index.d.ts",
@@ -19,7 +19,7 @@
     "ethers": "^5.6.9",
     "https-proxy-agent": "^5.0.1",
     "web3-assert": "^1.0.2",
-    "web3-signer-provider": "^1.3.2"
+    "web3-signer-provider": "^1.3.3"
   },
   "devDependencies": {
     "typescript": "~4.6.4"

@@ -34,7 +34,7 @@ export class MetaMaskWallet extends BaseProvider {
             }
             this.chainId = Number(this.provider.networkVersion)
             this.address = this.provider.selectedAddress
-            this.accounts =[this.address]
+            this.accounts = [this.address]
 
         } else {
             const onboarding = new MetaMaskOnboarding();
@@ -76,20 +76,19 @@ export class MetaMaskWallet extends BaseProvider {
             this.provider = undefined
             this.chainId = 0
             this.address = ''
-            this.accounts =[]
+            this.accounts = []
         })
 
         provider.on('chainChanged', async (chainId: string) => {
-            console.log('Matemask chainChanged SDK', chainId)
+            // console.log('Matemask chainChanged SDK', chainId)
             this.chainId = Number(chainId)
             this.emit('chainChanged', chainId)
-            // window.location.reload()
         })
 
         provider.on('accountsChanged', async (accounts: Array<string>) => {
-            console.log('Matemask accountsChanged SDK', accounts)
+            // console.log('Matemask accountsChanged SDK', accounts)
             this.address = accounts[0]
-            this.accounts =accounts
+            this.accounts = accounts
             this.emit('accountsChanged', accounts)
         })
 
