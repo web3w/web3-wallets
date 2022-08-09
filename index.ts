@@ -1,5 +1,6 @@
 export {MetaMaskWallet} from './src/connectors/metamaskWallet'
 export {CoinbaseWallet} from './src/connectors/coinbaseWallet'
+export {BitKeepWallet} from './src/connectors/bitkeepWallet'
 export {Web3Wallets} from './src'
 
 export type {

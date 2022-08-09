@@ -6,7 +6,7 @@ import Avatar from "antd/es/avatar/avatar";
 import QRCodeModal from '@walletconnect/qrcode-modal'
 import {Web3Wallets} from 'web3-wallets';
 
-import {metamaskIcon, coinbaseIcon, walletConnectIcon, oneKeyIcon, bitKeepIcon} from "../js/config"
+import {iconWalletConnect, iconMetaMask, iconCoinBase, iconOneKey, iconBitKeep} from "../js/config"
 
 import {walletAction} from "../js/walletAction";
 
@@ -41,7 +41,7 @@ export function WalletList() {
             if (error) {
                 throw error
             }
-            console.log(newWallet.walletName,'disconnect')
+            console.log(newWallet.walletName, 'disconnect')
             setWallet({})
         })
         newWallet.on('chainChanged', async (chainId) => {
@@ -52,9 +52,16 @@ export function WalletList() {
         })
         newWallet.on('accountsChanged', async (accounts) => {
             // setWallet(wallet)
-            console.log(newWallet.walletName,'accountsChanged Page', accounts)
+            console.log(newWallet.walletName, 'accountsChanged Page', accounts)
             setAccounts(accounts)
             setWallet(newWallet)
+        })
+
+        newWallet.on('message', async (accounts) => {
+            // setWallet(wallet)
+            debugger
+            console.log(newWallet.walletName, 'accountsChanged Page', accounts)
+
         })
 
         const isConnect = newWallet.connected()
@@ -62,7 +69,10 @@ export function WalletList() {
             debugger
             setWallet(newWallet)
         } else {
-            await newWallet.connect()
+            await newWallet.connect().catch(e => {
+                console.log(e)
+
+            })
         }
 
         if (newWallet.chainId) {
@@ -73,11 +83,11 @@ export function WalletList() {
 
 
     const walletItems = [
-        {title: 'MetaMask', key: 'metamask', icon: metamaskIcon, desc: "Popular wallet"},
-        {title: 'WalletConnect', key: 'wallet_connect', icon: walletConnectIcon, desc: "mobile only"},
-        {title: 'CoinBase', key: 'coinbase', icon: coinbaseIcon, desc: "coinbase wallet"},
-        {title: 'BitKeep', key: 'bitkeep', icon: bitKeepIcon, desc: "BitKeep wallet"},
-        {title: 'OneKey', key: 'one_key', icon: oneKeyIcon, desc: "One Key wallet"}
+        {title: 'MetaMask', key: 'metamask', icon: iconMetaMask, desc: "Popular wallet"},
+        {title: 'WalletConnect', key: 'wallet_connect', icon: iconWalletConnect, desc: "mobile only"},
+        {title: 'CoinBase', key: 'coinbase', icon: iconCoinBase, desc: "coinbase wallet"},
+        {title: 'BitKeep', key: 'bitkeep', icon: iconBitKeep, desc: "BitKeep wallet"},
+        {title: 'OneKey', key: 'one_key', icon: iconOneKey, desc: "One Key wallet"}
     ];
 
     const accountFun = [

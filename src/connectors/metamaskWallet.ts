@@ -7,10 +7,10 @@ import {
 import {BaseProvider} from "./baseProvider";
 
 
-function metaMaskOnboarding() {
+function getProvider() {
     const provider = window && window.ethereum;
     if (!provider) {
-        return window.open('https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn');
+        window.open('https://metamask.io/download/');
     }
     return provider;
 }
@@ -26,22 +26,16 @@ export class MetaMaskWallet extends BaseProvider {
 
     constructor(name?: string) {
         super()
-        this.provider = window.ethereum
+        this.provider = getProvider()
         if (this.provider) {
-            // adapter coinbase wallet
             if (this.provider.overrideIsMetaMask) {
                 const provider = this.provider.providerMap.get("MetaMask")
-                if (!provider) {
-                    metaMaskOnboarding()
-                    throw new Error('Install MetaMask wallet')
-                }
                 this.provider = provider
             }
             this.chainId = Number(this.provider.networkVersion)
             this.address = this.provider.selectedAddress
             this.accounts = [this.address]
-        } else {
-            metaMaskOnboarding()
+        }else {
             throw new Error('Install MetaMask wallet')
         }
 

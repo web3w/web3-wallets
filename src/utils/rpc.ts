@@ -56,12 +56,11 @@ export async function getEstimateGas(rpcUrl: string, callData: LimitedCallSpec) 
         "params": [callData, 'latest'],
         "id": 1
     }
-    const blockNumberRes = await ethers.utils.fetchJson(rpcUrl, JSON.stringify(estimate))
-    // console.log('getEstimateGas result', blockNumberRes.result)
-    if (blockNumberRes.result) {
-        return Number(blockNumberRes.result).toString()
+    const gasData = await ethers.utils.fetchJson(rpcUrl, JSON.stringify(estimate))
+    if (gasData.result) {
+        return Number(gasData.result).toString()
     } else {
-        throw blockNumberRes.error
+        throw gasData.error
     }
 }
 

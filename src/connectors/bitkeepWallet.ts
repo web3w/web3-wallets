@@ -13,7 +13,7 @@ function getProvider() {
     // @ts-ignore
     const provider = window.bitkeep && window.bitkeep.ethereum;
     if (!provider) {
-        return window.open('https://bitkeep.com/download?type=0&theme=light');
+        window.open('https://bitkeep.com/download?type=0&theme=light');
     }
     return provider;
 }
@@ -33,8 +33,8 @@ export class BitKeepWallet extends BaseProvider {
             this.chainId = Number(this.provider.chainId)
             this.address = this.provider.selectedAddress
             this.accounts = [this.address]
-        } else {
-            throw new Error('Install BitKeep wallet')
+        }else {
+            throw new Error('Install MetaMask wallet')
         }
         this.registerProviderEvents(this.provider)
     }

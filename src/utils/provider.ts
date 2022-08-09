@@ -103,8 +103,8 @@ export function getProvider(walletInfo: WalletInfo) {
             walletProvider = new SignerProvider(walletInfo)
             walletSigner = new JsonRpcProvider(url, network).getSigner(address)
         } else {
-            if (window.ethereum && !window.walletProvider || window.ethereum && !window.elementWeb3) {
-                console.log('GetProvider:window.ethereum')
+            if ((window.ethereum && !window.walletProvider) || (window.ethereum && !window.elementWeb3)) {
+                // console.log('GetProvider:window.ethereum')
                 walletProvider = window.ethereum as ExternalProvider
                 if (walletProvider.selectedAddress) {
                     walletProvider.enable()
@@ -112,22 +112,24 @@ export function getProvider(walletInfo: WalletInfo) {
                 walletSigner = new Web3Provider(walletProvider).getSigner(address)
             }
             if (window.walletProvider) {
-                console.log('GetProvider:window.walletProvider')
+                // console.log('GetProvider:window.walletProvider')
                 walletProvider = window.walletProvider
                 walletSigner = new Web3Provider(walletProvider).getSigner(address)
             }
 
             if (window.elementWeb3) {
-                console.log('GetProvider:window.elementWeb3')
+                // console.log('GetProvider:window.elementWeb3')
                 walletProvider = window.elementWeb3
                 if (walletProvider.isWalletConnect) {
                     //JsonRpcSigner wallet connect
                     console.log('GetProvider:window.elementWeb3  isWalletConnect')
                     walletSigner = new Web3Provider(walletProvider).getSigner(address)
                 } else {
-                    // new Web3()
-                    // this.web3.currentProvider
-                    walletSigner = new Web3Provider(walletProvider.currentProvider).getSigner(address)
+                    if (walletProvider.currentProvider?.isMetaMask) {
+                        walletSigner = new Web3Provider(walletProvider.currentProvider).getSigner(address)
+                    } else if (walletProvider.currentProvider?.provider) {
+                        walletSigner = new Web3Provider(walletProvider.currentProvider.provider).getSigner(address)
+                    }
                 }
             }
         }

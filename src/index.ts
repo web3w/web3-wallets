@@ -164,7 +164,12 @@ export class Web3Wallets implements EIP1193Provider {
         if (!this.walletProvider) {
             throw new Error('Web3-wallets connect error')
         }
-        return this.walletProvider.connected()
+        if (typeof this.walletProvider.connected == 'function') {
+            return this.walletProvider.connected()
+        } else {
+            return this.walletProvider.connected
+        }
+
     };
 
     async disconnect(): Promise<ProviderAccounts> {
