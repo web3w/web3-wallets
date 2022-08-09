@@ -1,15 +1,16 @@
 {
   "files": {
     "main.css": "/web3-wallets/static/css/main.031c9afe.css",
-    "main.js": "/web3-wallets/static/js/main.bf14afea.js",
-    "static/media/bitkeep_logo.png": "/web3-wallets/static/media/bitkeep_logo.f6ca779f0608b6c9482c.png",
-    "static/media/metamask.png": "/web3-wallets/static/media/metamask.c6e8e59392f8bfc48238.png",
+    "main.js": "/web3-wallets/static/js/main.01458549.js",
+    "static/media/bitkeep.svg": "/web3-wallets/static/media/bitkeep.4eca0014763142155cc62065081642d9.svg",
+    "static/media/metamask.svg": "/web3-wallets/static/media/metamask.7bbb06c183e4e1cfa34ded67faeaf8ab.svg",
+    "static/media/coinbase.svg": "/web3-wallets/static/media/coinbase.5acfb6a15d554f2cbf77eb85371f06fc.svg",
     "static/media/onekey.svg": "/web3-wallets/static/media/onekey.d92b3d8ffda748c988eca96bdc233159.svg",
-    "index.html": "/web3-wallets/index.html",
-    "static/media/coinbaseWallet.svg": "/web3-wallets/static/media/coinbaseWallet.0a0007e4bb4981fa8f155b9fd1724092.svg"
+    "static/media/walletconnect.svg": "/web3-wallets/static/media/walletconnect.2b0eb7159645db6a46edb8379402ffb5.svg",
+    "index.html": "/web3-wallets/index.html"
   },
   "entrypoints": [
     "static/css/main.031c9afe.css",
-    "static/js/main.bf14afea.js"
+    "static/js/main.01458549.js"
   ]
 }
