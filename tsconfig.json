@@ -1,14 +1,12 @@
 {
   "include": [
-    "./page/**/*.tsx",
-    "./src/**/*",
+    "./src/*/*",
     "./index.ts"
   ],
   "exclude": [
     "./node_modules",
     "./test/**/*",
-    "config/webpack.config.js",
-    "config/webpack.node.config.js"
+    "./example/"
   ],
   "compilerOptions": {
     "baseUrl": "./src",

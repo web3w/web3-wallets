@@ -22,7 +22,7 @@ function makeWeb3Provider() {
     return coinbaseWallet.makeWeb3Provider(DEFAULT_ETH_JSONRPC_URL, DEFAULT_CHAIN_ID)
 }
 
-export class CoinbaseWallet extends BaseProvider {
+export class CoinbaseProvider extends BaseProvider {
     public walletName: WalletNames = 'coinbase'
     public provider: any
     public address: string = ''

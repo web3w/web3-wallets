@@ -1,14 +1,11 @@
-import {MetaMaskWallet} from './connectors/metamaskWallet'
-import {CoinbaseWallet} from './connectors/coinbaseWallet'
 import EventEmitter from 'events'
 import {
     EIP1193Provider,
     JsonRpcPayload, JsonRpcResponse, LimitedCallSpec,
-    ProviderAccounts, ProviderChainId, ProviderInfo, ProviderMessage, ProviderRpcError,
+    ProviderAccounts,
     RequestArguments, TransactionRequest, WalletInfo
 } from "./types";
 import {ExternalProvider, JsonRpcSigner, Web3Provider} from "@ethersproject/providers";
-import {SignerProvider, WalletProvider} from "web3-signer-provider";
 import {getWalletName} from "./utils/provider";
 import {EIP712TypedData} from "./utils/eip712TypeData";
 import {arrayify, Bytes, isHexString} from "@ethersproject/bytes";
@@ -16,8 +13,10 @@ import {BigNumber} from "./constants/index";
 import {get1559Fee} from "./utils/fee";
 import pkg from "../package.json"
 import {BaseProvider} from "./connectors/baseProvider";
-import {IRPCMap} from "web3-signer-provider";
-import {BitKeepWallet} from "./connectors/bitkeepWallet";
+import {IRPCMap, SignerProvider, WalletProvider} from "web3-signer-provider";
+import {EthereumProvider} from './connectors/ethereumProvider'
+import {CoinbaseProvider} from './connectors/coinbaseProvider'
+// import {BitKeepProvider} from "./connectors/bitkeepProvider";
 
 declare global {
     interface Window {
@@ -47,10 +46,10 @@ export class Web3Wallets implements EIP1193Provider {
         if (isBrowser) {
             switch (walletName) {
                 case 'metamask':
-                    this.walletProvider = new MetaMaskWallet();
+                    this.walletProvider = new EthereumProvider();
                     break;
                 case 'coinbase':
-                    this.walletProvider = new CoinbaseWallet();
+                    this.walletProvider = new CoinbaseProvider();
                     break;
                 case 'wallet_connect':
                     this.walletProvider = new WalletProvider({
@@ -60,22 +59,22 @@ export class Web3Wallets implements EIP1193Provider {
                     }, rpcMap);
                     break;
                 case 'token_pocket':
-                    this.walletProvider = new MetaMaskWallet();
+                    this.walletProvider = new EthereumProvider();
                     break;
                 case 'math_wallet':
-                    this.walletProvider = new MetaMaskWallet();
+                    this.walletProvider = new EthereumProvider();
                     break;
                 case 'imtoken':
-                    this.walletProvider = new MetaMaskWallet();
+                    this.walletProvider = new EthereumProvider();
                     break;
                 case 'bitkeep':
-                    this.walletProvider = new BitKeepWallet();
+                    this.walletProvider = new EthereumProvider(walletName);
                     break;
                 case 'coin98':
-                    this.walletProvider = new MetaMaskWallet();
+                    this.walletProvider = new EthereumProvider();
                     break;
-                case 'one_key':
-                    this.walletProvider = new MetaMaskWallet(walletName);
+                case 'onekey':
+                    this.walletProvider = new EthereumProvider(walletName);
                     break;
                 default:
                     throw new Error("Wallet not support")
@@ -294,6 +293,8 @@ export class Web3Wallets implements EIP1193Provider {
         }
         return this.request(getReceipt)
     }
+
+
 }
 
 

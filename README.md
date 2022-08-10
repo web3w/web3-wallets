@@ -24,8 +24,8 @@ Example: https://web3w.github.io/web3-wallets
 
 ### An adapted wallet
 
-'metamask','wallet_connect','coinbase','imtoken','math_wallet','token_pocket','bitkeep' | 'coin98'
-  
+'metamask','wallet_connect','coinbase','imtoken','math_wallet','token_pocket','bitkeep','onekey'
+
 #### Web3Js
 
 ```ts
@@ -44,6 +44,7 @@ const sign = await signer.signMessage("hello web3")
 ```
 
 #### Connect
+
 ```ts
 const accounts = await wallet.connect() // same enable()
 const res = await wallet.request({"method": "eth_blockNumber", "params": []})

@@ -5,8 +5,8 @@ import {
     ProviderConnectInfo,
     ProviderMessage,
     ProviderRpcError
-} from '../types'
-import {BaseProvider} from "./baseProvider";
+} from '../src/types'
+import {BaseProvider} from "../src/connectors/baseProvider";
 
 
 function getProvider() {
@@ -19,7 +19,7 @@ function getProvider() {
 }
 
 //https://docs.bitkeep.com/guide/connect-wallet-for-dapp.html#evm
-export class BitKeepWallet extends BaseProvider {
+export class BitKeepProvider extends BaseProvider {
     public walletName: WalletNames = 'bitkeep'
     public provider: any
     public chainId: number

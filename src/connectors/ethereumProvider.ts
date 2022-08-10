@@ -7,26 +7,33 @@ import {
 import {BaseProvider} from "./baseProvider";
 
 
-function getProvider() {
+function getProvider(name: WalletNames) {
     const provider = window && window.ethereum;
-    if (!provider) {
+    if (name == 'metamask') {
         window.open('https://metamask.io/download/');
+    }
+    if (name == 'bitkeep') {
+        window.open('https://bitkeep.com/download?type=0&theme=light');
+    }
+
+    if (name == 'onekey') {
+        window.open('https://onekey.so/download/?client=browserExtension');
     }
     return provider;
 }
 
 // https://github.com/metamask/test-dapp
 // https://metamask.github.io/test-dapp/
-export class MetaMaskWallet extends BaseProvider {
+export class EthereumProvider extends BaseProvider {
     public walletName: WalletNames = 'metamask'
     public provider: any
     public chainId: number
     public address: string
     public accounts: string[] = []
 
-    constructor(name?: string) {
+    constructor(name?: WalletNames) {
         super()
-        this.provider = getProvider()
+        this.provider = getProvider(name || this.walletName)
         if (this.provider) {
             if (this.provider.overrideIsMetaMask) {
                 const provider = this.provider.providerMap.get("MetaMask")
@@ -35,7 +42,7 @@ export class MetaMaskWallet extends BaseProvider {
             this.chainId = Number(this.provider.networkVersion)
             this.address = this.provider.selectedAddress
             this.accounts = [this.address]
-        }else {
+        } else {
             throw new Error('Install MetaMask wallet')
         }
 
@@ -50,10 +57,19 @@ export class MetaMaskWallet extends BaseProvider {
             this.walletName = 'token_pocket'
         }
         // @ts-ignore
-        if (name == "one_key" && window.$onekey) {
+        if (name == "bitkeep" && window.bitkeep) {
+            // @ts-ignore
+            this.provider = window.bitkeep.ethereum;
+            this.walletName = 'bitkeep'
+            //isBitKeep
+            //isBitEthereum: true
+            //isBitKeepChrome: true
+        }
+        // @ts-ignore
+        if (name == "onekey" && window.$onekey) {
             // @ts-ignore
             this.provider = window.$onekey.ethereum
-            this.walletName = 'one_key'
+            this.walletName = 'onekey'
         }
 
         this.registerProviderEvents(this.provider)
