@@ -112,17 +112,18 @@ export class EthereumProvider extends BaseProvider {
         })
     }
 
-    // async request(args: RequestArguments): Promise<unknown> {
-    //     return new Promise<unknown>(async (resolve, reject) => {
-    //         const result = await this.provider.request(args)
-    //         resolve(result)
-    //     })
-    // };
-
     isUnlocked() {
-        return this.provider._metamask.isUnlocked()
+        return this.provider?._metamask?.isUnlocked()
     }
 
 }
+
+// async request(args: RequestArguments): Promise<unknown> {
+//     return new Promise<unknown>(async (resolve, reject) => {
+//         const result = await this.provider.request(args)
+//         resolve(result)
+//     })
+// };
+
 
 
