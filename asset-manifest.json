@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/web3-wallets/static/css/main.031c9afe.css",
-    "main.js": "/web3-wallets/static/js/main.01458549.js",
+    "main.js": "/web3-wallets/static/js/main.1bf11f20.js",
     "static/media/bitkeep.svg": "/web3-wallets/static/media/bitkeep.4eca0014763142155cc62065081642d9.svg",
     "static/media/metamask.svg": "/web3-wallets/static/media/metamask.7bbb06c183e4e1cfa34ded67faeaf8ab.svg",
     "static/media/coinbase.svg": "/web3-wallets/static/media/coinbase.5acfb6a15d554f2cbf77eb85371f06fc.svg",
@@ -11,6 +11,6 @@
   },
   "entrypoints": [
     "static/css/main.031c9afe.css",
-    "static/js/main.01458549.js"
+    "static/js/main.1bf11f20.js"
   ]
 }
