@@ -7,21 +7,6 @@ import {
 import {BaseProvider} from "./baseProvider";
 
 
-function getProvider(name: WalletNames) {
-    const provider = window && window.ethereum;
-    if (name == 'metamask') {
-        window.open('https://metamask.io/download/');
-    }
-    if (name == 'bitkeep') {
-        window.open('https://bitkeep.com/download?type=0&theme=light');
-    }
-
-    if (name == 'onekey') {
-        window.open('https://onekey.so/download/?client=browserExtension');
-    }
-    return provider;
-}
-
 // https://github.com/metamask/test-dapp
 // https://metamask.github.io/test-dapp/
 export class EthereumProvider extends BaseProvider {
@@ -33,7 +18,7 @@ export class EthereumProvider extends BaseProvider {
 
     constructor(name?: WalletNames) {
         super()
-        this.provider = getProvider(name || this.walletName)
+        this.provider = window && window.ethereum
         if (this.provider) {
             if (this.provider.overrideIsMetaMask) {
                 const provider = this.provider.providerMap.get("MetaMask")
@@ -43,7 +28,7 @@ export class EthereumProvider extends BaseProvider {
             this.address = this.provider.selectedAddress
             this.accounts = [this.address]
         } else {
-            throw new Error('Install MetaMask wallet')
+            throw new Error('Install web3 wallet')
         }
 
         const provider = this.provider
@@ -116,6 +101,19 @@ export class EthereumProvider extends BaseProvider {
         return this.provider?._metamask?.isUnlocked()
     }
 
+    static openDownload(name: WalletNames) {
+        const provider = window && window.ethereum;
+        if (!provider && name == 'metamask') {
+            window.open('https://metamask.io/download/');
+        }
+        if (!provider && name == 'bitkeep') {
+            window.open('https://bitkeep.com/download?type=0&theme=light');
+        }
+
+        if (!provider && name == 'onekey') {
+            window.open('https://onekey.so/download/?client=browserExtension');
+        }
+    }
 }
 
 // async request(args: RequestArguments): Promise<unknown> {
