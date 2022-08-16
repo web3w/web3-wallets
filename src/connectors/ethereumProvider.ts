@@ -11,10 +11,6 @@ import {BaseProvider} from "./baseProvider";
 // https://metamask.github.io/test-dapp/
 export class EthereumProvider extends BaseProvider {
     public walletName: WalletNames = 'metamask'
-    public provider: any
-    public chainId: number
-    public address: string
-    public accounts: string[] = []
 
     constructor(name?: WalletNames) {
         super()
@@ -24,7 +20,9 @@ export class EthereumProvider extends BaseProvider {
                 const provider = this.provider.providerMap.get("MetaMask")
                 this.provider = provider
             }
-            this.chainId = Number(this.provider.networkVersion)
+            this.chainId =this.provider.networkVersion
+                ? Number(this.provider.networkVersion)
+                : this.provider.chainId ? Number(this.provider.chainId):0
             this.address = this.provider.selectedAddress
             this.accounts = [this.address]
         } else {

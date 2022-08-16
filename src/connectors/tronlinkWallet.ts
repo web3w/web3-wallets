@@ -26,9 +26,6 @@ const tronWalletEvent = (account) => {
 
 export class TronLinkWallet  extends BaseProvider {
     public walletName: WalletNames = 'tron_link'
-    public provider: any
-    public address: string = ''
-    public chainId: number = 0
     public host: string = ''
 
 

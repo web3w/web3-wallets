@@ -1,6 +1,6 @@
 import {
     EIP1193Provider, NewAsset,
-    ProviderAccounts, RequestArguments, WalletNames
+    ProviderAccounts, RequestArguments
 } from '../types'
 import EventEmitter from "events";
 import {addChainParameter} from "../constants/chain";
@@ -20,8 +20,9 @@ export abstract class BaseProvider extends EventEmitter implements EIP1193Provid
 
     async connect(): Promise<ProviderAccounts> {
         const accounts = await this.provider.request({method: 'eth_requestAccounts'})
-        this.chainId = Number(this.provider.networkVersion)
-        this.address = this.provider.selectedAddress
+        const chainId = await this.provider.request({method: 'eth_chainId'})
+        this.chainId = Number(chainId)
+        this.address = accounts[0]
         this.accounts = accounts
         return accounts // enable ethereum
     }

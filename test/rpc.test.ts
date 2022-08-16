@@ -1,6 +1,10 @@
 import {getBlockByNumber, getChainRpcUrl, getTransactionByHash, getTransactionReceipt} from "../src/utils/rpc";
+import {fetchJson} from "../src/utils/hepler";
 
 (async () => {
+
+    const signFunc = await fetchJson("https://raw.githubusercontent.com/ethereum-lists/4bytes/master/signatures/a9059cbb", {proxyUrl: "http://127.0.0.1:7890"})
+    const res = await signFunc.text()
     const chainId = 4
     const rpcUrl = await getChainRpcUrl(chainId, true)
     console.log(rpcUrl)

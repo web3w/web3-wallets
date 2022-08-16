@@ -38,15 +38,21 @@ export class Web3Wallets implements EIP1193Provider {
     constructor(wallet?: Partial<WalletInfo>, rpcMap?: IRPCMap) {
         this.wallet = wallet
         const bridge = wallet?.bridge || "https://bridge.walletconnect.org"
+        this.wallet.bridge = bridge
         const chainId = wallet?.chainId || 1
+        this.wallet.chainId = chainId
         const isBrowser = typeof window !== 'undefined'
 
         const walletName = wallet?.name || getWalletName()
+        this.wallet.name = walletName
 
         if (isBrowser) {
             switch (walletName) {
                 case 'metamask':
                     this.walletProvider = new EthereumProvider();
+                    break;
+                case "imtoken":
+                    this.walletProvider = new EthereumProvider(walletName);
                     break;
                 case 'coinbase':
                     this.walletProvider = new CoinbaseProvider();
@@ -59,13 +65,13 @@ export class Web3Wallets implements EIP1193Provider {
                     }, rpcMap);
                     break;
                 case 'token_pocket':
-                    this.walletProvider = new EthereumProvider();
+                    this.walletProvider = new EthereumProvider(walletName);
                     break;
                 case 'math_wallet':
-                    this.walletProvider = new EthereumProvider();
+                    this.walletProvider = new EthereumProvider(walletName);
                     break;
                 case 'imtoken':
-                    this.walletProvider = new EthereumProvider();
+                    this.walletProvider = new EthereumProvider(walletName);
                     break;
                 case 'bitkeep':
                     this.walletProvider = new EthereumProvider(walletName);
@@ -88,7 +94,7 @@ export class Web3Wallets implements EIP1193Provider {
             if (walletName == 'wallet_connect') {
                 this.walletProvider = new WalletProvider({bridge, chainId});
             } else {
-                this.walletProvider = new SignerProvider({chainId: wallet?.chainId, privateKeys: wallet?.privateKeys})
+                this.walletProvider = new SignerProvider(wallet)
             }
             this.walletSigner = new Web3Provider(this.walletProvider).getSigner()
         }

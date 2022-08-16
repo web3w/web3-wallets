@@ -143,5 +143,11 @@ export async function fetchJson(url: string, options?: RequestInit & {
     return data
 }
 
+export async function get4Bytes(hash: string) {
+    const url = "https://raw.githubusercontent.com/ethereum-lists/4bytes/master/signatures/"
+    const signFunc = await fetchJson(url + hash, {proxyUrl: "http://127.0.0.1:7890"})
+    return signFunc.text()
+}
+
 
 

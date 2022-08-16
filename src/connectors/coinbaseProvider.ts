@@ -24,10 +24,6 @@ function makeWeb3Provider() {
 
 export class CoinbaseProvider extends BaseProvider {
     public walletName: WalletNames = 'coinbase'
-    public provider: any
-    public address: string = ''
-    public accounts: string[] = []
-    public chainId: number = 0
 
     constructor() {
         super()

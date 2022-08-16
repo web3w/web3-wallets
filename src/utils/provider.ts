@@ -44,6 +44,18 @@ export function getWalletName(): string {
             return 'metamask'
         }
 
+        if (walletProvider.isImToken) {
+            return 'imtoken'
+        }
+
+        if (walletProvider.isMathWallet) {
+            return 'math_wallet'
+        }
+
+        if (walletProvider.isTokenPocket) {
+            return 'token_pocket'
+        }
+
         if (walletProvider.overrideIsMetaMask) {
             // this.provider = walletProvider.provider.providers.find(val => val.isMetaMask)
             return 'coinbase'
