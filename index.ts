@@ -55,7 +55,14 @@ export {
     itemsIsEquality,
     fetch,
     sleep,
-    checkURL
+    checkURL,
+    isCoinBase,
+    isMetaMask,
+    isBitKeep,
+    isOneKey,
+    isImToken,
+    isMathWallet,
+    isTokenPocket
 } from './src/utils/hepler'
 
 export {

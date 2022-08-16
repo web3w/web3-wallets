@@ -61,6 +61,15 @@ export function getWalletName(): string {
             return 'coinbase'
         }
     }
+    // @ts-ignore
+    if (window.bitkeep) {
+        return 'bitkeep'
+    }
+
+    // @ts-ignore
+    if (window.$onekey) {
+        return 'onekey'
+    }
     return "wallet_connect"
 }
 

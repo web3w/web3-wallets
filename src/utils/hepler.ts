@@ -30,6 +30,54 @@ export function checkURL(URL: string) {
 }
 
 
+/* ------------------------钱包识别----->dApp内置浏览器注入或者系统浏览器插件注入------------------------ */
+export const isMetaMask = () => {
+    const {ethereum} = window
+    // @ts-ignore
+    return ethereum && ethereum.isMetaMask
+}
 
+export const isCoinBase = () => {
+    const {ethereum} = window
+    // @ts-ignore
+    if (ethereum) return ethereum.isMetaMask && ethereum.overrideIsMetaMask
+}
+
+export const isBitKeep = () => {
+    // @ts-ignore
+    const {ethereum, bitkeep} = window
+    // @ts-ignore
+    if (ethereum) return ethereum.isMetaMask
+    // @ts-ignore
+    if (bitkeep) return bitkeep.ethereum.isBitKeep
+
+}
+
+export const isOneKey = () => {
+    // @ts-ignore
+    const {ethereum, $onekey} = window
+    // @ts-ignore
+    if (ethereum) return ethereum.isMetaMask
+    // @ts-ignore
+    if ($onekey) return $onekey.ethereum.isOneKey
+
+}
+
+export const isImToken = () => {
+    const {ethereum} = window
+    // @ts-ignore
+    return ethereum && ethereum.isImToken
+}
+
+export const isTokenPocket = () => {
+    const {ethereum} = window
+    // @ts-ignore
+    return ethereum && ethereum.isTokenPocket
+}
+export const isMathWallet = () => {
+    const {ethereum} = window
+    // @ts-ignore
+    return ethereum && ethereum.isMathWallet
+}
 
 
