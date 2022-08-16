@@ -60,7 +60,6 @@ export function getWalletName(): string {
             // this.provider = walletProvider.provider.providers.find(val => val.isMetaMask)
             return 'coinbase'
         }
-
     }
     return "wallet_connect"
 }

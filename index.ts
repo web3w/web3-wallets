@@ -1,6 +1,5 @@
 export {EthereumProvider} from './src/connectors/ethereumProvider'
 export {CoinbaseProvider} from './src/connectors/coinbaseProvider'
-// export {BitKeepProvider} from './src/connectors/bitkeepProvider'
 export {Web3Wallets} from './src'
 
 export type {
@@ -54,14 +53,16 @@ export {hexUtils} from "./src/utils/hexUtils"
 export {
     objectClone,
     itemsIsEquality,
-    fetchJson,
     fetch,
     sleep,
     checkURL
 } from './src/utils/hepler'
 
 export {
-    ethSend, getEstimateGas, getChainRpcUrl, getChainInfo, getTransactionReceipt, getBlockByNumber, getTransactionByHash
+    ethSend,
+    getEstimateGas,
+    getChainRpcUrl,
+    getChainInfo
 } from './src/utils/rpc'
 
 
