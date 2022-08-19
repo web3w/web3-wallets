@@ -3,29 +3,10 @@ import iconMetaMask from "../assets/images/metamask.svg";
 import iconCoinBase from "../assets/images/coinbase.svg";
 import iconOneKey from "../assets/images/onekey.svg";
 import iconBitKeep from "../assets/images/bitkeep.svg";
-
-// import iconImToken from '../assets/images/imtoken.png'
-// import iconTrustWallet from '../assets/images/trustwallet.svg'
-// import iconSafePal from '../assets/images/safepal.svg'
-// import iconFortmatic from '../assets/images/fortmatic.svg'
-// import iconMathWallet from '../assets/images/mathwallet.svg'
+import iconOnto from "../assets/images/onto-wallet.jpeg";
 
 
-// import iconBinanceChainWallet from '../assets/images/binancechainwallet.svg'
-// import iconMetamask from '@public/images/metamask.svg'
-// import iconBinanceChainWallet from '@public/images/binancechainwallet.svg'
-// import iconWalletConnect from '@public/images/walletconnect.svg'
-// import iconTokenPocket from '@public/images/tokenpocket.png'
-// import bitkeepWallet from '@public/images/bitkeepWallet.png'
-// import iconImToken from '@public/images/imtoken.png'
-// import iconTrustWallet from '@public/images/trustwallet.svg'
-// import iconSafePal from '@public/images/safepal.svg'
-// import iconFortmatic from '@public/images/fortmatic.svg'
-// import iconMathWallet from '@public/images/mathwallet.svg'
-// import coinbaseWallet from '@public/images/coinbaseWallet.svg'
-// import oneKeyWallet from '@public/images/onekey.svg'
-
-export {iconWalletConnect, iconMetaMask, iconCoinBase, iconOneKey, iconBitKeep}
+export {iconWalletConnect, iconMetaMask, iconCoinBase, iconOneKey, iconBitKeep,iconOnto}
 
 export const RPC_PROVIDER = {
     4: 'https://api-test.element.market/api/v1/jsonrpc',

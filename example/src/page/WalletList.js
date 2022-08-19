@@ -6,7 +6,7 @@ import Avatar from "antd/es/avatar/avatar";
 import QRCodeModal from '@walletconnect/qrcode-modal'
 import {Web3Wallets} from 'web3-wallets';
 
-import {iconWalletConnect, iconMetaMask, iconCoinBase, iconOneKey, iconBitKeep} from "../js/config"
+import {iconWalletConnect, iconMetaMask, iconCoinBase, iconOneKey, iconBitKeep,iconOnto} from "../js/config"
 
 import {walletAction} from "../js/walletAction";
 
@@ -83,28 +83,29 @@ export function WalletList() {
         {title: 'WalletConnect', key: 'wallet_connect', icon: iconWalletConnect, desc: "mobile only"},
         {title: 'CoinBase', key: 'coinbase', icon: iconCoinBase, desc: "coinbase wallet"},
         {title: 'BitKeep', key: 'bitkeep', icon: iconBitKeep, desc: "BitKeep wallet"},
-        {title: 'OneKey', key: 'onekey', icon: iconOneKey, desc: "One Key wallet"}
+        {title: 'OneKey', key: 'onekey', icon: iconOneKey, desc: "One Key wallet"},
+        {title: 'ONTO', key: 'onto_wallet', icon: iconOnto, desc: "ONTO wallet"}
     ];
 
     const accountFun = [
         {title: 'SignMessage', key: 'SignMessage', disabled: ['']},
-        {title: 'SignTypedData', key: 'SignTypedData', disabled: ['']},
-        {title: 'SignTypedDataList', key: 'SignTypedDataList', disabled: ['']},
+        {title: 'SignTypedData', key: 'SignTypedData', disabled: ['onto_wallet']},
+        {title: 'SignTypedDataList', key: 'SignTypedDataList', disabled: ['onto_wallet']},
         {title: 'GetBalance', key: 'GetBalance', disabled: ['']}
     ];
 
     const contractFun = [
-        {title: 'DepositWETH', key: 'wethDeposit', disabled: ['']},
-        {title: 'WithdrawWETH', key: 'wethWithdraw', disabled: ['']},
+        {title: 'DepositWETH', key: 'wethDeposit', disabled: ['onto_wallet']},
+        {title: 'WithdrawWETH', key: 'wethWithdraw', disabled: ['onto_wallet']},
         // {title: 'Transfer', key: 'transfer', disabled: ['']},
     ]
 
     const walletFun = [
         {title: 'Connect', key: 'Connect', disabled: ['']},
-        {title: 'DisConnect', key: 'DisConnect', disabled: ['metamask', "one_key"]},
+        {title: 'DisConnect', key: 'DisConnect', disabled: ['metamask', "one_key","onto_wallet"]},
         {title: 'AddChain', key: 'AddChain', disabled: ['wallet_connect']},
         {title: 'AddToken', key: 'AddToken', disabled: ['wallet_connect', 'coinbase']},
-        {title: 'SwitchChain', key: 'SwitchChain', disabled: ['wallet_connect']}
+        {title: 'SwitchChain', key: 'SwitchChain', disabled: ['wallet_connect','onto_wallet']}
     ]
 
     const accountActions = (item) => accountFun.map(val => {

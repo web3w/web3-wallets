@@ -53,8 +53,15 @@ export class EthereumProvider extends BaseProvider {
             // @ts-ignore
             this.provider = window.$onekey.ethereum
             this.walletName = 'onekey'
-
             // if ($onekey) return $onekey.ethereum.isOneKey
+        }
+
+        // @ts-ignore
+        if (name == "onto_wallet" && window.onto) {
+            // ethereum && ethereum.isONTO
+            // @ts-ignore
+            this.provider = window.onto
+            this.walletName = 'onto_wallet'
         }
 
         this.registerProviderEvents(this.provider)

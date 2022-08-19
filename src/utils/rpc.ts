@@ -4,7 +4,7 @@ import {ChainConfig, LimitedCallSpec, WalletInfo, TransactionRequest, Transactio
 
 import {getProvider} from "./provider";
 import {CHAIN_CONFIG, BigNumber} from '../constants'
-import { fetch} from "./hepler";
+import {fetch} from "./hepler";
 import {Web3Provider} from "@ethersproject/providers";
 
 
@@ -69,7 +69,7 @@ export async function ethSend(wallet: WalletInfo, callData: LimitedCallSpec): Pr
     const signer = wallet.provider ? new Web3Provider(wallet.provider).getSigner(address) : walletSigner
 
     // console.log("ethSend signer", signer)
-    let value =   ethers.BigNumber.from(0)
+    let value = ethers.BigNumber.from(0)
     if (callData.value) {
         value = ethers.BigNumber.from(callData.value)
     }
@@ -109,6 +109,10 @@ export async function ethSend(wallet: WalletInfo, callData: LimitedCallSpec): Pr
             // console.log("GasPrice", gasPrice)
             transactionObject.gasPrice = ethers.BigNumber.from(gasPrice)
         }
+    }
+
+    if (callData.gasLimit) {
+        transactionObject.gasLimit = ethers.BigNumber.from(callData.gasLimit)
     }
 
     try {

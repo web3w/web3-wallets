@@ -80,4 +80,10 @@ export const isMathWallet = () => {
     return ethereum && ethereum.isMathWallet
 }
 
-
+export const isONTOWallet = () => {
+    //https://chrome.google.com/webstore/detail/onto-wallet/ifckdpamphokdglkkdomedpdegcjhjdp
+    const {ethereum} = window
+    // @ts-ignore
+    return ethereum && ethereum.isONTO
+    //const web3 = new Web3(window.onto);
+}

@@ -25,6 +25,7 @@ export type WalletNames = 'metamask'
     | 'token_pocket'
     | 'wallet_connect'
     | 'onekey'
+    | 'onto_wallet'
     | 'rainbow'
     | 'bitkeep'
     | 'coin98'
@@ -67,6 +68,7 @@ export interface LimitedCallSpec {
     data: string
     value?: string
     from?: string
+    gasLimit?: number
 }
 
 export interface ProviderRpcError extends Error {

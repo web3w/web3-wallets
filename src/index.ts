@@ -16,7 +16,6 @@ import {BaseProvider} from "./connectors/baseProvider";
 import {IRPCMap, SignerProvider, WalletProvider} from "web3-signer-provider";
 import {EthereumProvider} from './connectors/ethereumProvider'
 import {CoinbaseProvider} from './connectors/coinbaseProvider'
-// import {BitKeepProvider} from "./connectors/bitkeepProvider";
 
 declare global {
     interface Window {
@@ -80,6 +79,9 @@ export class Web3Wallets implements EIP1193Provider {
                     this.walletProvider = new EthereumProvider();
                     break;
                 case 'onekey':
+                    this.walletProvider = new EthereumProvider(walletName);
+                    break;
+                case 'onto_wallet':
                     this.walletProvider = new EthereumProvider(walletName);
                     break;
                 default:
