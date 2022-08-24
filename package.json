@@ -1,6 +1,6 @@
 {
   "name": "web3-wallets",
-  "version": "2.3.9",
+  "version": "2.3.11",
   "description": "Javascript SDK for Web3 wallets",
   "main": "lib/index.js",
   "type": "lib/index.d.ts",
@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "ts-node": "^10.9.1",
-    "typescript": "~4.6.4"
+    "typescript": "4.7.4"
   },
   "publishConfig": {
     "access": "public"

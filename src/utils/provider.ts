@@ -70,6 +70,10 @@ export function getWalletName(): string {
     if (window.$onekey) {
         return 'onekey'
     }
+
+    if (window.ethereum) {
+        return 'metamask'
+    }
     return "wallet_connect"
 }
 

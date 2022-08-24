@@ -20,11 +20,18 @@ export class EthereumProvider extends BaseProvider {
                 const provider = this.provider.providerMap.get("MetaMask")
                 this.provider = provider
             }
-            this.chainId =this.provider.networkVersion
-                ? Number(this.provider.networkVersion)
-                : this.provider.chainId ? Number(this.provider.chainId):0
-            this.address = this.provider.selectedAddress
-            this.accounts = [this.address]
+
+            if (!this.provider.isMetaMask) {
+                // @ts-ignore
+                const provider =window.web3.currentProvider
+                this.provider = provider
+            }
+            // debugger
+            // this.chainId =this.provider.networkVersion
+            //     ? Number(this.provider.networkVersion)
+            //     : this.provider.chainId ? Number(this.provider.chainId):0
+            // this.address = this.provider.selectedAddress
+            // this.accounts = [this.address]
         } else {
             throw new Error('Install web3 wallet')
         }
@@ -85,13 +92,13 @@ export class EthereumProvider extends BaseProvider {
         })
 
         provider.on('chainChanged', async (chainId: string) => {
-            // console.log('Matemask chainChanged SDK', chainId)
+            console.log('Matemask chainChanged SDK', chainId)
             this.chainId = Number(chainId)
             this.emit('chainChanged', chainId)
         })
 
         provider.on('accountsChanged', async (accounts: Array<string>) => {
-            // console.log('Matemask accountsChanged SDK', accounts)
+            console.log('Matemask accountsChanged SDK', accounts)
             this.address = accounts[0]
             this.accounts = accounts
             this.emit('accountsChanged', accounts)
@@ -132,3 +139,19 @@ export class EthereumProvider extends BaseProvider {
 
 
 
+// const ye = {
+//     chainId: 1,
+//     rpcUrl: "https://api.bitski.com/v1/web3/mainnet"
+// }
+//     , be = {
+//     chainId: 4,
+//     rpcUrl: "https://api.bitski.com/v1/web3/rinkeby"
+// }
+//     , we = {
+//     chainId: 137,
+//     rpcUrl: "https://api.bitski.com/v1/web3/polygon"
+// }
+//     , _e = {
+//     chainId: 80001,
+//     rpcUrl: "https://api.bitski.com/v1/web3/mumbai"
+// };

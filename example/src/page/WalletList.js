@@ -21,7 +21,7 @@ export function WalletList() {
     const {wallet, setWallet, setAccounts, setChainId} = useContext(Context);
 
     const selectWallet = async (item, action) => {
-        // debugger
+
         if (wallet && wallet.walletName == item.key) {
             // setWallet(wallet)
             await walletAction(wallet, action)
@@ -62,15 +62,12 @@ export function WalletList() {
         })
 
         const isConnect = newWallet.connected()
-        if (isConnect) {
-            debugger
-            setWallet(newWallet)
-        } else {
-            await newWallet.connect().catch(e => {
-                console.log(e)
-            })
-        }
+        console.log(isConnect)
+        await newWallet.connect().catch(e => {
+            console.log(e)
+        })
 
+        setWallet(newWallet)
         if (newWallet.chainId) {
             await walletAction(newWallet, action)
         }
