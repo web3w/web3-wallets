@@ -55,8 +55,7 @@ export function getWalletName(): { walletName: string, isMobile: boolean, ethere
         }
 
         if (walletProvider.overrideIsMetaMask || walletProvider.isCoinbaseWallet) {
-            // this.provider = walletProvider.provider.providers.find(val => val.isMetaMask)
-            isMobile = !walletProvider.isCoinbaseBrowser
+            isMobile = walletProvider.isCoinbaseBrowser
             walletName = 'coinbase'
         }
 
@@ -97,9 +96,11 @@ export function getWalletName(): { walletName: string, isMobile: boolean, ethere
     }
 
     if (window.ethereum) {
-        walletName = 'metamask'
+        if (walletName == "wallet_connect") {
+            walletName = 'metamask'
+        }
     }
-    return {walletName, isMobile, ethereumProvider:walletProvider}
+    return {walletName, isMobile, ethereumProvider: walletProvider}
 }
 
 export function detectWallets(wallet?: WalletInfo) {

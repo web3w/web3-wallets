@@ -73,7 +73,7 @@ export {
 } from './src/utils/rpc'
 
 
-export {getWalletInfo, getProvider, detectWallets} from './src/utils/provider'
+export {getWalletInfo, getProvider, detectWallets, getWalletName} from './src/utils/provider'
 
 export {
     CHAIN_NAME, CHAIN_CONFIG, NULL_ADDRESS, NULL_BLOCK_HASH, ETH_TOKEN_ADDRESS, MAX_UINT_256, BigNumber, ZERO
