@@ -1,6 +1,6 @@
 {
   "name": "web3-wallets",
-  "version": "2.3.11",
+  "version": "2.3.12",
   "description": "Javascript SDK for Web3 wallets",
   "main": "lib/index.js",
   "type": "lib/index.d.ts",
@@ -13,7 +13,7 @@
     "link": "sudo npm link web3-wallets"
   },
   "dependencies": {
-    "@coinbase/wallet-sdk": "^3.4.0",
+    "@coinbase/wallet-sdk": "^3.5.0",
     "bignumber.js": "^9.0.1",
     "ethers": "^5.6.9",
     "web3-assert": "^1.0.2",

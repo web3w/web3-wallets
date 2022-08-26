@@ -34,47 +34,72 @@ export async function getWalletInfo(): Promise<WalletInfo> {
     return {address, chainId}
 }
 
-export function getWalletName(): string {
+export function getWalletName(): { walletName: string, isMobile: boolean, ethereumProvider?: any } {
+    let isMobile = false
     if (typeof window === 'undefined') {
-        return "wallet_signer"
+        return {walletName: "wallet_signer", isMobile}
     }
-    if (window.ethereum) {
-        const walletProvider = window.ethereum as any
-        if (walletProvider.isMetaMask) {
-            return 'metamask'
+    let walletProvider = window.ethereum as any
+    let walletName = "wallet_connect"
+    if (walletProvider) {
+        // if (walletProvider.isMetaMask) {
+        //     return 'metamask'
+        // }
+        if (walletProvider.isFinnie) {
+            // @ts-ignore
+            const web3 = window.web3 as any
+            if (web3) {
+                walletProvider = web3.currentProvider
+            }
+            walletName = 'finnie_wallet'
+        }
+
+        if (walletProvider.overrideIsMetaMask || walletProvider.isCoinbaseWallet) {
+            // this.provider = walletProvider.provider.providers.find(val => val.isMetaMask)
+            isMobile = !walletProvider.isCoinbaseBrowser
+            walletName = 'coinbase'
         }
 
         if (walletProvider.isImToken) {
-            return 'imtoken'
+            isMobile = true
+            walletName = 'imtoken'
         }
 
         if (walletProvider.isMathWallet) {
-            return 'math_wallet'
+            walletName = 'math_wallet'
         }
 
         if (walletProvider.isTokenPocket) {
-            return 'token_pocket'
+            isMobile = true
+            walletName = 'token_pocket'
         }
 
-        if (walletProvider.overrideIsMetaMask) {
-            // this.provider = walletProvider.provider.providers.find(val => val.isMetaMask)
-            return 'coinbase'
+
+        if (walletProvider.isONTO) {
+            walletName = 'onto_wallet'
         }
+
     }
     // @ts-ignore
     if (window.bitkeep) {
-        return 'bitkeep'
+        // @ts-ignore
+        isMobile = !window.bitkeep.isBitKeepChrome
+        // @ts-ignore
+        walletProvider = window.bitkeep.ethereum;
+        walletName = 'bitkeep'
     }
 
     // @ts-ignore
     if (window.$onekey) {
-        return 'onekey'
+        // @ts-ignore
+        walletProvider = window.$onekey.ethereum
+        walletName = 'onekey'
     }
 
     if (window.ethereum) {
-        return 'metamask'
+        walletName = 'metamask'
     }
-    return "wallet_connect"
+    return {walletName, isMobile, ethereumProvider:walletProvider}
 }
 
 export function detectWallets(wallet?: WalletInfo) {
@@ -130,7 +155,7 @@ export function getProvider(walletInfo: WalletInfo) {
             if ((window.ethereum && !window.walletProvider) || (window.ethereum && !window.elementWeb3)) {
                 // console.log('GetProvider:window.ethereum')
                 walletProvider = window.ethereum as ExternalProvider
-                if (walletProvider.selectedAddress) {
+                if (walletProvider.enable) {
                     walletProvider.enable()
                 }
                 walletSigner = new Web3Provider(walletProvider).getSigner(address)

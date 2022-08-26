@@ -8,12 +8,11 @@ import {
 } from '../types'
 import {BaseProvider} from "./baseProvider";
 
-const APP_NAME = 'Coinbase'
-const APP_LOGO_URL = 'https://images.ctfassets.net/q5ulk4bp65r7/3TBS4oVkD1ghowTqVQJlqj/2dfd4ea3b623a7c0d8deb2ff445dee9e/Consumer_Wordmark.svg'
-const DEFAULT_ETH_JSONRPC_URL = "https://mainnet-infura.wallet.coinbase.com"
-const DEFAULT_CHAIN_ID = 1;
-
 function makeWeb3Provider() {
+    const APP_NAME = 'Coinbase'
+    const APP_LOGO_URL = 'https://images.ctfassets.net/q5ulk4bp65r7/3TBS4oVkD1ghowTqVQJlqj/2dfd4ea3b623a7c0d8deb2ff445dee9e/Consumer_Wordmark.svg'
+    const DEFAULT_ETH_JSONRPC_URL = "https://mainnet-infura.wallet.coinbase.com"
+    const DEFAULT_CHAIN_ID = 1;
     const coinbaseWallet = new CoinbaseWalletSDK({
         appName: APP_NAME,
         appLogoUrl: APP_LOGO_URL,
@@ -30,6 +29,7 @@ export class CoinbaseProvider extends BaseProvider {
         this.provider = window.ethereum
         if (this.provider) {
             // adapter coinbase wallet
+            // isCoinbaseWallet
             if (this.provider.overrideIsMetaMask) {
                 const provider = this.provider.providerMap.get("CoinbaseWallet")
                 if (!provider) {
@@ -40,9 +40,10 @@ export class CoinbaseProvider extends BaseProvider {
         } else {
             this.provider = makeWeb3Provider()
         }
-        this.address = this.provider.selectedAddress
-        this.accounts = [this.address]
-        this.chainId = Number(this.provider.chainId)
+
+        // this.address = this.provider.selectedAddress
+        // this.accounts = [this.address]
+        // this.chainId = Number(this.provider.chainId)
         this.registerProviderEvents(this.provider)
     }
 

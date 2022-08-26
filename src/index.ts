@@ -42,7 +42,8 @@ export class Web3Wallets implements EIP1193Provider {
         this.wallet.chainId = chainId
         const isBrowser = typeof window !== 'undefined'
 
-        const walletName = wallet?.name || getWalletName()
+        const walletName = wallet?.name || getWalletName().walletName
+        console.log('SDK',walletName)
         this.wallet.name = walletName
 
         if (isBrowser) {

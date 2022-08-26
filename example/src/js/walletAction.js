@@ -18,6 +18,7 @@ export const walletAction = async (wallet, action) => {
     const {walletSigner, walletProvider} = wallet
 
     if (action == 'Connect') {
+        debugger
         const addresses = await wallet.connect()
         if (walletProvider.walletName == 'wallet_connect') {
             const {walletName, wc} = walletProvider

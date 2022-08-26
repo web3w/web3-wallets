@@ -20,8 +20,8 @@ export class EthereumProvider extends BaseProvider {
                 const provider = this.provider.providerMap.get("MetaMask")
                 this.provider = provider
             }
-
-            if (!this.provider.isMetaMask) {
+            // @ts-ignore
+            if (!this.provider.isMetaMask &&  window.web3) {
                 // @ts-ignore
                 const provider =window.web3.currentProvider
                 this.provider = provider
