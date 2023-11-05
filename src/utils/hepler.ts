@@ -1,6 +1,6 @@
-import fetch from "node-fetch";
+// import fetch from "node-fetch";
 
-export {fetch}
+// export {fetch}
 
 export function objectClone(obj: object) {
     return JSON.parse(JSON.stringify(obj))

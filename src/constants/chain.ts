@@ -69,13 +69,33 @@ export const CHAIN_CONFIG = {
         chain: "ETH",
         "rpcs": [
             "https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
-            "https://api-test.element.market/api/v1/jsonrpc"
+            // "https://api-test.element.market/api/v1/jsonrpc"
         ],
         "scans": [
             "https://rinkeby.etherscan.io/"
         ],
         "faucets": [
             "https://rinkebyfaucet.com/"
+        ]
+    },
+    "5": {
+        name: "Ethereum Rinkby",
+        short_name: "eth",
+        native_currency: {
+            symbol: "ETH",
+            name: "Ether",
+            decimals: "18"
+        },
+        chain: "ETH",
+        "rpcs": [
+            "https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
+            "https://rpc.ankr.com/eth_goerli"
+        ],
+        "scans": [
+            "https://goerli.etherscan.io/"
+        ],
+        "faucets": [
+            "https://faucets.chain.link/"
         ]
     },
     "56": {

@@ -1,14 +1,16 @@
-import {Web3Provider, JsonRpcSigner, ExternalProvider} from "@ethersproject/providers";
+import { Web3Provider, JsonRpcSigner, ExternalProvider } from "@ethersproject/providers";
+import { Signer } from 'ethers'
 
-export {ethers, Signer, Contract, Wallet, providers, BaseContract, constants, utils} from 'ethers'
+export { ethers, Contract, Wallet, BrowserProvider as providers, BaseContract } from 'ethers'
+//  constants, utils
+ 
+export type { ExternalProvider, Signer }
+export { Web3Provider, JsonRpcSigner }
 
-export type {ExternalProvider}
-export {Web3Provider, JsonRpcSigner}
 
+export type { TransactionRequest, TransactionResponse } from '@ethersproject/abstract-provider'
 
-export type {TransactionRequest, TransactionResponse} from '@ethersproject/abstract-provider'
-
-export type {ContractInterface} from 'ethers'
+export type { ContractInterface } from 'ethers'
 
 export type TokenSchemaNames =
     'erc20'
@@ -98,7 +100,7 @@ export interface ProviderConnectInfo {
     readonly chainId: string
 }
 
-export type  ProviderAccounts = string[];
+export type ProviderAccounts = string[];
 
 export interface SimpleEventEmitter {
     // add listener
@@ -145,9 +147,9 @@ export interface EIP1193Provider extends SimpleEventEmitter {
 
 
 export interface ChainConfig {
-    rpcs: string []
-    faucets?: string []
-    scans?: string []
+    rpcs: string[]
+    faucets?: string[]
+    scans?: string[]
     name?: string
     websiteUrl?: string
     websiteDead?: boolean

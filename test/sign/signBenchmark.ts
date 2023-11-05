@@ -10,8 +10,7 @@ import {SigningKey} from '@ethersproject/signing-key';
 import {hashMessage} from "@ethersproject/hash";
 import {ecSignMessage, signMessage} from "../../index";
 import {hexUtils} from "../../src/utils/hexUtils";
-import {ecSignHash, joinECSignature} from "../../src/utils/eip712TypeData";
-import {Signature} from "@ethersproject/bytes";
+import {ecSignHash, joinECSignature} from "../../src/utils/eip712TypeData"; 
 
 // export function ecSignHashWithKey(hash: string, key: string) {
 //     const {v, r, s} = ethjs.ecsign(ethjs.toBuffer(hash), ethjs.toBuffer(key));

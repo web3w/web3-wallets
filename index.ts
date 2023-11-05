@@ -16,7 +16,7 @@ export type {
 } from './src/types'
 
 export {
-    ethers, Signer, Contract, Wallet, providers, BaseContract, constants, utils,
+    ethers,  Contract, Wallet, providers, BaseContract,
     Web3Provider,
     JsonRpcSigner,
 } from './src/types'
@@ -52,8 +52,7 @@ export {hexUtils} from "./src/utils/hexUtils"
 
 export {
     objectClone,
-    itemsIsEquality,
-    fetch,
+    itemsIsEquality, 
     sleep,
     checkURL,
     isCoinBase,
@@ -76,6 +75,6 @@ export {
 export {getWalletInfo, getProvider, detectWallets, getWalletName} from './src/utils/provider'
 
 export {
-    CHAIN_NAME, CHAIN_CONFIG, NULL_ADDRESS, NULL_BLOCK_HASH, ETH_TOKEN_ADDRESS, MAX_UINT_256, BigNumber, ZERO
+    CHAIN_NAME, CHAIN_CONFIG, NULL_ADDRESS, NULL_BLOCK_HASH, ETH_TOKEN_ADDRESS, MAX_UINT_256
 } from './src/constants'
 
